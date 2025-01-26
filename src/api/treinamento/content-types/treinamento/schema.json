@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "treinamentos",
+  "info": {
+    "singularName": "treinamento",
+    "pluralName": "treinamentos",
+    "displayName": "Treinamentos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Nivel": {
+      "type": "enumeration",
+      "enum": [
+        "Basico",
+        "Intermediario",
+        "Avancado"
+      ],
+      "required": true
+    },
+    "Duracao": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Topicos": {
+      "type": "richtext",
+      "required": true
+    },
+    "Imagem": {
+      "allowedTypes": [
+        "images",
+        "videos"
+      ],
+      "type": "media",
+      "multiple": true,
+      "required": true
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Ordem": {
+      "type": "integer"
+    },
+    "Meta_Title": {
+      "type": "text"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "testemunhos",
+  "info": {
+    "singularName": "testemunho",
+    "pluralName": "testemunhos",
+    "displayName": "Testemunhos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Foto": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Depoimento": {
+      "type": "text"
+    },
+    "curso_realizado": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treinamento.treinamento"
+    },
+    "LinkedIn": {
+      "type": "string"
+    },
+    "Instagram": {
+      "type": "string"
+    },
+    "Facebook": {
+      "type": "string"
+    },
+    "Cargo": {
+      "type": "string"
+    },
+    "Empresa": {
+      "type": "string"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

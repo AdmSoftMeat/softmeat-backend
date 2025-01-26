@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "produtos",
+  "info": {
+    "singularName": "produto",
+    "pluralName": "produtos",
+    "displayName": "Produtos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome"
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Embutidos",
+        "Defumados",
+        "Bacon",
+        "Presuntos",
+        "Outros"
+      ],
+      "required": true
+    },
+    "Descricao_Catalogo": {
+      "type": "string",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Mercado_Livre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "allowedTypes": [
+        "images",
+        "videos"
+      ],
+      "type": "media",
+      "multiple": true,
+      "required": true
+    },
+    "Ordem_Exibicao": {
+      "type": "integer",
+      "default": 999
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_File": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}

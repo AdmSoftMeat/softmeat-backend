@@ -1,0 +1,26 @@
+{
+  "kind": "singleType",
+  "collectionName": "index_destaques",
+  "info": {
+    "singularName": "index-destaque",
+    "pluralName": "index-destaques",
+    "displayName": "Index Destaques",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cursos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::curso-online.curso-online"
+    },
+    "produtos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::produto.produto"
+    }
+  }
+}

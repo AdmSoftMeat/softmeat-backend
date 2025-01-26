@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cronogramas",
+  "info": {
+    "singularName": "cronograma",
+    "pluralName": "cronogramas",
+    "displayName": "Cronogramas",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Data": {
+      "type": "date",
+      "required": true
+    },
+    "Cidade": {
+      "type": "string",
+      "required": true,
+      "default": "Ribeirão Preto"
+    },
+    "Vagas_Totais": {
+      "type": "integer",
+      "required": true
+    },
+    "Vagas_Disponiveis": {
+      "type": "integer"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "treinamento": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treinamento.treinamento"
+    }
+  }
+}
