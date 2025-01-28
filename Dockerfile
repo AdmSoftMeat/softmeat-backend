@@ -4,20 +4,20 @@ FROM node:18-alpine
 RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
 
 # Definir diretório de trabalho
-WORKDIR /app
+WORKDIR /opt/app
 
 # Copiar arquivos de dependências
 COPY package*.json ./
 
 # Instalar dependências
-RUN npm install
+RUN npm ci
 
 # Copiar código fonte
 COPY . .
 
 # Criar diretório de dados e ajustar permissões
-RUN mkdir -p /app/data
-RUN chown -R node:node /app
+RUN mkdir -p /opt/app/data
+RUN chown -R node:node /opt/app
 
 # Mudar para usuário não-root
 USER node
