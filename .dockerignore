@@ -1,0 +1,10 @@
+node_modules
+.env
+.tmp
+.cache
+.git
+build
+data
+package-lock.json
+.DS_Store
+*.log
