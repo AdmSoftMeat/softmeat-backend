@@ -81,13 +81,20 @@ module.exports = ({ env }) => {
     },
     sqlite: {
       connection: {
-        filename: path.join(__dirname, '..', 'data', 'data.db'),
+        filename: path.join(env('DATABASE_FILENAME', '/opt/app/data/data.db')),
         pool: {
           min: 0,
-          max: 5
+          max: 5,
+          acquireTimeoutMillis: env.int("DATABASE_CONNECTION_TIMEOUT", 60000),
+          createTimeoutMillis: env.int("DATABASE_CONNECTION_TIMEOUT", 60000),
+          destroyTimeoutMillis: env.int("DATABASE_CONNECTION_TIMEOUT", 60000),
+          idleTimeoutMillis: env.int("DATABASE_CONNECTION_TIMEOUT", 60000),
+          reapIntervalMillis: 1000,
+          createRetryIntervalMillis: 100
         }
       },
       useNullAsDefault: true,
+      debug: false
     },
   };
 
