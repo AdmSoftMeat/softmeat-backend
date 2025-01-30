@@ -1,18 +1,34 @@
 FROM node:18-alpine
 
-# Instalar dependências necessárias
-RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
+# Instalar todas as dependências necessárias para o sharp
+RUN apk add --no-cache \
+    build-base \
+    gcc \
+    autoconf \
+    automake \
+    zlib-dev \
+    libpng-dev \
+    vips-dev \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
+
+# Configurar variáveis de ambiente para o sharp
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
+ENV npm_config_arch=x64
+ENV npm_config_platform=linux
 
 # Criar diretório da aplicação
 WORKDIR /opt/app
 
-# Copiar EXPLICITAMENTE tanto package.json quanto package-lock.json
-COPY package.json package-lock.json ./
+# Copiar package files
+COPY package*.json ./
 
-# Instalar dependências usando npm ci
-RUN npm ci
+# Instalar dependências
+RUN npm ci --verbose
 
-# Copiar o restante do código-fonte
+# Copiar resto do código
 COPY . .
 
 # Criar diretório de dados e ajustar permissões
