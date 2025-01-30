@@ -1,9 +1,5 @@
 node_modules
-.env
+build
 .tmp
 .cache
 .git
-build
-data
-.DS_Store
-*.log
