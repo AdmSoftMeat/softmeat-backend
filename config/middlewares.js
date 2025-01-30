@@ -19,9 +19,11 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       enabled: true,
-      origin: ['*'], // Em produção, você deve limitar isso aos domínios específicos
       headers: ['*'],
+      origin: ['*'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      keepHeaderOnError: true,
+      credentials: true,
     },
   },
   'strapi::poweredBy',
@@ -31,5 +33,4 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-  'strapi::security',
 ];
