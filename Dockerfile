@@ -6,13 +6,13 @@ RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips
 # Criar diretório da aplicação
 WORKDIR /opt/app
 
-# Copiar arquivos de dependências
-COPY package*.json ./
+# Copiar EXPLICITAMENTE tanto package.json quanto package-lock.json
+COPY package.json package-lock.json ./
 
-# Instalar dependências
+# Instalar dependências usando npm ci
 RUN npm ci
 
-# Copiar código-fonte
+# Copiar o restante do código-fonte
 COPY . .
 
 # Criar diretório de dados e ajustar permissões
