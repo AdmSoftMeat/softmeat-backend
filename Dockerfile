@@ -1,32 +1,37 @@
 FROM node:18-alpine
 
-# Instalar dependências do sistema
-RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
+# Configurar variáveis de ambiente
+ENV NODE_ENV=production
+
+# Instalar apenas as dependências necessárias
+RUN apk add --no-cache \
+    build-base \
+    python3 \
+    sqlite
 
 # Configurar workdir
 WORKDIR /opt/app
 
-# Copiar arquivos de dependência
+# Copiar package files
 COPY package*.json ./
 
-# Instalar dependências
-RUN npm ci --production
+# Instalar dependências usando as versões exatas
+RUN npm install \
+    @strapi/strapi@4.15.5 \
+    @strapi/plugin-users-permissions@4.15.5 \
+    @strapi/plugin-i18n@4.15.5 \
+    better-sqlite3@8.6.0
 
-# Copiar arquivos do projeto
+# Copiar resto do código
 COPY . .
 
-# Criar diretório de dados e configurar permissões
+# Criar diretório de dados e ajustar permissões
 RUN mkdir -p /opt/app/data && \
     chown -R node:node /opt/app && \
     chmod -R 755 /opt/app/data
 
-# Variáveis de ambiente
-ENV NODE_ENV=production
-ENV DATABASE_FILENAME=/opt/app/data/data.db
-ENV DATABASE_CLIENT=sqlite
-
 # Expor porta
 EXPOSE 1337
 
-# Iniciar aplicação
-CMD ["npm", "run", "start"]
+# Comando para iniciar
+CMD ["npm", "start"]
