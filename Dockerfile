@@ -31,18 +31,14 @@ RUN npm ci --verbose
 # Copiar resto do código
 COPY . .
 
-# Criar diretório de dados e ajustar permissões de forma mais explícita
-RUN mkdir -p /opt/app/data && \
-    chown -R node:node /opt/app && \
-    chown -R node:node /opt/app/data && \
-    chmod -R 755 /opt/app && \
-    chmod -R 777 /opt/app/data  # Temporariamente mais permissivo para debug
+# Criar diretório de dados e ajustar permissões
+RUN mkdir -p /opt/app/data
 
-# Mudar para usuário node
-USER node
+# Não vamos mais mudar para o usuário node devido ao RAILWAY_RUN_UID=0
+# USER node
 
 # Expor porta
 EXPOSE 1337
 
-# Comando para iniciar com debug do SQLite
-CMD ["sh", "-c", "ls -la /opt/app/data && npm start"]
+# Comando para iniciar
+CMD ["npm", "start"]
