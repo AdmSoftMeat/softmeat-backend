@@ -1,9 +1,6 @@
 FROM node:18-alpine
 
-# Configurar variáveis de ambiente
-ENV NODE_ENV=production
-
-# Instalar apenas as dependências necessárias
+# Instalar dependências necessárias
 RUN apk add --no-cache \
     build-base \
     python3 \
@@ -15,7 +12,7 @@ WORKDIR /opt/app
 # Copiar package files
 COPY package*.json ./
 
-# Instalar dependências usando as versões exatas
+# Instalar dependências
 RUN npm install \
     @strapi/strapi@4.15.5 \
     @strapi/plugin-users-permissions@4.15.5 \
@@ -24,6 +21,9 @@ RUN npm install \
 
 # Copiar resto do código
 COPY . .
+
+# Build do Strapi
+RUN NODE_ENV=production npm run build
 
 # Criar diretório de dados e ajustar permissões
 RUN mkdir -p /opt/app/data && \

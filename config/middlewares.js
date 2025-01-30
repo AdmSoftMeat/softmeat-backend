@@ -15,11 +15,6 @@ module.exports = [
         },
       },
       frameguard: false,
-      strapi: {
-        oneTimeAuthToken: {
-          required: false
-        }
-      }
     },
   },
   {
