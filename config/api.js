@@ -4,4 +4,10 @@ module.exports = {
     maxLimit: 100,
     withCount: true,
   },
+  responses: {
+    privateAttributes: ['_v', 'id', 'created_at'],
+  },
+  webhook: {
+    populateRelations: false,
+  },
 };
