@@ -4,7 +4,8 @@
   "info": {
     "singularName": "treinamento",
     "pluralName": "treinamentos",
-    "displayName": "Treinamentos"
+    "displayName": "Treinamentos",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -35,15 +36,6 @@
     },
     "Topicos": {
       "type": "richtext",
-      "required": true
-    },
-    "Imagem": {
-      "allowedTypes": [
-        "images",
-        "videos"
-      ],
-      "type": "media",
-      "multiple": true,
       "required": true
     },
     "Ativo": {
