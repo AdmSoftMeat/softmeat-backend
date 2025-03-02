@@ -14,6 +14,12 @@
 ├── src
 │   ├── admin
 │   ├── api
+│   │   ├── carrossel-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── carrossel-treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
 │   │   ├── cliente
 │   │   │   ├── content-types
 │   │   │   │   └── cliente
@@ -32,6 +38,30 @@
 │   │   │   ├── controllers
 │   │   │   ├── routes
 │   │   │   └── services
+│   │   ├── hero-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── hero-consultoria
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── home-consultoria
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-hero
+│   │   │   ├── content-types
+│   │   │   │   └── home-hero
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── home-treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
 │   │   ├── index-destaque
 │   │   │   ├── content-types
 │   │   │   │   └── index-destaque
@@ -41,6 +71,12 @@
 │   │   ├── produto
 │   │   │   ├── content-types
 │   │   │   │   └── produto
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── sobre-carrossel
+│   │   │   ├── content-types
+│   │   │   │   └── sobre-carrossel
 │   │   │   ├── controllers
 │   │   │   ├── routes
 │   │   │   └── services
@@ -231,6 +267,7 @@ module.exports = [
           'frame-ancestors': null,
           upgradeInsecureRequests: null,
         },
+        'default-src': ["'self'", '*.cloudinary.com', 'res.cloudinary.com'],
       },
       frameguard: false,
     },
@@ -283,6 +320,9 @@ module.exports = ({ env }) => ({
         api_key: env('CLOUDINARY_KEY'),
         api_secret: env('CLOUDINARY_SECRET'),
         secure: true,
+        private_cdn: false,
+        secure_distribution: null,
+        cname: null,
       },
       breakpoints: {
         xlarge: 1920,
@@ -293,14 +333,15 @@ module.exports = ({ env }) => ({
       },
       actionOptions: {
         upload: {
-          folder: 'softmeat',
+          folder: env('CLOUDINARY_FOLDER', 'softmeat'),
           resource_type: 'auto',
           unique_filename: true,
           overwrite: false,
           transformation: {
             quality: 'auto:good',
             fetch_format: 'auto',
-          }
+          },
+          use_filename: true,
         },
         delete: {
           invalidate: true
@@ -444,6 +485,74 @@ module.exports = (config, webpack) => {
   // Important: return the modified config
   return config;
 };
+
+
+src\api\carrossel-treinamento\content-types\carrossel-treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "carrossel_treinamentos",
+  "info": {
+    "singularName": "carrossel-treinamento",
+    "pluralName": "carrossel-treinamentos",
+    "displayName": "Carrossel Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "DepoimentosTreinamentos": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
+
+
+src\api\carrossel-treinamento\controllers\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::carrossel-treinamento.carrossel-treinamento');
+
+
+src\api\carrossel-treinamento\routes\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::carrossel-treinamento.carrossel-treinamento');
+
+
+src\api\carrossel-treinamento\services\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::carrossel-treinamento.carrossel-treinamento');
 
 
 src\api\cliente\content-types\cliente\schema.json
@@ -721,6 +830,280 @@ const { createCoreService } = require('@strapi/strapi').factories;
 module.exports = createCoreService('api::curso-online.curso-online');
 
 
+src\api\hero-consultoria\content-types\hero-consultoria\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "hero_consultorias",
+  "info": {
+    "singularName": "hero-consultoria",
+    "pluralName": "hero-consultorias",
+    "displayName": "Hero Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Consultor": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\hero-consultoria\controllers\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::hero-consultoria.hero-consultoria');
+
+
+src\api\hero-consultoria\routes\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::hero-consultoria.hero-consultoria');
+
+
+src\api\hero-consultoria\services\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::hero-consultoria.hero-consultoria');
+
+
+src\api\home-consultoria\content-types\home-consultoria\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_consultorias",
+  "info": {
+    "singularName": "home-consultoria",
+    "pluralName": "home-consultorias",
+    "displayName": "Home Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ConsultoriaPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\home-consultoria\controllers\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-consultoria.home-consultoria');
+
+
+src\api\home-consultoria\routes\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-consultoria.home-consultoria');
+
+
+src\api\home-consultoria\services\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-consultoria.home-consultoria');
+
+
+src\api\home-hero\content-types\home-hero\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_heroes",
+  "info": {
+    "singularName": "home-hero",
+    "pluralName": "home-heroes",
+    "displayName": "Home Hero",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "PageHero": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
+
+
+src\api\home-hero\controllers\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-hero.home-hero');
+
+
+src\api\home-hero\routes\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-hero.home-hero');
+
+
+src\api\home-hero\services\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-hero.home-hero');
+
+
+src\api\home-treinamento\content-types\home-treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_treinamentos",
+  "info": {
+    "singularName": "home-treinamento",
+    "pluralName": "home-treinamentos",
+    "displayName": "Home Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "TreinamentoPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\home-treinamento\controllers\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-treinamento.home-treinamento');
+
+
+src\api\home-treinamento\routes\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-treinamento.home-treinamento');
+
+
+src\api\home-treinamento\services\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-treinamento.home-treinamento');
+
+
 src\api\index-destaque\content-types\index-destaque\schema.json
 
 {
@@ -824,11 +1207,11 @@ src\api\produto\content-types\produto\schema.json
     "Categoria": {
       "type": "enumeration",
       "enum": [
-        "Embutidos",
+        "Maturados",
+        "Fermentados",
         "Defumados",
-        "Bacon",
-        "Presuntos",
-        "Outros"
+        "Cozidos",
+        "Frescais"
       ],
       "required": true
     },
@@ -845,12 +1228,13 @@ src\api\produto\content-types\produto\schema.json
       "required": true,
       "unique": true
     },
-
     "Imagem": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "Destaque": {
       "type": "boolean",
@@ -909,6 +1293,77 @@ src\api\produto\services\produto.js
 const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService('api::produto.produto');
+
+
+src\api\sobre-carrossel\content-types\sobre-carrossel\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "sobre_carrosseis",
+  "info": {
+    "singularName": "sobre-carrossel",
+    "pluralName": "sobre-carrosseis",
+    "displayName": "Sobre Carrossel"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Imagens": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
+
+
+src\api\sobre-carrossel\controllers\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::sobre-carrossel.sobre-carrossel');
+
+
+src\api\sobre-carrossel\routes\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::sobre-carrossel.sobre-carrossel');
+
+
+src\api\sobre-carrossel\services\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::sobre-carrossel.sobre-carrossel');
 
 
 src\api\testemunho\content-types\testemunho\schema.json

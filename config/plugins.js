@@ -12,6 +12,9 @@ module.exports = ({ env }) => ({
         api_key: env('CLOUDINARY_KEY'),
         api_secret: env('CLOUDINARY_SECRET'),
         secure: true,
+        private_cdn: false,
+        secure_distribution: null,
+        cname: null,
       },
       breakpoints: {
         xlarge: 1920,
@@ -22,14 +25,15 @@ module.exports = ({ env }) => ({
       },
       actionOptions: {
         upload: {
-          folder: 'softmeat',
+          folder: env('CLOUDINARY_FOLDER', 'softmeat'),
           resource_type: 'auto',
           unique_filename: true,
           overwrite: false,
           transformation: {
             quality: 'auto:good',
             fetch_format: 'auto',
-          }
+          },
+          use_filename: true,
         },
         delete: {
           invalidate: true

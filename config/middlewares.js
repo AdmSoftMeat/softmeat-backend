@@ -27,6 +27,7 @@ module.exports = [
           'frame-ancestors': null,
           upgradeInsecureRequests: null,
         },
+        'default-src': ["'self'", '*.cloudinary.com', 'res.cloudinary.com'],
       },
       frameguard: false,
     },
