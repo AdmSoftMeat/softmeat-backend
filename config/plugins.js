@@ -1,4 +1,3 @@
-// config/plugins.js
 module.exports = ({ env }) => ({
   'users-permissions': {
     config: {
@@ -7,15 +6,34 @@ module.exports = ({ env }) => ({
   },
   upload: {
     config: {
-      provider: 'local',
+      provider: '@strapi/provider-upload-cloudinary',
       providerOptions: {
-        sizeLimit: 10 * 1024 * 1024, // Aumentando para 10MB
+        cloud_name: env('CLOUDINARY_NAME'),
+        api_key: env('CLOUDINARY_KEY'),
+        api_secret: env('CLOUDINARY_SECRET'),
+        secure: true,
       },
       breakpoints: {
+        xlarge: 1920,
         large: 1000,
         medium: 750,
         small: 500,
-        thumbnail: 150,
+        xsmall: 64
+      },
+      actionOptions: {
+        upload: {
+          folder: 'softmeat',
+          resource_type: 'auto',
+          unique_filename: true,
+          overwrite: false,
+          transformation: {
+            quality: 'auto:good',
+            fetch_format: 'auto',
+          }
+        },
+        delete: {
+          invalidate: true
+        },
       },
     },
   },

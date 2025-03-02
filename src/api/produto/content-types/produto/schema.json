@@ -24,11 +24,11 @@
     "Categoria": {
       "type": "enumeration",
       "enum": [
-        "Embutidos",
+        "Maturados",
+        "Fermentados",
         "Defumados",
-        "Bacon",
-        "Presuntos",
-        "Outros"
+        "Cozidos",
+        "Frescais"
       ],
       "required": true
     },
@@ -48,10 +48,9 @@
     "Imagem": {
       "type": "media",
       "multiple": true,
-      "required": true,
+      "required": false,
       "allowedTypes": [
-        "images",
-        "videos"
+        "images"
       ]
     },
     "Destaque": {

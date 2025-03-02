@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "carrossel_treinamentos",
+  "info": {
+    "singularName": "carrossel-treinamento",
+    "pluralName": "carrossel-treinamentos",
+    "displayName": "Carrossel Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "DepoimentosTreinamentos": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}

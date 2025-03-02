@@ -15,6 +15,12 @@
       "type": "string",
       "required": true
     },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
     "Foto": {
       "allowedTypes": [
         "images"

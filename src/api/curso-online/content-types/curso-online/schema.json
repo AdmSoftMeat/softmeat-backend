@@ -44,13 +44,10 @@
       "unique": true
     },
     "Imagem": {
-      "allowedTypes": [
-        "images",
-        "videos"
-      ],
       "type": "media",
-      "multiple": true,
-      "required": true
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
     },
     "Ordem_Exibicao": {
       "type": "integer",

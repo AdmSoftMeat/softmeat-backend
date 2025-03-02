@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sobre_carrosseis",
+  "info": {
+    "singularName": "sobre-carrossel",
+    "pluralName": "sobre-carrosseis",
+    "displayName": "Sobre Carrossel"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Imagens": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}

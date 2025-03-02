@@ -17,6 +17,12 @@
       "relation": "oneToMany",
       "target": "api::curso-online.curso-online"
     },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
     "produtos_em_destaque": {
       "type": "relation",
       "relation": "oneToMany",

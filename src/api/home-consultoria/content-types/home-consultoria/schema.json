@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "home_consultorias",
+  "info": {
+    "singularName": "home-consultoria",
+    "pluralName": "home-consultorias",
+    "displayName": "Home Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ConsultoriaPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}

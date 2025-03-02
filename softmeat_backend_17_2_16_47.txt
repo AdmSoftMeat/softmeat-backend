@@ -1,0 +1,1095 @@
+# Estrutura do Projeto SoftMeat - backend
+
+├── public
+│   ├── uploads
+│   │   ├── Clientes
+│   │   ├── Cursos
+│   │   ├── Produtos
+│   │   │   ├── Bacon
+│   │   │   ├── Blumenau
+│   │   │   ├── Copa
+│   │   │   ├── Pastrami
+│   │   │   └── Salame
+│   │   ├── Testemunhos
+├── src
+│   ├── admin
+│   ├── api
+│   │   ├── cliente
+│   │   │   ├── content-types
+│   │   │   │   └── cliente
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── cronograma
+│   │   │   ├── content-types
+│   │   │   │   └── cronograma
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── curso-online
+│   │   │   ├── content-types
+│   │   │   │   └── curso-online
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── index-destaque
+│   │   │   ├── content-types
+│   │   │   │   └── index-destaque
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── produto
+│   │   │   ├── content-types
+│   │   │   │   └── produto
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── testemunho
+│   │   │   ├── content-types
+│   │   │   │   └── testemunho
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   ├── extensions
+├── .env
+├── package.json
+
+
+.env
+
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=2VJlAoWpXfzDHzGqX7IVTA==,QSdu6uWUfiOcoPe5SgRI+w==,I9GT5I/hmBtES9PgklJFow==,W6LM3JinQfZ6BN/+u5aFSA==
+API_TOKEN_SALT=isFissNnC7p/4U1GpNnMDA==
+ADMIN_JWT_SECRET=E4rq8HGv9avD80L7hXY8TA==
+TRANSFER_TOKEN_SALT=EQ/v2sGIMohFSsL9Tg7gww==
+JWT_SECRET=vDZKwN6GXEPTfdIC8Aijrg==
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=.tmp/data.db
+URL=http://localhost:1337
+PUBLIC_URL=http://localhost:1337
+WEBHOOKS_POPULATE_RELATIONS=false
+CLOUDINARY_NAME=dz260cx0n
+CLOUDINARY_KEY=368272995746464
+CLOUDINARY_SECRET=z5mrMLmhyB7s7xCv3fO76ojSv5w
+
+
+config\admin.js
+
+module.exports = ({ env }) => ({
+  auth: {
+    secret: env('ADMIN_JWT_SECRET'),
+  },
+  apiToken: {
+    salt: env('API_TOKEN_SALT'),
+  },
+  transfer: {
+    token: {
+      salt: env('TRANSFER_TOKEN_SALT'),
+    },
+  },
+  flags: {
+    nps: env.bool('FLAG_NPS', false),
+    promoteEE: env.bool('FLAG_PROMOTE_EE', false),
+  },
+  watchIgnoreFiles: [
+    '**/config/sync/**',
+  ],
+});
+
+
+config\api.js
+
+module.exports = {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 100,
+    withCount: true,
+  },
+  responses: {
+    privateAttributes: ['_v', 'id', 'created_at'],
+  },
+  webhook: {
+    populateRelations: false,
+  },
+};
+
+
+config\database.js
+
+const path = require("path");
+
+module.exports = ({ env }) => ({
+  connection: {
+    client: 'sqlite',
+    connection: {
+      filename: path.join(process.cwd(), env('DATABASE_FILENAME', '/opt/app/data/data.db')),
+      useNullAsDefault: true,
+      // Aumentando limites para suportar URLs longas do Cloudinary
+      stringifyObjects: true,
+      timezone: 'UTC',
+      options: {
+        maxVariables: 10000 // Aumenta limite de variáveis
+      }
+    },
+    debug: false,
+    pool: {
+      min: 0,
+      max: 1,
+      acquireTimeoutMillis: 300000,
+      createTimeoutMillis: 300000,
+      destroyTimeoutMillis: 300000,
+      idleTimeoutMillis: 300000,
+      // Usando sintaxe correta do Knex para SQLite
+      afterCreate: (conn, cb) => {
+        conn.pragma('journal_mode = WAL');
+        conn.pragma('synchronous = NORMAL');
+        cb(null, conn);
+      }
+    },
+    useNullAsDefault: true,
+    migrations: {
+      directory: path.join(process.cwd(), 'database/migrations')
+    }
+  }
+});
+
+
+config\functions\bootstrap.js
+
+'use strict';
+
+module.exports = () => {
+  // Função de bootstrap
+  strapi.log.info('Starting Strapi server...');
+
+  // Configurações iniciais
+  strapi.log.info('Checking database connection...');
+
+  // Log de configurações importantes
+  strapi.log.info(`Server URL: ${strapi.config.get('server.url', 'not set')}`);
+  strapi.log.info(`Database Client: ${strapi.config.get('database.connection.client', 'not set')}`);
+  strapi.log.info(`Database Path: ${strapi.config.get('database.connection.connection.filename', 'not set')}`);
+};
+
+
+config\middlewares.js
+
+module.exports = [
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:', 'http:'],
+          'img-src': ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+          'media-src': ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+          'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          'frame-ancestors': null,
+          upgradeInsecureRequests: null,
+        },
+      },
+      frameguard: false,
+    },
+  },
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      headers: '*',
+      origin: [
+        'http://localhost:1337',
+        'http://localhost:3000',
+        'http://localhost:4321',
+        'https://softmeat.com.br',
+        'https://www.softmeat.com.br',
+        'https://softmeat-backend-production.up.railway.app',
+        'https://softmeat.pages.dev' // Domínio do Cloudflare Pages
+      ],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      keepHeaderOnError: true,
+      credentials: true,
+      maxAge: 31536000,
+      exposedHeaders: ['Content-Range', 'X-Content-Range']
+    },
+  },
+  'strapi::poweredBy',
+  'strapi::logger',
+  'strapi::query',
+  'strapi::body',
+  'strapi::session',
+  'strapi::favicon',
+  'strapi::public',
+];
+
+
+config\plugins.js
+
+// config/plugins.js
+module.exports = ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
+  upload: {
+    config: {
+      provider: '@strapi/provider-upload-cloudinary',
+      providerOptions: {
+        cloud_name: env('CLOUDINARY_NAME'),
+        api_key: env('CLOUDINARY_KEY'),
+        api_secret: env('CLOUDINARY_SECRET'),
+        params: {
+          folder: 'softmeat',
+          resource_type: 'auto',
+        },
+      },
+      // Mantemos os breakpoints existentes
+      breakpoints: {
+        large: 1000,
+        medium: 750,
+        small: 500,
+        thumbnail: 150,
+      },
+      // Mantemos o limite de tamanho
+      sizeLimit: 10 * 1024 * 1024,
+      actionOptions: {
+        upload: {
+          // Opções específicas para upload
+          transformation: {
+            quality: 'auto:good',
+            fetch_format: 'auto',
+          }
+        },
+        delete: {
+          // Opções para deleção de recursos
+          invalidate: true
+        },
+      },
+    },
+  },
+});
+
+
+config\server.js
+
+module.exports = ({ env }) => ({
+  host: env('HOST', '0.0.0.0'),
+  port: env.int('PORT', 1337),
+  url: env('PUBLIC_URL', 'https://softmeat-backend-production.up.railway.app'),
+  admin: {
+    auth: {
+      secret: env('ADMIN_JWT_SECRET'),
+    },
+    url: '/admin',
+    autoOpen: false,
+  },
+  app: {
+    keys: env.array('APP_KEYS'),
+  },
+  webhooks: {
+    populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
+  },
+});
+
+
+package.json
+
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "NODE_ENV=production strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/plugin-i18n": "4.12.0",
+    "@strapi/plugin-users-permissions": "4.12.0",
+    "@strapi/provider-upload-cloudinary": "^5.9.0",
+    "@strapi/strapi": "4.12.0",
+    "better-sqlite3": "8.0.1",
+    "strapi-plugin-import-export-entries": "^1.23.1"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "3289c097-8983-4dc0-817c-2192d4dfd468"
+  },
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
+
+
+src\admin\app.example.js
+
+const config = {
+  locales: [
+    // 'ar',
+    // 'fr',
+    // 'cs',
+    // 'de',
+    // 'dk',
+    // 'es',
+    // 'he',
+    // 'id',
+    // 'it',
+    // 'ja',
+    // 'ko',
+    // 'ms',
+    // 'nl',
+    // 'no',
+    // 'pl',
+    // 'pt-BR',
+    // 'pt',
+    // 'ru',
+    // 'sk',
+    // 'sv',
+    // 'th',
+    // 'tr',
+    // 'uk',
+    // 'vi',
+    // 'zh-Hans',
+    // 'zh',
+  ],
+};
+
+const bootstrap = (app) => {
+  console.log(app);
+};
+
+export default {
+  config,
+  bootstrap,
+};
+
+
+src\admin\app.js
+
+const config = {
+  locales: ['pt-BR'],
+  translations: {
+    'pt-BR': {
+      'app.components.LeftMenu.navbrand.title': 'SoftMeat Dashboard',
+      'Content Manager': 'Gerenciador de Conteúdo',
+      'app.components.LeftMenu.collection.title': 'Tipos de Coleção',
+      'Settings.permissions': 'Permissões',
+      'Settings.roles': 'Funções',
+      'Settings.users': 'Usuários',
+      'notification.success.saved': 'Salvo com sucesso',
+      'global.save': 'Salvar',
+      'global.delete': 'Deletar',
+      'global.back': 'Voltar',
+      'global.cancel': 'Cancelar',
+    },
+  },
+};
+
+
+src\admin\webpack.config.example.js
+
+'use strict';
+
+/* eslint-disable no-unused-vars */
+module.exports = (config, webpack) => {
+  // Note: we provide webpack above so you should not `require` it
+  // Perform customizations to webpack config
+  // Important: return the modified config
+  return config;
+};
+
+
+src\api\cliente\content-types\cliente\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "clientes",
+  "info": {
+    "singularName": "cliente",
+    "pluralName": "clientes",
+    "displayName": "Clientes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Descricao_Case": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
+
+
+src\api\cliente\controllers\cliente.js
+
+'use strict';
+
+/**
+ * cliente controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cliente.cliente');
+
+
+src\api\cliente\routes\cliente.js
+
+'use strict';
+
+/**
+ * cliente router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cliente.cliente');
+
+
+src\api\cliente\services\cliente.js
+
+'use strict';
+
+/**
+ * cliente service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cliente.cliente');
+
+
+src\api\cronograma\content-types\cronograma\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "cronogramas",
+  "info": {
+    "singularName": "cronograma",
+    "pluralName": "cronogramas",
+    "displayName": "Cronogramas",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Data": {
+      "type": "date",
+      "required": true
+    },
+    "Cidade": {
+      "type": "string",
+      "required": true,
+      "default": "Ribeirão Preto"
+    },
+    "Vagas_Totais": {
+      "type": "integer",
+      "required": true
+    },
+    "Vagas_Disponiveis": {
+      "type": "integer"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "treinamento": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treinamento.treinamento"
+    }
+  }
+}
+
+
+src\api\cronograma\controllers\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cronograma.cronograma');
+
+
+src\api\cronograma\routes\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cronograma.cronograma');
+
+
+src\api\cronograma\services\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cronograma.cronograma');
+
+
+src\api\curso-online\content-types\curso-online\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "cursos_online",
+  "info": {
+    "singularName": "curso-online",
+    "pluralName": "cursos-online",
+    "displayName": "Cursos Online"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome",
+      "required": true
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Básico",
+        "Intermediário",
+        "Avançado",
+        "Especialização"
+      ]
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Hotmart": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "allowedTypes": [
+        "images",
+        "videos"
+      ],
+      "type": "media",
+      "multiple": true,
+      "required": true
+    },
+    "Ordem_Exibicao": {
+      "type": "integer",
+      "default": 999
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_Title": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+src\api\curso-online\controllers\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::curso-online.curso-online');
+
+
+src\api\curso-online\routes\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::curso-online.curso-online');
+
+
+src\api\curso-online\services\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::curso-online.curso-online');
+
+
+src\api\index-destaque\content-types\index-destaque\schema.json
+
+{
+  "kind": "singleType",
+  "collectionName": "index_destaques",
+  "info": {
+    "singularName": "index-destaque",
+    "pluralName": "index-destaques",
+    "displayName": "Index Destaques",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cursos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::curso-online.curso-online"
+    },
+    "produtos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::produto.produto"
+    }
+  }
+}
+
+
+src\api\index-destaque\controllers\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::index-destaque.index-destaque');
+
+
+src\api\index-destaque\routes\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::index-destaque.index-destaque');
+
+
+src\api\index-destaque\services\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::index-destaque.index-destaque');
+
+
+src\api\produto\content-types\produto\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "produtos",
+  "info": {
+    "singularName": "produto",
+    "pluralName": "produtos",
+    "displayName": "Produtos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome"
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Embutidos",
+        "Defumados",
+        "Bacon",
+        "Presuntos",
+        "Outros"
+      ],
+      "required": true
+    },
+    "Descricao_Catalogo": {
+      "type": "string",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Mercado_Livre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_File": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    },
+    "Disponivel": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}
+
+
+src\api\produto\controllers\produto.js
+
+'use strict';
+
+/**
+ * produto controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::produto.produto');
+
+
+src\api\produto\routes\produto.js
+
+'use strict';
+
+/**
+ * produto router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::produto.produto');
+
+
+src\api\produto\services\produto.js
+
+'use strict';
+
+/**
+ * produto service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::produto.produto');
+
+
+src\api\testemunho\content-types\testemunho\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "testemunhos",
+  "info": {
+    "singularName": "testemunho",
+    "pluralName": "testemunhos",
+    "displayName": "Testemunhos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Foto": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Depoimento": {
+      "type": "text"
+    },
+    "curso_realizado": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treinamento.treinamento"
+    },
+    "LinkedIn": {
+      "type": "string"
+    },
+    "Instagram": {
+      "type": "string"
+    },
+    "Facebook": {
+      "type": "string"
+    },
+    "Cargo": {
+      "type": "string"
+    },
+    "Empresa": {
+      "type": "string"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
+
+
+src\api\testemunho\controllers\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::testemunho.testemunho');
+
+
+src\api\testemunho\routes\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::testemunho.testemunho');
+
+
+src\api\testemunho\services\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::testemunho.testemunho');
+
+
+src\api\treinamento\content-types\treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "treinamentos",
+  "info": {
+    "singularName": "treinamento",
+    "pluralName": "treinamentos",
+    "displayName": "Treinamentos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Nivel": {
+      "type": "enumeration",
+      "enum": [
+        "Basico",
+        "Intermediario",
+        "Avancado"
+      ],
+      "required": true
+    },
+    "Duracao": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Topicos": {
+      "type": "richtext",
+      "required": true
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Ordem": {
+      "type": "integer"
+    },
+    "Meta_Title": {
+      "type": "text"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+src\api\treinamento\controllers\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::treinamento.treinamento');
+
+
+src\api\treinamento\routes\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::treinamento.treinamento');
+
+
+src\api\treinamento\services\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::treinamento.treinamento');
+
+
+src\index.js
+
+'use strict';
+
+module.exports = {
+  /**
+   * An asynchronous register function that runs before
+   * your application is initialized.
+   *
+   * This gives you an opportunity to extend code.
+   */
+  register(/*{ strapi }*/) {},
+
+  /**
+   * An asynchronous bootstrap function that runs before
+   * your application gets started.
+   *
+   * This gives you an opportunity to set up your data model,
+   * run jobs, or perform some special logic.
+   */
+  bootstrap(/*{ strapi }*/) {},
+};
+
+

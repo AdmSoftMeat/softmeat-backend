@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "hero_consultorias",
+  "info": {
+    "singularName": "hero-consultoria",
+    "pluralName": "hero-consultorias",
+    "displayName": "Hero Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Consultor": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
