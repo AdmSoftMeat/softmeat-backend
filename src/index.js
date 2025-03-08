@@ -11,7 +11,6 @@ module.exports = {
     console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
     console.log('R2_BUCKET:', process.env.R2_BUCKET);
     console.log('R2_CUSTOM_DOMAIN:', process.env.R2_CUSTOM_DOMAIN);
-    console.log('CLOUDINARY_NAME:', process.env.CLOUDINARY_NAME);
   },
 
   /**

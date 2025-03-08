@@ -10,18 +10,16 @@ module.exports = ({ env }) => [
             "'self'",
             'https:',
             'http:',
-            '*.r2.cloudflarestorage.com',
-            'images.softmeat.com.br',
-            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, "")
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, "")
           ],
           'img-src': [
             "'self'",
             'data:',
             'blob:',
             'dl.airtable.com',
-            '*.r2.cloudflarestorage.com',
-            'images.softmeat.com.br',
-            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, ""),
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
             'market-assets.strapi.io'
           ],
           'media-src': [
@@ -29,9 +27,8 @@ module.exports = ({ env }) => [
             'data:',
             'blob:',
             'dl.airtable.com',
-            '*.r2.cloudflarestorage.com',
-            'images.softmeat.com.br',
-            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, ""),
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
             'market-assets.strapi.io'
           ],
           'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
@@ -55,10 +52,9 @@ module.exports = ({ env }) => [
         'https://www.softmeat.com.br',
         'https://softmeat-backend-production.up.railway.app',
         'https://softmeat.pages.dev',
-        'https://images.softmeat.com.br',
         env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
-        'https://*.r2.cloudflarestorage.com'
-      ],
+        env("CF_ENDPOINT", "")
+      ].filter(Boolean),
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       keepHeaderOnError: true,
       credentials: true,

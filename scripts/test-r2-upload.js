@@ -1,31 +1,56 @@
-// test-r2-upload.js
-// Script para testar o upload e URLs do R2 diretamente
+// scripts/test-r2-upload.js - versão atualizada
 const { S3Client, ListObjectsV2Command, PutObjectCommand } = require('@aws-sdk/client-s3');
 const fs = require('fs');
 const path = require('path');
-const { formatR2Url } = require('../src/utils/r2');
 
 // Carregar variáveis de ambiente
 require('dotenv').config();
 
 // Verificar variáveis configuradas
 console.log('=== TESTE DE CONEXÃO R2 ===');
-console.log('R2_ACCESS_KEY existe:', !!process.env.R2_ACCESS_KEY);
-console.log('R2_SECRET_KEY existe:', !!process.env.R2_SECRET_KEY);
-console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
-console.log('R2_BUCKET:', process.env.R2_BUCKET);
-console.log('R2_REGION:', process.env.R2_REGION || 'auto');
-console.log('R2_CUSTOM_DOMAIN:', process.env.R2_CUSTOM_DOMAIN);
+console.log('CF_ACCESS_KEY_ID existe:', !!process.env.CF_ACCESS_KEY_ID);
+console.log('CF_ACCESS_SECRET existe:', !!process.env.CF_ACCESS_SECRET);
+console.log('CF_ENDPOINT:', process.env.CF_ENDPOINT);
+console.log('CF_BUCKET:', process.env.CF_BUCKET);
+console.log('CF_REGION:', process.env.CF_REGION || 'auto');
+console.log('CF_PUBLIC_ACCESS_URL:', process.env.CF_PUBLIC_ACCESS_URL);
 
 // Configurar cliente R2
 const r2Client = new S3Client({
-  region: process.env.R2_REGION || 'auto',
-  endpoint: process.env.R2_ENDPOINT,
+  region: process.env.CF_REGION || 'auto',
+  endpoint: process.env.CF_ENDPOINT,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY,
-    secretAccessKey: process.env.R2_SECRET_KEY,
+    accessKeyId: process.env.CF_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_ACCESS_SECRET,
   },
 });
+
+// Função para formatar URL R2
+const formatR2Url = (path) => {
+  if (!path) return '';
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+  if (process.env.CF_PUBLIC_ACCESS_URL) {
+    const domain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
+      ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
+      : process.env.CF_PUBLIC_ACCESS_URL;
+    return `${domain}/${cleanPath}`;
+  }
+
+  const endpoint = process.env.CF_ENDPOINT;
+  const bucket = process.env.CF_BUCKET;
+
+  if (!endpoint || !bucket) {
+    console.error('Erro: CF_ENDPOINT ou CF_BUCKET não definidos!');
+    return '';
+  }
+
+  const cleanEndpoint = endpoint.endsWith('/')
+    ? endpoint.slice(0, -1)
+    : endpoint;
+
+  return `${cleanEndpoint}/${bucket}/${cleanPath}`;
+};
 
 // Função para testar listagem de arquivos
 async function testListFiles() {
@@ -33,7 +58,7 @@ async function testListFiles() {
     console.log('\nTentando listar arquivos no bucket R2...');
 
     const command = new ListObjectsV2Command({
-      Bucket: process.env.R2_BUCKET,
+      Bucket: process.env.CF_BUCKET,
       MaxKeys: 5
     });
 
@@ -70,7 +95,7 @@ async function testUpload() {
     const fileKey = `test/test-upload-${Date.now()}.txt`;
 
     const uploadParams = {
-      Bucket: process.env.R2_BUCKET,
+      Bucket: process.env.CF_BUCKET,
       Key: fileKey,
       Body: fileStream,
       ContentType: 'text/plain',
@@ -117,8 +142,8 @@ async function runTests() {
   console.log('\n=== INICIANDO TESTES R2 ===');
 
   // Verificar variáveis necessárias
-  if (!process.env.R2_ACCESS_KEY || !process.env.R2_SECRET_KEY ||
-      !process.env.R2_ENDPOINT || !process.env.R2_BUCKET) {
+  if (!process.env.CF_ACCESS_KEY_ID || !process.env.CF_ACCESS_SECRET ||
+      !process.env.CF_ENDPOINT || !process.env.CF_BUCKET) {
     console.error('❌ Configuração incompleta. Verifique as variáveis de ambiente.');
     return;
   }

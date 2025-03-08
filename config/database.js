@@ -4,14 +4,8 @@ module.exports = ({ env }) => ({
   connection: {
     client: 'sqlite',
     connection: {
-      filename: path.join(process.cwd(), env('DATABASE_FILENAME', '/opt/app/data/data.db')),
+      filename: env('DATABASE_FILENAME', '/data/strapi.db'),
       useNullAsDefault: true,
-      // Aumentando limites para suportar URLs longas do Cloudinary
-      stringifyObjects: true,
-      timezone: 'UTC',
-      options: {
-        maxVariables: 10000 // Aumenta limite de variáveis
-      }
     },
     debug: false,
     pool: {

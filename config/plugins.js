@@ -17,29 +17,28 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
         region: env("CF_REGION", env('R2_REGION', 'auto')),
-        /**
-         * Set this Option to store the CDN URL of your files and not the R2 endpoint URL in your DB.
-         * Can be used in Cloudflare R2 with Domain-Access or Public URL
-         */
         cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
-        /**
-         * Sets if all assets should be uploaded in the root dir regardless the strapi folder.
-         */
-        pool: false,
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
           // Função para personalizar o caminho de upload
           customPath: (file) => {
-            console.log('Customizando caminho para upload:', file.name);
+            // Função para sanitizar strings (remover acentos e caracteres especiais)
+            const sanitizeString = (str) => {
+              if (!str) return '';
+              return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                .replace(/[^\w\-]/g, '-')        // Substitui caracteres especiais por hífen
+                .replace(/\-+/g, '-')            // Remove hífens consecutivos
+                .toLowerCase();                   // Converte para minúsculas
+            };
 
             // Detectar o tipo de recurso (imagem, vídeo, etc.)
             const resourceType = file.mime.startsWith('image/') ? 'images' :
-                                file.mime.startsWith('video/') ? 'videos' :
-                                file.mime.startsWith('audio/') ? 'audios' : 'files';
-
-            console.log('Tipo de recurso:', resourceType);
+                               file.mime.startsWith('video/') ? 'videos' :
+                               file.mime.startsWith('audio/') ? 'audios' : 'files';
 
             // Determinar a categoria com base no contexto do upload
             let category = 'geral';
@@ -48,44 +47,30 @@ module.exports = ({ env }) => ({
             if (file.related) {
               // Extrai o modelo de relacionamento
               const relatedType = file.related.split('.')[0];
-              console.log('Tipo relacionado:', relatedType);
 
-              switch (relatedType) {
-                case 'produto':
-                  category = 'produtos';
-                  break;
-                case 'curso-online':
-                  category = 'cursos';
-                  break;
-                case 'testemunho':
-                  category = 'testemunhos';
-                  break;
-                case 'cliente':
-                  category = 'clientes';
-                  break;
-                case 'hero-consultoria':
-                case 'home-consultoria':
-                  category = 'consultoria';
-                  break;
-                case 'home-hero':
-                case 'index-destaque':
-                  category = 'index';
-                  break;
-                case 'sobre-carrossel':
-                  category = 'institucional';
-                  break;
-                case 'carrossel-treinamento':
-                case 'treinamento':
-                case 'cronograma':
-                case 'home-treinamento':
-                  category = 'treinamentos';
-                  break;
-                default:
-                  category = 'geral';
-              }
+              // Mapeamento simplificado de categorias
+              const categoryMap = {
+                'produto': 'produtos',
+                'curso-online': 'cursos',
+                'testemunho': 'testemunhos',
+                'cliente': 'clientes',
+                'hero-consultoria': 'consultoria',
+                'home-consultoria': 'consultoria',
+                'home-hero': 'index',
+                'index-destaque': 'index',
+                'sobre-carrossel': 'institucional',
+                'carrossel-treinamento': 'treinamentos',
+                'treinamento': 'treinamentos',
+                'cronograma': 'treinamentos',
+                'home-treinamento': 'treinamentos'
+              };
+
+              // Obter categoria do mapeamento ou usar 'geral' como fallback
+              category = categoryMap[relatedType] || 'geral';
             }
 
-            console.log('Categoria:', category);
+            // Sanitizar a categoria para garantir compatibilidade com URLs
+            category = sanitizeString(category);
 
             // Gerar nome de arquivo único
             const extension = file.ext.startsWith('.') ? file.ext.substring(1) : file.ext;
@@ -94,7 +79,11 @@ module.exports = ({ env }) => ({
 
             // Gerar o caminho completo
             const path = `${resourceType}/${category}/${fileName}`;
-            console.log('Caminho final:', path);
+
+            // Log para diagnóstico
+            if (env('DEBUG') === 'true') {
+              console.log('Upload path:', path);
+            }
 
             return path;
           }
