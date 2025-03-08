@@ -19,12 +19,12 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
         region: env("CF_REGION", env('R2_REGION', 'auto')),
-        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
+        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
-          // Função para personalizar o caminho de upload
+          // Função aprimorada para personalizar o caminho de upload
           customPath: (file) => {
             // Função para sanitizar strings (remover acentos e caracteres especiais)
             const sanitizeString = (str) => {
@@ -38,16 +38,16 @@ module.exports = ({ env }) => ({
             };
 
             // Detectar o tipo de recurso (imagem, vídeo, etc.)
-            const resourceType = file.mime.startsWith('image/') ? 'images' :
-                               file.mime.startsWith('video/') ? 'videos' :
-                               file.mime.startsWith('audio/') ? 'audios' : 'files';
+            const resourceType = file.mime?.startsWith('image/') ? 'images' :
+                              file.mime?.startsWith('video/') ? 'videos' :
+                              file.mime?.startsWith('audio/') ? 'audios' : 'files';
 
             // Determinar a categoria com base no contexto do upload
             let category = 'geral';
 
-            // Tenta determinar a categoria baseado no tipo de conteúdo relacionado
+            // Tentar determinar a categoria baseado no tipo de conteúdo relacionado
             if (file.related) {
-              // Extrai o modelo de relacionamento
+              // Extrair o modelo de relacionamento
               const relatedType = file.related.split('.')[0];
 
               // Mapeamento simplificado de categorias
@@ -85,8 +85,8 @@ module.exports = ({ env }) => ({
               ? sanitizedName.substring(0, 30)
               : sanitizedName;
 
-            // Usar apenas o hash encurtado para garantir unicidade
-            const shortHash = file.hash.substring(0, 8);
+            // Garantir que o hash seja único e esteja presente
+            const shortHash = (file.hash || Date.now().toString()).substring(0, 8);
 
             // Gerar o nome final do arquivo
             const fileName = `${truncatedName}-${shortHash}.${extension}`;
@@ -112,4 +112,5 @@ module.exports = ({ env }) => ({
       },
     },
   },
+  // Adicione aqui outros plugins conforme necessário
 });

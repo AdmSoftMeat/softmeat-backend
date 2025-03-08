@@ -1,57 +1,124 @@
-// src/extensions/upload/services/format-url.js (versão simplificada para produção)
 'use strict';
 
-module.exports = {
-  formatFileUrl(file) {
-    if (!file || !file.url) return file;
+/**
+ * Serviço aprimorado para formatação de URLs do R2
+ */
 
-    try {
-      // Log detalhado para depuração em produção
-      console.log(`[PROD URL] Formatando URL: ${file.url}`);
+/**
+ * Extrai o domínio de uma URL
+ * @param {string} url - URL para extrair o domínio
+ * @returns {string} Domínio da URL
+ */
+function extractDomain(url) {
+  if (!url) return '';
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao extrair domínio: ${error.message}`);
+    return '';
+  }
+}
 
-      // Verificar se a URL já usa o domínio público
-      if (process.env.CF_PUBLIC_ACCESS_URL &&
-          file.url.indexOf(process.env.CF_PUBLIC_ACCESS_URL) === -1) {
+/**
+ * Formata URL de arquivo para usar o domínio público do R2
+ * @param {Object} file - Objeto de arquivo
+ * @returns {Object} Arquivo com URL atualizada
+ */
+function formatFileUrl(file) {
+  if (!file || !file.url) return file;
 
-        // Tentar extrair caminho relativo
-        let relativePath = '';
+  try {
+    // Obter configurações do R2
+    const publicDomain = process.env.CF_PUBLIC_ACCESS_URL;
+    const r2Endpoint = process.env.CF_ENDPOINT;
+    const bucket = process.env.CF_BUCKET;
 
-        try {
-          const urlObj = new URL(file.url);
-          relativePath = urlObj.pathname;
-
-          // Remover o prefixo do bucket se presente
-          if (process.env.CF_BUCKET && relativePath.includes(process.env.CF_BUCKET)) {
-            relativePath = relativePath.substring(
-              relativePath.indexOf(process.env.CF_BUCKET) + process.env.CF_BUCKET.length
-            );
-          }
-
-          // Remover a barra inicial
-          if (relativePath.startsWith('/')) {
-            relativePath = relativePath.substring(1);
-          }
-
-          // Formar nova URL
-          const publicDomain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
-            ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
-            : process.env.CF_PUBLIC_ACCESS_URL;
-
-          const newUrl = `${publicDomain}/${relativePath}`;
-
-          console.log(`[PROD URL] Transformação: ${file.url} -> ${newUrl}`);
-
-          // Criar cópia com URL atualizada
-          return { ...file, url: newUrl };
-        } catch (error) {
-          console.error(`[PROD URL ERROR] Falha ao processar URL ${file.url}: ${error.message}`);
-        }
-      }
-    } catch (error) {
-      console.error(`[PROD URL ERROR] Erro geral: ${error.message}`);
+    if (!publicDomain) {
+      console.log(`[R2 URL] Domínio público não configurado, mantendo URL original: ${file.url}`);
+      return file;
     }
 
-    // Retornar o arquivo original se não conseguir processar
+    // Log para depuração
+    console.log(`[R2 URL] Processando URL: ${file.url}`);
+
+    const currentDomain = extractDomain(file.url);
+    const publicUrlDomain = extractDomain(publicDomain);
+
+    // Se já estiver usando o domínio público, manter como está
+    if (currentDomain === publicUrlDomain) {
+      console.log(`[R2 URL] URL já usa domínio público, mantendo: ${file.url}`);
+      return file;
+    }
+
+    // Verificar se está usando o endpoint R2 direto
+    const isUsingR2Endpoint = r2Endpoint && file.url.includes(r2Endpoint);
+
+    // Se não estiver usando endpoint R2 nem domínio público, pode ser URL externa
+    if (!isUsingR2Endpoint && currentDomain !== publicUrlDomain) {
+      console.log(`[R2 URL] Possível URL externa, verificando estrutura: ${file.url}`);
+
+      // Verificar se é uma URL válida
+      try {
+        new URL(file.url);
+      } catch (e) {
+        console.log(`[R2 URL] URL inválida, mantendo como está: ${file.url}`);
+        return file;
+      }
+
+      // Se o domínio for diferente e não for do R2, é provavelmente uma URL externa
+      // Preserva-la se for válida
+      if (!currentDomain.includes('cloudflarestorage.com') &&
+          !currentDomain.includes('softmeat.com.br')) {
+        console.log(`[R2 URL] URL externa confirmada, mantendo: ${file.url}`);
+        return file;
+      }
+    }
+
+    // Se chegamos aqui, precisamos reformatar a URL para usar o domínio público
+
+    // Extrair o caminho relativo da URL
+    let relativePath = '';
+    try {
+      const urlObj = new URL(file.url);
+      relativePath = urlObj.pathname;
+
+      // Remover prefixo do bucket se presente
+      if (bucket && relativePath.includes(bucket)) {
+        const bucketIndex = relativePath.indexOf(bucket);
+        relativePath = relativePath.substring(bucketIndex + bucket.length);
+      }
+
+      // Remover barras iniciais
+      while (relativePath.startsWith('/')) {
+        relativePath = relativePath.substring(1);
+      }
+    } catch (error) {
+      console.error(`[R2 URL] Erro ao extrair caminho: ${error.message}`);
+      return file;
+    }
+
+    // Formar nova URL com domínio público
+    const formattedPublicDomain = publicDomain.endsWith('/')
+      ? publicDomain.slice(0, -1)
+      : publicDomain;
+
+    const newUrl = `${formattedPublicDomain}/${relativePath}`;
+
+    console.log(`[R2 URL] URL reformatada: ${file.url} -> ${newUrl}`);
+
+    // Criar cópia do arquivo com URL atualizada
+    return {
+      ...file,
+      url: newUrl
+    };
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao formatar URL: ${error.message}`);
+    // Em caso de erro, retornar arquivo original sem modificações
     return file;
   }
+}
+
+module.exports = {
+  formatFileUrl
 };
