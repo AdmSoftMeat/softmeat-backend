@@ -21,6 +21,34 @@ module.exports = (plugin) => {
         // Se a URL for válida, usar a URL diretamente
         console.log(`[PROD] Usando URL existente no R2: ${fileData.url}`);
 
+        // Verificar se a imagem é do tipo WebP
+        if (fileData.url.toLowerCase().endsWith('.webp')) {
+          try {
+            // Download da imagem para processá-la corretamente (caso necessário)
+            const response = await axios.get(fileData.url, { responseType: 'arraybuffer' });
+
+            // Criar um arquivo temporário para o arquivo baixado
+            const tempFilePath = path.join(__dirname, 'temp', `${fileData.name}`);
+            fs.writeFileSync(tempFilePath, response.data);
+
+            // Usar Sharp para processar a imagem WebP, caso necessário
+            const processedImage = await sharp(tempFilePath).webp().toBuffer();
+            fs.writeFileSync(tempFilePath, processedImage);
+
+            fileData = {
+              ...fileData,
+              _path: tempFilePath, // Use o caminho temporário da imagem processada
+              size: fs.statSync(tempFilePath).size,
+            };
+
+            // Retornar o fileData com a URL, sem fazer o upload
+            return fileData;
+          } catch (error) {
+            console.error(`[PROD] Erro ao processar WebP: ${error.message}`);
+          }
+        }
+
+        // Caso a URL seja válida mas não precise de processamento adicional
         fileData = {
           ...fileData,
           _path: fileData.url, // Use a URL diretamente
