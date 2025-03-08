@@ -1,10 +1,8 @@
-'use strict';
-
-const formatUrl = require('./services/format-url');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const stream = require('stream');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+const sharp = require('sharp');
 
 module.exports = (plugin) => {
   const originalUpload = plugin.services.upload.upload;
@@ -15,25 +13,22 @@ module.exports = (plugin) => {
 
       // Baixar o arquivo da URL externa
       try {
-        const response = await axios.get(fileData.url, { responseType: 'stream' });
+        const response = await axios.get(fileData.url, { responseType: 'arraybuffer' });
 
-        const filePath = path.join(__dirname, 'temp', `${fileData.name}`);  // Caminho temporário para o arquivo
+        // Verificar se a resposta contém dados
+        if (!response.data) {
+          throw new Error("Imagem não encontrada ou inválida.");
+        }
 
-        // Salvar o arquivo temporariamente
-        const writer = fs.createWriteStream(filePath);
-        response.data.pipe(writer);
+        // Criar um arquivo temporário para o arquivo baixado
+        const tempFilePath = path.join(__dirname, 'temp', `${fileData.name}`);
+        fs.writeFileSync(tempFilePath, response.data);
 
-        // Aguardar o download ser concluído
-        await new Promise((resolve, reject) => {
-          writer.on('finish', resolve);
-          writer.on('error', reject);
-        });
-
-        // Substituir os dados do arquivo com o arquivo baixado
+        // Atualizar o fileData com o arquivo temporário
         fileData = {
           ...fileData,
-          _path: filePath,  // Caminho temporário para o arquivo
-          size: fs.statSync(filePath).size,  // Ajuste o tamanho do arquivo
+          _path: tempFilePath,
+          size: fs.statSync(tempFilePath).size,
         };
       } catch (error) {
         console.error(`[PROD ERROR] Erro ao baixar a imagem da URL ${fileData.url}: ${error.message}`);
@@ -41,6 +36,7 @@ module.exports = (plugin) => {
       }
     }
 
+    // Continuar com o upload original
     try {
       const result = await originalUpload(fileData, config);
       console.log(`[PROD UPLOAD] Upload concluído: ${fileData?.name || 'Unknown'}`);
