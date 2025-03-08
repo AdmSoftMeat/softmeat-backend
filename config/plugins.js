@@ -20,12 +20,20 @@ module.exports = ({ env }) => ({
         },
         region: env("CF_REGION", env('R2_REGION', 'auto')),
         cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
+        // Adicionar configurações para reconhecer URLs externas
+        useExistingUrl: true,
+        r2Patterns: [
+          'images.softmeat.com.br',
+          '.r2.cloudflarestorage.com',
+          env("CF_PUBLIC_ACCESS_URL", ''),
+          env("R2_CUSTOM_DOMAIN", '')
+        ].filter(Boolean),
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
-          // Função aprimorada para personalizar o caminho de upload
           customPath: (file) => {
+            // Manter a lógica existente para novos uploads
             // Função para sanitizar strings (remover acentos e caracteres especiais)
             const sanitizeString = (str) => {
               if (!str) return '';
@@ -37,10 +45,18 @@ module.exports = ({ env }) => ({
                 .toLowerCase();                   // Converte para minúsculas
             };
 
+            // Se for uma URL externa, retornar a URL completa sem modificação
+            if (file.isExternalUrl && file.url) {
+              return file.url;
+            }
+
+            // O resto da sua lógica existente para novos uploads...
+            // (manter o código existente)
+
             // Detectar o tipo de recurso (imagem, vídeo, etc.)
             const resourceType = file.mime?.startsWith('image/') ? 'images' :
-                              file.mime?.startsWith('video/') ? 'videos' :
-                              file.mime?.startsWith('audio/') ? 'audios' : 'files';
+                               file.mime?.startsWith('video/') ? 'videos' :
+                               file.mime?.startsWith('audio/') ? 'audios' : 'files';
 
             // Determinar a categoria com base no contexto do upload
             let category = 'geral';

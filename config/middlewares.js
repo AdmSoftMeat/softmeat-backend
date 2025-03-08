@@ -1,47 +1,47 @@
 module.exports = ({ env }) => [
-  'strapi::errors',
+  "strapi::errors",
   {
-    name: 'strapi::security',
+    name: "strapi::security",
     config: {
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'connect-src': [
+          "connect-src": [
             "'self'",
-            'https:',
-            'http:',
+            "https:",
+            "http:",
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
             env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
-            '*.r2.cloudflarestorage.com'
+            "*.r2.cloudflarestorage.com",
           ],
-          'img-src': [
+          "img-src": [
             "'self'",
-            'data:',
-            'blob:',
-            'dl.airtable.com',
+            "data:",
+            "blob:",
+            "dl.airtable.com",
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
             env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
-            '*.r2.cloudflarestorage.com',
-            '*.cloudflare.com',
-            '*.softmeat.com.br',
-            'market-assets.strapi.io',
-            '*'  // Temporariamente permissivo durante testes
+            "*.r2.cloudflarestorage.com",
+            "*.cloudflare.com",
+            "*.softmeat.com.br",
+            "market-assets.strapi.io",
+            "*", // Temporariamente permissivo durante testes
           ],
-          'media-src': [
+          "media-src": [
             "'self'",
-            'data:',
-            'blob:',
-            'dl.airtable.com',
+            "data:",
+            "blob:",
+            "dl.airtable.com",
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
             env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
-            '*.r2.cloudflarestorage.com',
-            '*.cloudflare.com',
-            '*.softmeat.com.br',
-            'market-assets.strapi.io',
-            '*'  // Temporariamente permissivo durante testes
+            "*.r2.cloudflarestorage.com",
+            "*.cloudflare.com",
+            "*.softmeat.com.br",
+            "market-assets.strapi.io",
+            "*", // Temporariamente permissivo durante testes
           ],
-          'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-          'frame-ancestors': null,
+          "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          "frame-ancestors": null,
           upgradeInsecureRequests: null,
         },
       },
@@ -49,33 +49,37 @@ module.exports = ({ env }) => [
     },
   },
   {
-    name: 'strapi::cors',
+    name: "strapi::cors",
     config: {
       enabled: true,
-      headers: '*',
+      headers: "*",
       origin: [
-        'http://localhost:1337',
-        'http://localhost:3000',
-        'http://localhost:4321',
-        'https://softmeat.com.br',
-        'https://www.softmeat.com.br',
-        'https://softmeat-backend-production.up.railway.app',
-        'https://softmeat.pages.dev',
+        "http://localhost:1337",
+        "http://localhost:3000",
+        "http://localhost:4321",
+        "https://softmeat.com.br",
+        "https://www.softmeat.com.br",
+        "https://softmeat-backend-production.up.railway.app",
+        "https://softmeat.pages.dev",
         env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
-        env("CF_ENDPOINT", "")
+        env("CF_ENDPOINT", ""),
       ].filter(Boolean),
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
       keepHeaderOnError: true,
       credentials: true,
       maxAge: 31536000,
-      exposedHeaders: ['Content-Range', 'X-Content-Range']
+      exposedHeaders: ["Content-Range", "X-Content-Range"],
     },
+  }, // Adicionar nosso middleware de verificação de URL externa
+  {
+    name: "global::checkExternalUrl",
+    config: {},
   },
-  'strapi::poweredBy',
-  'strapi::logger',
-  'strapi::query',
-  'strapi::body',
-  'strapi::session',
-  'strapi::favicon',
-  'strapi::public',
+  "strapi::poweredBy",
+  "strapi::logger",
+  "strapi::query",
+  "strapi::body",
+  "strapi::session",
+  "strapi::favicon",
+  "strapi::public",
 ];

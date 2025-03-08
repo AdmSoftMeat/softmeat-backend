@@ -1,0 +1,3248 @@
+# Estrutura do Projeto SoftMeat - backend
+
+├── public
+│   ├── uploads
+│   │   ├── Clientes
+│   │   ├── Cursos
+│   │   ├── Produtos
+│   │   │   ├── Bacon
+│   │   │   ├── Blumenau
+│   │   │   ├── Copa
+│   │   │   ├── Pastrami
+│   │   │   └── Salame
+│   │   ├── Testemunhos
+├── src
+│   ├── admin
+│   ├── api
+│   │   ├── carrossel-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── carrossel-treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── cliente
+│   │   │   ├── content-types
+│   │   │   │   └── cliente
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── configuracao-geral
+│   │   │   ├── content-types
+│   │   │   │   └── configuracao-geral
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── cronograma
+│   │   │   ├── content-types
+│   │   │   │   └── cronograma
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── curso-online
+│   │   │   ├── content-types
+│   │   │   │   └── curso-online
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── hero-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── hero-consultoria
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── home-consultoria
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-hero
+│   │   │   ├── content-types
+│   │   │   │   └── home-hero
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── home-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── home-treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── index-destaque
+│   │   │   ├── content-types
+│   │   │   │   └── index-destaque
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── produto
+│   │   │   ├── content-types
+│   │   │   │   └── produto
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── sobre-carrossel
+│   │   │   ├── content-types
+│   │   │   │   └── sobre-carrossel
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── testemunho
+│   │   │   ├── content-types
+│   │   │   │   └── testemunho
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   │   ├── treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── treinamento
+│   │   │   ├── controllers
+│   │   │   ├── routes
+│   │   │   └── services
+│   ├── extensions
+│   │   ├── upload
+│   │   │   ├── middlewares
+│   │   │   ├── services
+│   ├── utils
+├── .env
+├── package.json
+
+
+.env
+
+# Configuração do Servidor
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=2VJlAoWpXfzDHzGqX7IVTA==,QSdu6uWUfiOcoPe5SgRI+w==,I9GT5I/hmBtES9PgklJFow==,W6LM3JinQfZ6BN/+u5aFSA==
+API_TOKEN_SALT=isFissNnC7p/4U1GpNnMDA==
+ADMIN_JWT_SECRET=E4rq8HGv9avD80L7hXY8TA==
+TRANSFER_TOKEN_SALT=EQ/v2sGIMohFSsL9Tg7gww==
+JWT_SECRET=vDZKwN6GXEPTfdIC8Aijrg==
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=/mnt/data/softmeat-db/data.db
+URL=http://localhost:1337
+PUBLIC_URL=http://localhost:1337
+WEBHOOKS_POPULATE_RELATIONS=false
+
+# Configurações Cloudflare R2
+CF_ACCESS_KEY_ID=ac7dbce38cf86a9df0239e0d1973aa6c
+CF_ACCESS_SECRET=79f513ca8cb364f64b2ea1a4a042b925e83f3cdd8aacb21f0f2967742fddc189
+CF_ENDPOINT=https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com
+CF_BUCKET=softmeat-dev
+CF_REGION=auto
+CF_PUBLIC_ACCESS_URL=https://images.softmeat.com.br
+
+
+config\admin.js
+
+module.exports = ({ env }) => ({
+  auth: {
+    secret: env('ADMIN_JWT_SECRET'),
+  },
+  apiToken: {
+    salt: env('API_TOKEN_SALT'),
+  },
+  transfer: {
+    token: {
+      salt: env('TRANSFER_TOKEN_SALT'),
+    },
+  },
+  flags: {
+    nps: env.bool('FLAG_NPS', false),
+    promoteEE: env.bool('FLAG_PROMOTE_EE', false),
+  },
+  watchIgnoreFiles: [
+    '**/config/sync/**',
+  ],
+});
+
+
+config\api.js
+
+module.exports = {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 100,
+    withCount: true,
+  },
+  responses: {
+    privateAttributes: ['_v', 'id', 'created_at'],
+  },
+  webhook: {
+    populateRelations: false,
+  },
+};
+
+
+config\database.js
+
+const path = require("path");
+
+module.exports = ({ env }) => ({
+  connection: {
+    client: 'sqlite',
+    connection: {
+      filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'), // Modifique para um local persistente
+      useNullAsDefault: true,
+    },
+    debug: false,
+    pool: {
+      min: 0,
+      max: 1,
+      acquireTimeoutMillis: 300000,
+      createTimeoutMillis: 300000,
+      destroyTimeoutMillis: 300000,
+      idleTimeoutMillis: 300000,
+      afterCreate: (conn, cb) => {
+        conn.pragma('journal_mode = WAL');
+        conn.pragma('synchronous = NORMAL');
+        cb(null, conn);
+      }
+    },
+    migrations: {
+      directory: path.join(process.cwd(), 'database/migrations')
+    }
+  }
+});
+
+
+config\functions\bootstrap.js
+
+'use strict';
+
+module.exports = () => {
+  // Função de bootstrap
+  strapi.log.info('Starting Strapi server...');
+
+  // Configurações iniciais
+  strapi.log.info('Checking database connection...');
+
+  // Log de configurações importantes
+  strapi.log.info(`Server URL: ${strapi.config.get('server.url', 'not set')}`);
+  strapi.log.info(`Database Client: ${strapi.config.get('database.connection.client', 'not set')}`);
+  strapi.log.info(`Database Path: ${strapi.config.get('database.connection.connection.filename', 'not set')}`);
+};
+
+
+config\middlewares\debug.js
+
+// config/middlewares/debug.js
+module.exports = (config, { strapi }) => {
+  strapi.log.info("============ DEBUG ENVIRONMENT VARIABLES ============");
+  strapi.log.info("R2_ENDPOINT:", process.env.R2_ENDPOINT);
+  strapi.log.info("R2_BUCKET:", process.env.R2_BUCKET);
+  strapi.log.info("R2_CUSTOM_DOMAIN:", process.env.R2_CUSTOM_DOMAIN);
+
+  return async (ctx, next) => {
+    // Continuar para o próximo middleware
+    await next();
+  };
+};
+
+
+config\middlewares\r2.js
+
+module.exports = ({ env }) => ({
+  settings: {
+    r2Storage: {
+      enabled: true,
+      config: {
+        provider: '@strapi/provider-upload-aws-s3',
+        providerOptions: {
+          accessKeyId: env('R2_ACCESS_KEY'),
+          secretAccessKey: env('R2_SECRET_KEY'),
+          endpoint: env('R2_ENDPOINT'),
+          params: {
+            Bucket: env('R2_BUCKET'),
+          },
+          region: env('R2_REGION', 'auto'),
+        },
+      },
+    },
+  },
+});
+
+
+config\middlewares.js
+
+module.exports = ({ env }) => [
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': [
+            "'self'",
+            'https:',
+            'http:',
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
+            '*.r2.cloudflarestorage.com'
+          ],
+          'img-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'dl.airtable.com',
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
+            '*.r2.cloudflarestorage.com',
+            '*.cloudflare.com',
+            '*.softmeat.com.br',
+            'market-assets.strapi.io',
+            '*'  // Temporariamente permissivo durante testes
+          ],
+          'media-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'dl.airtable.com',
+            env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
+            '*.r2.cloudflarestorage.com',
+            '*.cloudflare.com',
+            '*.softmeat.com.br',
+            'market-assets.strapi.io',
+            '*'  // Temporariamente permissivo durante testes
+          ],
+          'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          'frame-ancestors': null,
+          upgradeInsecureRequests: null,
+        },
+      },
+      frameguard: false,
+    },
+  },
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      headers: '*',
+      origin: [
+        'http://localhost:1337',
+        'http://localhost:3000',
+        'http://localhost:4321',
+        'https://softmeat.com.br',
+        'https://www.softmeat.com.br',
+        'https://softmeat-backend-production.up.railway.app',
+        'https://softmeat.pages.dev',
+        env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
+        env("CF_ENDPOINT", "")
+      ].filter(Boolean),
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      keepHeaderOnError: true,
+      credentials: true,
+      maxAge: 31536000,
+      exposedHeaders: ['Content-Range', 'X-Content-Range']
+    },
+  },
+  'strapi::poweredBy',
+  'strapi::logger',
+  'strapi::query',
+  'strapi::body',
+  'strapi::session',
+  'strapi::favicon',
+  'strapi::public',
+];
+
+
+config\plugins.js
+
+// config/plugins.js
+const path = require('path');
+
+module.exports = ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
+  upload: {
+    config: {
+      provider: "strapi-provider-cloudflare-r2",
+      providerOptions: {
+        accessKeyId: env("CF_ACCESS_KEY_ID", env('R2_ACCESS_KEY')),
+        secretAccessKey: env("CF_ACCESS_SECRET", env('R2_SECRET_KEY')),
+        endpoint: env("CF_ENDPOINT", env('R2_ENDPOINT')),
+        params: {
+          Bucket: env("CF_BUCKET", env('R2_BUCKET')),
+          ACL: 'public-read',
+        },
+        region: env("CF_REGION", env('R2_REGION', 'auto')),
+        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
+      },
+      actionOptions: {
+        upload: {
+          ACL: 'public-read',
+          // Função aprimorada para personalizar o caminho de upload
+          customPath: (file) => {
+            // Função para sanitizar strings (remover acentos e caracteres especiais)
+            const sanitizeString = (str) => {
+              if (!str) return '';
+              return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                .replace(/[^\w\-]/g, '-')        // Substitui caracteres especiais por hífen
+                .replace(/\-+/g, '-')            // Remove hífens consecutivos
+                .toLowerCase();                   // Converte para minúsculas
+            };
+
+            // Detectar o tipo de recurso (imagem, vídeo, etc.)
+            const resourceType = file.mime?.startsWith('image/') ? 'images' :
+                              file.mime?.startsWith('video/') ? 'videos' :
+                              file.mime?.startsWith('audio/') ? 'audios' : 'files';
+
+            // Determinar a categoria com base no contexto do upload
+            let category = 'geral';
+
+            // Tentar determinar a categoria baseado no tipo de conteúdo relacionado
+            if (file.related) {
+              // Extrair o modelo de relacionamento
+              const relatedType = file.related.split('.')[0];
+
+              // Mapeamento simplificado de categorias
+              const categoryMap = {
+                'produto': 'produtos',
+                'curso-online': 'cursos',
+                'testemunho': 'testemunhos',
+                'cliente': 'clientes',
+                'hero-consultoria': 'consultoria',
+                'home-consultoria': 'consultoria',
+                'home-hero': 'index',
+                'index-destaque': 'index',
+                'sobre-carrossel': 'institucional',
+                'carrossel-treinamento': 'testemunhos',
+                'treinamento': 'treinamentos',
+                'cronograma': 'treinamentos',
+                'home-treinamento': 'treinamentos',
+                'configuracao-geral': 'logo'
+              };
+
+              // Obter categoria do mapeamento ou usar 'geral' como fallback
+              category = categoryMap[relatedType] || 'geral';
+            }
+
+            // Sanitizar a categoria
+            category = sanitizeString(category);
+
+            // Gerar nome de arquivo sem caracteres especiais mas mantendo a extensão
+            const nameWithoutExt = path.basename(file.name, file.ext);
+            const sanitizedName = sanitizeString(nameWithoutExt);
+            const extension = file.ext.startsWith('.') ? file.ext.substring(1) : file.ext;
+
+            // Evitar nomes muito longos, limitando a 30 caracteres + extensão
+            const truncatedName = sanitizedName.length > 30
+              ? sanitizedName.substring(0, 30)
+              : sanitizedName;
+
+            // Garantir que o hash seja único e esteja presente
+            const shortHash = (file.hash || Date.now().toString()).substring(0, 8);
+
+            // Gerar o nome final do arquivo
+            const fileName = `${truncatedName}-${shortHash}.${extension}`;
+
+            // Caminho completo no formato categoria/nome-arquivo
+            const finalPath = `${category}/${fileName}`;
+
+            if (env('DEBUG') === 'true') {
+              console.log('[Upload Path]', {
+                original: file.name,
+                category: category,
+                path: finalPath
+              });
+            }
+
+            return finalPath;
+          }
+        },
+        uploadStream: {
+          ACL: 'public-read'
+        },
+        delete: {},
+      },
+    },
+  },
+  // Adicione aqui outros plugins conforme necessário
+});
+
+
+config\server.js
+
+module.exports = ({ env }) => ({
+  host: env('HOST', '0.0.0.0'),
+  port: env.int('PORT', 1337),
+  url: env('PUBLIC_URL', 'https://softmeat-backend-production.up.railway.app'),
+  admin: {
+    auth: {
+      secret: env('ADMIN_JWT_SECRET'),
+    },
+    url: '/admin',
+    autoOpen: false,
+  },
+  app: {
+    keys: env.array('APP_KEYS'),
+  },
+  webhooks: {
+    populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
+  },
+});
+
+
+package.json
+
+{
+  "name": "backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "NODE_ENV=production strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/plugin-i18n": "4.12.0",
+    "@strapi/plugin-users-permissions": "4.12.0",
+    "@strapi/provider-upload-aws-s3": "^4.25.20",
+    "@strapi/strapi": "4.12.0",
+    "better-sqlite3": "8.0.1",
+    "sharp": "^0.33.5",
+    "strapi-plugin-import-export-entries": "^1.23.1",
+    "strapi-provider-cloudflare-r2": "^0.3.0"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "3289c097-8983-4dc0-817c-2192d4dfd468"
+  },
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.758.0",
+    "dotenv": "^16.4.7",
+    "mime-types": "^2.1.35"
+  }
+}
+
+
+scripts\diagnose-r2.js
+
+// scripts/diagnose-r2-images-v2.js
+const { S3Client, ListObjectsV2Command, GetObjectCommand } = require('@aws-sdk/client-s3');
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
+const dotenv = require('dotenv');
+const { tmpdir } = require('os');
+
+// Carregar variáveis de ambiente
+dotenv.config();
+
+// Criar cliente R2
+const s3Client = new S3Client({
+  region: process.env.CF_REGION || 'auto',
+  endpoint: process.env.CF_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.CF_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_ACCESS_SECRET,
+  },
+});
+
+// Diretório para salvar imagens temporárias
+const TEMP_DIR = path.join(tmpdir(), 'r2-images-diagnose');
+if (!fs.existsSync(TEMP_DIR)) {
+  fs.mkdirSync(TEMP_DIR, { recursive: true });
+}
+
+// Função para obter a URL formatada
+function getFormattedUrl(key) {
+  if (process.env.CF_PUBLIC_ACCESS_URL) {
+    return `${process.env.CF_PUBLIC_ACCESS_URL.replace(/\/$/, '')}/${key}`;
+  }
+  return `${process.env.CF_ENDPOINT.replace(/\/$/, '')}/${process.env.CF_BUCKET}/${key}`;
+}
+
+// Função para verificar se a imagem é transparente
+async function isTransparentImage(filePath) {
+  try {
+    const metadata = await sharp(filePath).metadata();
+    // A imagem tem canal alpha e é PNG, WebP ou similar
+    return metadata.hasAlpha === true && metadata.channels === 4;
+  } catch (error) {
+    console.error(`Erro ao analisar imagem ${filePath}: ${error.message}`);
+    return false;
+  }
+}
+
+// Função para verificar imagens em um prefixo específico
+async function checkImagesInPrefix(prefix) {
+  console.log(`\n=== VERIFICANDO IMAGENS EM ${prefix}/ ===`);
+
+  try {
+    // Listar objetos com o prefixo
+    const listCommand = new ListObjectsV2Command({
+      Bucket: process.env.CF_BUCKET,
+      Prefix: prefix + '/',
+      MaxKeys: 20 // Limitar para amostragem
+    });
+
+    const listResult = await s3Client.send(listCommand);
+
+    if (!listResult.Contents || listResult.Contents.length === 0) {
+      console.log(`Nenhuma imagem encontrada no prefixo ${prefix}/`);
+      return { total: 0, transparent: 0, errors: 0 };
+    }
+
+    console.log(`Encontradas ${listResult.Contents.length} imagens no prefixo ${prefix}/`);
+
+    // Filtrar apenas arquivos de imagem
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const imageObjects = listResult.Contents.filter(obj => {
+      const ext = path.extname(obj.Key).toLowerCase();
+      return imageExtensions.includes(ext);
+    });
+
+    console.log(`Total de arquivos de imagem: ${imageObjects.length}`);
+
+    // Analisar uma amostra de imagens (limitando para não sobrecarregar)
+    const sampleSize = Math.min(imageObjects.length, 5); // Limitar a 5 imagens por prefixo
+    const imageSample = imageObjects.slice(0, sampleSize);
+
+    console.log(`\nAnalisando amostra de ${sampleSize} imagens...`);
+
+    let transparentCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < imageSample.length; i++) {
+      const imageObj = imageSample[i];
+      console.log(`\nImagem ${i+1}/${sampleSize}: ${imageObj.Key}`);
+
+      try {
+        // Obter o objeto do R2
+        const getCommand = new GetObjectCommand({
+          Bucket: process.env.CF_BUCKET,
+          Key: imageObj.Key,
+        });
+
+        const getResult = await s3Client.send(getCommand);
+
+        // Salvar temporariamente para análise
+        const tempFilePath = path.join(TEMP_DIR, path.basename(imageObj.Key));
+        const fileStream = fs.createWriteStream(tempFilePath);
+
+        await new Promise((resolve, reject) => {
+          getResult.Body.pipe(fileStream)
+            .on('finish', () => {
+              resolve();
+            })
+            .on('error', (err) => {
+              reject(err);
+            });
+        });
+
+        // Verificar se a imagem tem transparência
+        const transparent = await isTransparentImage(tempFilePath);
+
+        // Obter informações da imagem
+        const metadata = await sharp(tempFilePath).metadata();
+
+        console.log(`  URL: ${getFormattedUrl(imageObj.Key)}`);
+        console.log(`  Formato: ${metadata.format}`);
+        console.log(`  Dimensões: ${metadata.width}x${metadata.height}`);
+        console.log(`  Canais: ${metadata.channels}`);
+        console.log(`  Tem transparência: ${transparent ? 'Sim' : 'Não'}`);
+
+        if (transparent) {
+          transparentCount++;
+        }
+
+        // Limpar arquivo temporário
+        fs.unlinkSync(tempFilePath);
+      } catch (error) {
+        console.error(`  Erro ao analisar imagem: ${error.message}`);
+        errorCount++;
+      }
+    }
+
+    return {
+      total: sampleSize,
+      transparent: transparentCount,
+      errors: errorCount
+    };
+
+  } catch (error) {
+    console.error(`Erro ao analisar prefixo ${prefix}/: ${error.message}`);
+    return { total: 0, transparent: 0, errors: 0 };
+  }
+}
+
+// Função principal de diagnóstico
+async function diagnoseR2Images() {
+  console.log('=== DIAGNÓSTICO DE IMAGENS NO R2 ===');
+  console.log(`Bucket: ${process.env.CF_BUCKET}`);
+  console.log(`Endpoint: ${process.env.CF_ENDPOINT}`);
+  console.log(`URL pública: ${process.env.CF_PUBLIC_ACCESS_URL || 'Não configurada'}`);
+
+  if (!process.env.CF_BUCKET || !process.env.CF_ENDPOINT) {
+    console.error('Erro: Configuração R2 incompleta. Verifique as variáveis de ambiente.');
+    return;
+  }
+
+  try {
+    // Primeiro, listar todos os objetos para descobrir prefixos
+    console.log('\nDescobrir prefixos disponíveis...');
+    const listCommand = new ListObjectsV2Command({
+      Bucket: process.env.CF_BUCKET,
+      MaxKeys: 1000
+    });
+
+    const listResult = await s3Client.send(listCommand);
+
+    if (!listResult.Contents || listResult.Contents.length === 0) {
+      console.log('Nenhum objeto encontrado no bucket.');
+      return;
+    }
+
+    // Extrair prefixos únicos (primeiro nível)
+    const prefixes = new Set();
+    listResult.Contents.forEach(obj => {
+      const firstLevel = obj.Key.split('/')[0];
+      if (firstLevel) {
+        prefixes.add(firstLevel);
+      }
+    });
+
+    console.log(`Prefixos encontrados: ${Array.from(prefixes).join(', ')}`);
+
+    // Analisar imagens em cada prefixo
+    let totalStats = { total: 0, transparent: 0, errors: 0 };
+
+    for (const prefix of prefixes) {
+      const stats = await checkImagesInPrefix(prefix);
+      totalStats.total += stats.total;
+      totalStats.transparent += stats.transparent;
+      totalStats.errors += stats.errors;
+    }
+
+    // Resumo geral
+    console.log('\n=== RESUMO GERAL DA ANÁLISE ===');
+    console.log(`Total de imagens analisadas: ${totalStats.total}`);
+    console.log(`Imagens com transparência: ${totalStats.transparent} (${(totalStats.transparent/totalStats.total*100 || 0).toFixed(1)}%)`);
+    console.log(`Erros durante a análise: ${totalStats.errors} (${(totalStats.errors/totalStats.total*100 || 0).toFixed(1)}%)`);
+
+    // Limpar diretório temporário
+    fs.rmSync(TEMP_DIR, { recursive: true, force: true });
+
+  } catch (error) {
+    console.error('Erro durante o diagnóstico:', error.message);
+  }
+}
+
+// Executar diagnóstico
+diagnoseR2Images().catch(error => {
+  console.error('Erro fatal durante o diagnóstico:', error);
+});
+
+
+scripts\fix-r2-urls.js
+
+// scripts/fix-r2-urls-improved.js
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
+
+// Cores para console
+const colors = {
+  reset: '\x1b[0m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m'
+};
+
+async function fixImageUrls(strapi) {
+  console.log(`${colors.magenta}=== CORREÇÃO AVANÇADA DE URLs DE IMAGENS ===\n${colors.reset}`);
+
+  // Verificar configurações
+  console.log(`${colors.blue}Verificando configurações R2:${colors.reset}`);
+  const r2Config = {
+    publicUrl: process.env.CF_PUBLIC_ACCESS_URL,
+    endpoint: process.env.CF_ENDPOINT,
+    bucket: process.env.CF_BUCKET,
+    legacyUrl: process.env.R2_CUSTOM_DOMAIN,
+  };
+
+  // Validar configurações
+  for (const [key, value] of Object.entries(r2Config)) {
+    if (value) {
+      console.log(`  ✅ ${key}: ${value}`);
+    } else {
+      console.log(`  ${colors.yellow}⚠️ ${key}: Não configurado${colors.reset}`);
+    }
+  }
+
+  if (!r2Config.publicUrl) {
+    console.error(`${colors.red}Erro: CF_PUBLIC_ACCESS_URL não está configurado, é necessário para corrigir URLs.${colors.reset}`);
+    return;
+  }
+
+  try {
+    // Buscar todos os arquivos no banco de dados
+    console.log(`\n${colors.blue}Buscando arquivos no banco de dados...${colors.reset}`);
+    const files = await strapi.db.query('plugin::upload.file').findMany({});
+
+    console.log(`Encontrados ${files.length} arquivos no total\n`);
+
+    // Agrupar arquivos por tipo MIME
+    const filesByType = {};
+    for (const file of files) {
+      const type = file.mime ? (file.mime.split('/')[0] || 'other') : 'unknown';
+      if (!filesByType[type]) filesByType[type] = [];
+      filesByType[type].push(file);
+    }
+
+    console.log(`${colors.blue}Distribuição de arquivos por tipo:${colors.reset}`);
+    for (const [type, typeFiles] of Object.entries(filesByType)) {
+      console.log(`  ${type}: ${typeFiles.length} arquivos`);
+    }
+
+    // Extrator de domínio
+    const extractDomain = (url) => {
+      if (!url) return '';
+      try {
+        return new URL(url).hostname;
+      } catch (error) {
+        return '';
+      }
+    };
+
+    // Formatador de URL
+    const formatFileUrl = (url) => {
+      if (!url) return { formatted: false, url };
+
+      try {
+        // Verificar se a URL já usa o domínio correto
+        const publicUrlDomain = extractDomain(r2Config.publicUrl);
+        const currentDomain = extractDomain(url);
+
+        if (currentDomain === publicUrlDomain) {
+          return { formatted: false, url }; // Já está usando o domínio correto
+        }
+
+        // URL nula ou inválida
+        if (!url || !url.includes('://')) {
+          return { formatted: false, url };
+        }
+
+        // Se for URL externa (não R2 nem Cloudflare)
+        if (!url.includes('cloudflarestorage.com') &&
+            !url.includes(r2Config.endpoint) &&
+            !url.includes('softmeat.com.br')) {
+          return { formatted: false, url };
+        }
+
+        // Extrair caminho relativo
+        const urlObj = new URL(url);
+        let relativePath = urlObj.pathname;
+
+        // Remover bucket se presente
+        if (r2Config.bucket && relativePath.includes(r2Config.bucket)) {
+          const bucketIndex = relativePath.indexOf(r2Config.bucket);
+          relativePath = relativePath.substring(bucketIndex + r2Config.bucket.length);
+        }
+
+        // Remover barra inicial
+        while (relativePath.startsWith('/')) {
+          relativePath = relativePath.substring(1);
+        }
+
+        // Formar nova URL
+        const formattedPublicDomain = r2Config.publicUrl.endsWith('/')
+          ? r2Config.publicUrl.slice(0, -1)
+          : r2Config.publicUrl;
+
+        const newUrl = `${formattedPublicDomain}/${relativePath}`;
+
+        return { formatted: true, url: newUrl };
+      } catch (error) {
+        console.error(`Erro ao formatar URL ${url}: ${error.message}`);
+        return { formatted: false, url };
+      }
+    };
+
+    // Agrupar arquivos por fonte de URL
+    const urlSources = {};
+    for (const file of files) {
+      if (!file.url) continue;
+
+      const domain = extractDomain(file.url);
+      if (!urlSources[domain]) urlSources[domain] = [];
+      urlSources[domain].push(file);
+    }
+
+    console.log(`\n${colors.blue}Origens de URLs encontradas:${colors.reset}`);
+    for (const [domain, domainFiles] of Object.entries(urlSources)) {
+      console.log(`  ${domain}: ${domainFiles.length} arquivos`);
+    }
+
+    // Começar correção de URLs
+    console.log(`\n${colors.blue}Iniciando correção de URLs...${colors.reset}`);
+
+    let updatedCount = 0;
+    let errorCount = 0;
+    let skippedCount = 0;
+
+    for (const file of files) {
+      if (!file.url) {
+        console.log(`${colors.yellow}⚠️ Arquivo ${file.id} não tem URL${colors.reset}`);
+        skippedCount++;
+        continue;
+      }
+
+      const { formatted, url: newUrl } = formatFileUrl(file.url);
+
+      if (formatted) {
+        try {
+          // Verificar se a URL realmente mudou
+          if (file.url !== newUrl) {
+            // Atualizar URL no banco de dados
+            await strapi.db.query('plugin::upload.file').update({
+              where: { id: file.id },
+              data: { url: newUrl }
+            });
+
+            updatedCount++;
+            console.log(`✅ [${updatedCount}] URL atualizada: ${file.name}`);
+            console.log(`   De: ${file.url}`);
+            console.log(`   Para: ${newUrl}`);
+          } else {
+            skippedCount++;
+          }
+        } catch (error) {
+          console.error(`${colors.red}❌ Erro ao atualizar arquivo ${file.id}: ${error.message}${colors.reset}`);
+          errorCount++;
+        }
+      } else {
+        skippedCount++;
+      }
+    }
+
+    // Resumo final
+    console.log(`\n${colors.green}=== RESUMO DA CORREÇÃO DE URLs ===${colors.reset}`);
+    console.log(`✅ Total de URLs corrigidas: ${updatedCount}`);
+    console.log(`⏩ URLs ignoradas (já corretas ou externas): ${skippedCount}`);
+    console.log(`❌ Erros durante a correção: ${errorCount}`);
+
+    if (updatedCount > 0) {
+      console.log(`\n${colors.green}As URLs foram atualizadas com sucesso para usar o domínio: ${r2Config.publicUrl}${colors.reset}`);
+    } else if (errorCount === 0) {
+      console.log(`\n${colors.green}Todas as URLs já estão usando o domínio correto.${colors.reset}`);
+    } else {
+      console.log(`\n${colors.yellow}A correção de URLs encontrou problemas. Verifique os logs acima.${colors.reset}`);
+    }
+
+  } catch (error) {
+    console.error(`${colors.red}Erro fatal ao corrigir URLs: ${error.message}${colors.reset}`);
+    console.error(error.stack);
+  }
+}
+
+module.exports = { fixImageUrls };
+
+// Se o script for executado diretamente
+if (require.main === module) {
+  console.log('Este script deve ser executado através do Strapi:');
+  console.log('NODE_ENV=production node -e "require(\'./scripts/fix-r2-urls-improved.js\').fixImageUrls(strapi)"');
+}
+
+
+scripts\list-all-r2-objects.js
+
+// scripts/list-all-r2-objects.js
+const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+require('dotenv').config();
+
+async function listAllObjects() {
+  console.log('=== LISTAGEM COMPLETA DE OBJETOS NO R2 ===');
+  console.log(`Bucket: ${process.env.CF_BUCKET}`);
+  console.log(`Endpoint: ${process.env.CF_ENDPOINT}`);
+  console.log(`URL pública: ${process.env.CF_PUBLIC_ACCESS_URL || 'Não configurada'}`);
+
+  // Criar cliente R2
+  const s3Client = new S3Client({
+    region: process.env.CF_REGION || 'auto',
+    endpoint: process.env.CF_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.CF_ACCESS_KEY_ID,
+      secretAccessKey: process.env.CF_ACCESS_SECRET,
+    },
+  });
+
+  try {
+    // Listar todos os objetos (sem prefixo específico)
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.CF_BUCKET,
+      MaxKeys: 100
+    });
+
+    const response = await s3Client.send(command);
+
+    console.log(`\nTotal de objetos encontrados: ${response.Contents?.length || 0}`);
+
+    if (response.Contents && response.Contents.length > 0) {
+      // Agrupar por prefixo para entender a estrutura
+      const prefixes = {};
+
+      response.Contents.forEach(obj => {
+        // Extrair o primeiro nível do caminho
+        const firstLevel = obj.Key.split('/')[0];
+        if (!prefixes[firstLevel]) {
+          prefixes[firstLevel] = {
+            count: 0,
+            size: 0,
+            examples: []
+          };
+        }
+
+        prefixes[firstLevel].count++;
+        prefixes[firstLevel].size += obj.Size;
+
+        // Guardar alguns exemplos para cada prefixo
+        if (prefixes[firstLevel].examples.length < 3) {
+          prefixes[firstLevel].examples.push(obj.Key);
+        }
+      });
+
+      // Mostrar resumo de prefixos
+      console.log('\nEstrutura de diretórios:');
+      Object.entries(prefixes).forEach(([prefix, info]) => {
+        console.log(`- ${prefix}/: ${info.count} objetos (${(info.size / 1024 / 1024).toFixed(2)} MB)`);
+
+        // Mostrar alguns exemplos
+        console.log('  Exemplos:');
+        info.examples.forEach(example => {
+          const url = `${process.env.CF_PUBLIC_ACCESS_URL}/${example}`;
+          console.log(`  - ${example}`);
+          console.log(`    URL: ${url}`);
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Erro ao listar objetos:', error);
+  }
+}
+
+listAllObjects();
+
+
+scripts\sync-env-vars.js
+
+// scripts/sync-env-vars.js
+const fs = require('fs');
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Carregar variáveis do ambiente atual
+dotenv.config();
+
+// Definir mapeamentos R2 -> CF
+const mappings = [
+  { from: 'R2_ACCESS_KEY', to: 'CF_ACCESS_KEY_ID' },
+  { from: 'R2_SECRET_KEY', to: 'CF_ACCESS_SECRET' },
+  { from: 'R2_ENDPOINT', to: 'CF_ENDPOINT' },
+  { from: 'R2_BUCKET', to: 'CF_BUCKET' },
+  { from: 'R2_REGION', to: 'CF_REGION' },
+  { from: 'R2_CUSTOM_DOMAIN', to: 'CF_PUBLIC_ACCESS_URL' }
+];
+
+// Criar objeto com novos valores
+const newVars = {};
+let hasChanges = false;
+
+// Mapear valores existentes
+mappings.forEach(({ from, to }) => {
+  if (process.env[from] && !process.env[to]) {
+    newVars[to] = process.env[from];
+    hasChanges = true;
+    console.log(`Mapeando ${from} para ${to}: ${process.env[from]}`);
+  }
+});
+
+if (!hasChanges) {
+  console.log('Todas as variáveis já estão configuradas corretamente');
+  process.exit(0);
+}
+
+// Determinar se estamos em produção ou desenvolvimento
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+  // Em produção, apenas mostrar comandos para definir variáveis
+  console.log('\nEm ambiente de produção, use os seguintes comandos:');
+
+  Object.entries(newVars).forEach(([key, value]) => {
+    // Mostrar comando para Railway, Heroku ou similar
+    console.log(`railway variables set ${key}="${value}"`);
+    // Ou para ambiente genérico
+    console.log(`export ${key}="${value}"`);
+  });
+} else {
+  // Em desenvolvimento, atualizar arquivo .env
+  const envPath = path.join(process.cwd(), '.env');
+
+  if (!fs.existsSync(envPath)) {
+    console.error('Arquivo .env não encontrado');
+    process.exit(1);
+  }
+
+  let envContent = fs.readFileSync(envPath, 'utf8');
+
+  // Adicionar novas variáveis
+  envContent += '\n\n# Variáveis mapeadas automaticamente\n';
+  Object.entries(newVars).forEach(([key, value]) => {
+    envContent += `${key}=${value}\n`;
+  });
+
+  // Salvar o arquivo atualizado
+  fs.writeFileSync(envPath, envContent);
+  console.log('\nArquivo .env atualizado com sucesso!');
+}
+
+
+scripts\test-r2-connection.js
+
+// test-r2-connection.js
+const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+const dotenv = require('dotenv');
+const path = require('path');
+
+// Carregar variáveis de ambiente
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Verificar se as variáveis foram carregadas
+console.log('Variáveis carregadas:');
+console.log('R2_ACCESS_KEY existe:', !!process.env.R2_ACCESS_KEY);
+console.log('R2_SECRET_KEY existe:', !!process.env.R2_SECRET_KEY);
+console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
+console.log('R2_BUCKET:', process.env.R2_BUCKET);
+console.log('R2_REGION:', process.env.R2_REGION || 'auto');
+console.log('R2_CUSTOM_DOMAIN:', process.env.R2_CUSTOM_DOMAIN);
+
+// Verificar se as variáveis essenciais estão presentes
+if (!process.env.R2_ACCESS_KEY || !process.env.R2_SECRET_KEY || !process.env.R2_ENDPOINT || !process.env.R2_BUCKET) {
+ console.error('Erro: Variáveis de ambiente R2 não encontradas!');
+ console.error('Por favor, verifique se o arquivo .env contém as configurações do R2.');
+ process.exit(1);
+}
+
+// Configurar o cliente R2
+const r2Client = new S3Client({
+ region: process.env.R2_REGION || 'auto',
+ endpoint: process.env.R2_ENDPOINT,
+ credentials: {
+   accessKeyId: process.env.R2_ACCESS_KEY,
+   secretAccessKey: process.env.R2_SECRET_KEY,
+ },
+});
+
+async function testConnection() {
+ try {
+   console.log('\nTentando conectar ao R2...');
+
+   // Listar objetos no bucket
+   const command = new ListObjectsV2Command({
+     Bucket: process.env.R2_BUCKET,
+     MaxKeys: 10, // Limitando a 10 objetos para teste
+   });
+
+   const response = await r2Client.send(command);
+
+   console.log(`\nConexão com R2 bem-sucedida!`);
+   console.log(`Encontrados ${response.Contents?.length || 0} objetos:`);
+
+   // Mostrar alguns objetos
+   (response.Contents || []).forEach((obj, index) => {
+     console.log(`${index + 1}. ${obj.Key} (${obj.Size} bytes)`);
+
+     // Construir URL usando o domínio personalizado
+     const customUrl = `${process.env.R2_CUSTOM_DOMAIN}/${obj.Key}`;
+     console.log(`   URL custom: ${customUrl}`);
+
+     // Construir URL direta do R2
+     const directUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${obj.Key}`;
+     console.log(`   URL direta: ${directUrl}`);
+   });
+
+ } catch (error) {
+   console.error('Erro ao conectar com R2:', error);
+ }
+}
+
+testConnection();
+
+
+scripts\test-r2-provider.js
+
+// scripts/test-r2-provider.js
+// Script para testar a configuração do provider R2
+require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+const { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+
+// Cores para console
+const colors = {
+  reset: '\x1b[0m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m'
+};
+
+// Configurações
+const testFilePath = path.join(__dirname, 'test-file.txt');
+const testFileKey = `test/provider-test-${Date.now()}.txt`;
+
+// Criar o arquivo de teste
+fs.writeFileSync(testFilePath, `Teste de upload para R2 - ${new Date().toISOString()}`);
+
+// Configurar cliente R2
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.CF_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.CF_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_ACCESS_SECRET,
+  },
+});
+
+// Funções auxiliares
+function log(message, color = colors.reset) {
+  console.log(`${color}${message}${colors.reset}`);
+}
+
+// Teste de upload
+async function testUpload() {
+  log('\n=== TESTE DO PROVIDER STRAPI-PROVIDER-CLOUDFLARE-R2 ===', colors.magenta);
+
+  // Verificar variáveis de ambiente
+  log('\n[1] Verificando variáveis de ambiente:', colors.blue);
+  const requiredVars = ['CF_ACCESS_KEY_ID', 'CF_ACCESS_SECRET', 'CF_ENDPOINT', 'CF_BUCKET', 'CF_PUBLIC_ACCESS_URL'];
+
+  let missingVars = [];
+  for (const varName of requiredVars) {
+    if (!process.env[varName]) {
+      log(`  ❌ ${varName}: Não encontrada`, colors.red);
+      missingVars.push(varName);
+    } else {
+      log(`  ✅ ${varName}: Configurada`);
+    }
+  }
+
+  if (missingVars.length > 0) {
+    log(`\n❌ As seguintes variáveis não estão configuradas: ${missingVars.join(', ')}`, colors.red);
+    log('Por favor, configure-as no arquivo .env e tente novamente');
+    return;
+  }
+
+  // Testar conexão e listagem
+  log('\n[2] Testando conexão e listagem de objetos:', colors.blue);
+  try {
+    const listCommand = new ListObjectsV2Command({
+      Bucket: process.env.CF_BUCKET,
+      MaxKeys: 5
+    });
+
+    const listResponse = await s3Client.send(listCommand);
+    log(`  ✅ Conexão estabelecida com sucesso`);
+    log(`  ✅ Encontrados ${listResponse.Contents?.length || 0} objetos`);
+
+    if (listResponse.Contents && listResponse.Contents.length > 0) {
+      log(`\n  Exemplos de objetos:`);
+      listResponse.Contents.slice(0, 3).forEach((obj, i) => {
+        log(`  ${i+1}. ${obj.Key} (${obj.Size} bytes)`);
+
+        // Construir URL direta e pública
+        const directUrl = `${process.env.CF_ENDPOINT}/${process.env.CF_BUCKET}/${obj.Key}`;
+        const publicUrl = `${process.env.CF_PUBLIC_ACCESS_URL}/${obj.Key}`;
+
+        log(`     URL direta: ${directUrl}`);
+        log(`     URL pública: ${publicUrl}`);
+      });
+    }
+  } catch (error) {
+    log(`  ❌ Erro ao conectar ao R2: ${error.message}`, colors.red);
+    return;
+  }
+
+  // Testar upload
+  log('\n[3] Testando upload de arquivo:', colors.blue);
+  try {
+    const fileContent = fs.readFileSync(testFilePath);
+
+    const uploadCommand = new PutObjectCommand({
+      Bucket: process.env.CF_BUCKET,
+      Key: testFileKey,
+      Body: fileContent,
+      ContentType: 'text/plain',
+      ACL: 'public-read'
+    });
+
+    await s3Client.send(uploadCommand);
+    log(`  ✅ Arquivo enviado com sucesso`);
+
+    // Construir URLs
+    const directUrl = `${process.env.CF_ENDPOINT}/${process.env.CF_BUCKET}/${testFileKey}`;
+    const publicUrl = `${process.env.CF_PUBLIC_ACCESS_URL}/${testFileKey}`;
+
+    log(`  URL direta: ${directUrl}`);
+    log(`  URL pública: ${publicUrl}`);
+
+    // Testar download
+    log('\n[4] Testando download do arquivo:', colors.blue);
+    const getCommand = new GetObjectCommand({
+      Bucket: process.env.CF_BUCKET,
+      Key: testFileKey
+    });
+
+    const getResponse = await s3Client.send(getCommand);
+    log(`  ✅ Arquivo recuperado com sucesso`);
+    log(`  Content-Type: ${getResponse.ContentType}`);
+    log(`  Content-Length: ${getResponse.ContentLength} bytes`);
+
+    // Limpar
+    fs.unlinkSync(testFilePath);
+    log(`\n✅ Teste concluído com sucesso!`, colors.green);
+    log(`O arquivo de teste foi enviado para: ${testFileKey}`);
+    log(`\nPróximos passos:`);
+    log(`1. Verifique se pode acessar a URL pública: ${publicUrl}`);
+    log(`2. Configure o plugin no Strapi conforme documentação`);
+    log(`3. Reinicie o servidor Strapi e teste o upload pelo painel admin`);
+  } catch (error) {
+    log(`  ❌ Erro durante o teste: ${error.message}`, colors.red);
+  }
+}
+
+// Executar o teste
+testUpload();
+
+
+scripts\test-r2-upload.js
+
+// scripts/test-r2-upload.js - versão atualizada
+const { S3Client, ListObjectsV2Command, PutObjectCommand } = require('@aws-sdk/client-s3');
+const fs = require('fs');
+const path = require('path');
+
+// Carregar variáveis de ambiente
+require('dotenv').config();
+
+// Verificar variáveis configuradas
+console.log('=== TESTE DE CONEXÃO R2 ===');
+console.log('CF_ACCESS_KEY_ID existe:', !!process.env.CF_ACCESS_KEY_ID);
+console.log('CF_ACCESS_SECRET existe:', !!process.env.CF_ACCESS_SECRET);
+console.log('CF_ENDPOINT:', process.env.CF_ENDPOINT);
+console.log('CF_BUCKET:', process.env.CF_BUCKET);
+console.log('CF_REGION:', process.env.CF_REGION || 'auto');
+console.log('CF_PUBLIC_ACCESS_URL:', process.env.CF_PUBLIC_ACCESS_URL);
+
+// Configurar cliente R2
+const r2Client = new S3Client({
+  region: process.env.CF_REGION || 'auto',
+  endpoint: process.env.CF_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.CF_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_ACCESS_SECRET,
+  },
+});
+
+// Função para formatar URL R2
+const formatR2Url = (path) => {
+  if (!path) return '';
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+
+  if (process.env.CF_PUBLIC_ACCESS_URL) {
+    const domain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
+      ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
+      : process.env.CF_PUBLIC_ACCESS_URL;
+    return `${domain}/${cleanPath}`;
+  }
+
+  const endpoint = process.env.CF_ENDPOINT;
+  const bucket = process.env.CF_BUCKET;
+
+  if (!endpoint || !bucket) {
+    console.error('Erro: CF_ENDPOINT ou CF_BUCKET não definidos!');
+    return '';
+  }
+
+  const cleanEndpoint = endpoint.endsWith('/')
+    ? endpoint.slice(0, -1)
+    : endpoint;
+
+  return `${cleanEndpoint}/${bucket}/${cleanPath}`;
+};
+
+// Função para testar listagem de arquivos
+async function testListFiles() {
+  try {
+    console.log('\nTentando listar arquivos no bucket R2...');
+
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.CF_BUCKET,
+      MaxKeys: 5
+    });
+
+    const response = await r2Client.send(command);
+    console.log(`✅ Sucesso! Encontrados ${response.Contents?.length || 0} arquivos\n`);
+
+    // Mostrar alguns arquivos
+    if (response.Contents && response.Contents.length > 0) {
+      console.log('Exemplos de arquivos:');
+      response.Contents.slice(0, 5).forEach((file, index) => {
+        const url = formatR2Url(file.Key);
+        console.log(`${index + 1}. ${file.Key} -> ${url}`);
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao listar arquivos:', error.message);
+    return false;
+  }
+}
+
+// Função para testar upload de arquivo
+async function testUpload() {
+  try {
+    console.log('\nTentando fazer upload de arquivo de teste para R2...');
+
+    // Criar arquivo de teste
+    const testFile = path.join(__dirname, 'test-file.txt');
+    fs.writeFileSync(testFile, `Arquivo de teste gerado em ${new Date().toISOString()}`);
+
+    // Configurar comando de upload
+    const fileStream = fs.createReadStream(testFile);
+    const fileKey = `test/test-upload-${Date.now()}.txt`;
+
+    const uploadParams = {
+      Bucket: process.env.CF_BUCKET,
+      Key: fileKey,
+      Body: fileStream,
+      ContentType: 'text/plain',
+      ACL: 'public-read'
+    };
+
+    // Enviar arquivo
+    await r2Client.send(new PutObjectCommand(uploadParams));
+    console.log('✅ Upload concluído com sucesso');
+
+    // Mostrar URL
+    const url = formatR2Url(fileKey);
+    console.log(`URL do arquivo: ${url}`);
+
+    // Limpar
+    fs.unlinkSync(testFile);
+    console.log('Arquivo de teste local removido');
+
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao fazer upload:', error.message);
+    return false;
+  }
+}
+
+// Testar formatação de URLs
+function testFormatUrls() {
+  console.log('\nTeste de formatação de URLs:');
+
+  const testPaths = [
+    'images/test/example.jpg',
+    '/images/product/photo.png',
+    'videos/testimonials/video.mp4'
+  ];
+
+  for (const path of testPaths) {
+    const url = formatR2Url(path);
+    console.log(`${path} -> ${url}`);
+  }
+}
+
+// Executar testes
+async function runTests() {
+  console.log('\n=== INICIANDO TESTES R2 ===');
+
+  // Verificar variáveis necessárias
+  if (!process.env.CF_ACCESS_KEY_ID || !process.env.CF_ACCESS_SECRET ||
+      !process.env.CF_ENDPOINT || !process.env.CF_BUCKET) {
+    console.error('❌ Configuração incompleta. Verifique as variáveis de ambiente.');
+    return;
+  }
+
+  // Testar formatação de URLs
+  testFormatUrls();
+
+  // Testar conexão e listagem
+  const listSuccess = await testListFiles();
+
+  // Testar upload se listagem for bem-sucedida
+  if (listSuccess) {
+    await testUpload();
+  }
+
+  console.log('\n=== TESTES CONCLUÍDOS ===');
+}
+
+// Executar todos os testes
+runTests();
+
+
+scripts\update-env.js
+
+// scripts/update-env.js
+// Este script atualiza o arquivo .env com as variáveis necessárias para o Cloudflare R2
+const fs = require('fs');
+const path = require('path');
+
+const envPath = path.join(process.cwd(), '.env');
+
+// Verificar se o arquivo .env existe
+if (!fs.existsSync(envPath)) {
+  console.error('\x1b[31mArquivo .env não encontrado. Crie o arquivo primeiro.\x1b[0m');
+  process.exit(1);
+}
+
+// Ler o conteúdo atual do arquivo .env
+let envContent = fs.readFileSync(envPath, 'utf8');
+
+// Verificar quais variáveis já existem
+const existingVars = {
+  CF_ACCESS_KEY_ID: envContent.includes('CF_ACCESS_KEY_ID='),
+  CF_ACCESS_SECRET: envContent.includes('CF_ACCESS_SECRET='),
+  CF_ENDPOINT: envContent.includes('CF_ENDPOINT='),
+  CF_BUCKET: envContent.includes('CF_BUCKET='),
+  CF_PUBLIC_ACCESS_URL: envContent.includes('CF_PUBLIC_ACCESS_URL='),
+};
+
+// Ler variáveis R2 existentes para usar como padrão
+const r2Vars = {
+  R2_ACCESS_KEY: (envContent.match(/R2_ACCESS_KEY=([^\n]*)/)?.[1] || '').trim(),
+  R2_SECRET_KEY: (envContent.match(/R2_SECRET_KEY=([^\n]*)/)?.[1] || '').trim(),
+  R2_ENDPOINT: (envContent.match(/R2_ENDPOINT=([^\n]*)/)?.[1] || '').trim(),
+  R2_BUCKET: (envContent.match(/R2_BUCKET=([^\n]*)/)?.[1] || '').trim(),
+  R2_CUSTOM_DOMAIN: (envContent.match(/R2_CUSTOM_DOMAIN=([^\n]*)/)?.[1] || '').trim(),
+};
+
+// Preparar novas variáveis
+const newVars = [];
+
+if (!existingVars.CF_ACCESS_KEY_ID) {
+  newVars.push(`CF_ACCESS_KEY_ID=${r2Vars.R2_ACCESS_KEY}`);
+}
+
+if (!existingVars.CF_ACCESS_SECRET) {
+  newVars.push(`CF_ACCESS_SECRET=${r2Vars.R2_SECRET_KEY}`);
+}
+
+if (!existingVars.CF_ENDPOINT) {
+  newVars.push(`CF_ENDPOINT=${r2Vars.R2_ENDPOINT}`);
+}
+
+if (!existingVars.CF_BUCKET) {
+  newVars.push(`CF_BUCKET=${r2Vars.R2_BUCKET}`);
+}
+
+if (!existingVars.CF_PUBLIC_ACCESS_URL) {
+  newVars.push(`CF_PUBLIC_ACCESS_URL=${r2Vars.R2_CUSTOM_DOMAIN || 'https://images.softmeat.com.br'}`);
+}
+
+// Adicionar as novas variáveis ao arquivo .env
+if (newVars.length > 0) {
+  envContent += '\n\n# Variáveis Cloudflare R2 para strapi-provider-cloudflare-r2\n';
+  envContent += newVars.join('\n');
+
+  // Salvar o arquivo atualizado
+  fs.writeFileSync(envPath, envContent);
+
+  console.log('\x1b[32mVariáveis adicionadas ao arquivo .env:\x1b[0m');
+  newVars.forEach(v => console.log(`- ${v.split('=')[0]}`));
+} else {
+  console.log('\x1b[32mTodas as variáveis necessárias já existem no arquivo .env\x1b[0m');
+}
+
+console.log('\n\x1b[34mPróximos passos:\x1b[0m');
+console.log('1. Verifique se as variáveis têm os valores corretos no arquivo .env');
+console.log('2. Instale o provider: npm install strapi-provider-cloudflare-r2');
+console.log('3. Reinicie o servidor Strapi: npm run develop');
+
+
+scripts\upload-original-images-to-r2.js
+
+// scripts/upload-original-images-to-r2.js
+const fs = require('fs');
+const path = require('path');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const dotenv = require('dotenv');
+const mime = require('mime-types');
+
+// Carregar variáveis de ambiente
+dotenv.config();
+
+// Configurar o cliente R2
+const r2Client = new S3Client({
+  region: process.env.R2_REGION || 'auto',
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY,
+    secretAccessKey: process.env.R2_SECRET_KEY,
+  },
+});
+
+// Diretório base de imagens
+const BASE_IMAGE_DIR = path.join(__dirname, '/images');
+
+// Mapeamento de pastas para categorias no R2
+const FOLDER_CATEGORY_MAP = {
+  'clientes': 'clientes',
+  'consultoria': 'consultoria',
+  'cursos': 'cursos',
+  'index': 'index',
+  'institucional': 'institucional',
+  'logo': 'logo',
+  'produtos': 'produtos',
+  'testemunhos': 'testemunhos',
+  // Adicione outros mapeamentos conforme necessário
+};
+
+// Função para verificar se o arquivo é uma imagem
+function isImageFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext);
+}
+
+// Função para determinar o tipo de recurso com base no MIME type
+function getResourceType(mimeType) {
+  if (mimeType.startsWith('image/')) return 'images';
+  if (mimeType.startsWith('video/')) return 'videos';
+  if (mimeType.startsWith('audio/')) return 'audios';
+  return 'files';
+}
+
+// Função para determinar a categoria com base no caminho do arquivo
+function getCategory(filePath) {
+  const relativePath = path.relative(BASE_IMAGE_DIR, filePath);
+  const segments = relativePath.split(path.sep);
+
+  // Obter a primeira pasta do caminho relativo
+  const firstFolder = segments[0];
+
+  // Retornar a categoria mapeada ou 'geral' como fallback
+  return FOLDER_CATEGORY_MAP[firstFolder] || 'geral';
+}
+
+// Função para fazer upload de um arquivo para o R2
+async function uploadFileToR2(filePath) {
+  try {
+    // Ler o arquivo
+    const fileContent = fs.readFileSync(filePath);
+
+    // Determinar MIME type
+    const mimeType = mime.lookup(filePath) || 'application/octet-stream';
+
+    // Determinar tipo de recurso (images, videos, etc)
+    const resourceType = getResourceType(mimeType);
+
+    // Determinar categoria baseado no caminho
+    const category = getCategory(filePath);
+
+    // Gerar nome de arquivo (mantendo o nome original)
+    const fileName = path.basename(filePath);
+
+    // Criar o path no R2
+    const r2Key = `${category}/${fileName}`;
+
+    // Upload para o R2
+    const command = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: r2Key,
+      Body: fileContent,
+      ContentType: mimeType,
+      ACL: 'public-read',
+      CacheControl: 'public, max-age=31536000, immutable',
+    });
+
+    await r2Client.send(command);
+    console.log(`Uploaded ${filePath} to ${r2Key}`);
+    return r2Key;
+  } catch (error) {
+    console.error(`Error uploading ${filePath}:`, error);
+    throw error;
+  }
+}
+
+// Função para percorrer diretório recursivamente
+async function processDirectory(directory) {
+  const items = fs.readdirSync(directory);
+
+  for (const item of items) {
+    const itemPath = path.join(directory, item);
+    const stats = fs.statSync(itemPath);
+
+    if (stats.isDirectory()) {
+      // Se for diretório, processa recursivamente
+      await processDirectory(itemPath);
+    } else if (stats.isFile() && isImageFile(itemPath)) {
+      // Se for arquivo de imagem, faz upload
+      await uploadFileToR2(itemPath);
+    }
+  }
+}
+
+// Função principal
+async function main() {
+  try {
+    console.log('Starting upload of original images to R2...');
+    await processDirectory(BASE_IMAGE_DIR);
+    console.log('Upload completed successfully!');
+  } catch (error) {
+    console.error('Error during upload process:', error);
+    process.exit(1);
+  }
+}
+
+// Executar o script
+main();
+
+
+src\admin\app.example.js
+
+const config = {
+  locales: [
+    // 'ar',
+    // 'fr',
+    // 'cs',
+    // 'de',
+    // 'dk',
+    // 'es',
+    // 'he',
+    // 'id',
+    // 'it',
+    // 'ja',
+    // 'ko',
+    // 'ms',
+    // 'nl',
+    // 'no',
+    // 'pl',
+    // 'pt-BR',
+    // 'pt',
+    // 'ru',
+    // 'sk',
+    // 'sv',
+    // 'th',
+    // 'tr',
+    // 'uk',
+    // 'vi',
+    // 'zh-Hans',
+    // 'zh',
+  ],
+};
+
+const bootstrap = (app) => {
+  console.log(app);
+};
+
+export default {
+  config,
+  bootstrap,
+};
+
+
+src\admin\app.js
+
+const config = {
+  locales: ['pt-BR'],
+  translations: {
+    'pt-BR': {
+      'app.components.LeftMenu.navbrand.title': 'SoftMeat Dashboard',
+      'Content Manager': 'Gerenciador de Conteúdo',
+      'app.components.LeftMenu.collection.title': 'Tipos de Coleção',
+      'Settings.permissions': 'Permissões',
+      'Settings.roles': 'Funções',
+      'Settings.users': 'Usuários',
+      'notification.success.saved': 'Salvo com sucesso',
+      'global.save': 'Salvar',
+      'global.delete': 'Deletar',
+      'global.back': 'Voltar',
+      'global.cancel': 'Cancelar',
+    },
+  },
+};
+
+
+src\admin\webpack.config.example.js
+
+'use strict';
+
+/* eslint-disable no-unused-vars */
+module.exports = (config, webpack) => {
+  // Note: we provide webpack above so you should not `require` it
+  // Perform customizations to webpack config
+  // Important: return the modified config
+  return config;
+};
+
+
+src\api\carrossel-treinamento\content-types\carrossel-treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "carrossel_treinamentos",
+  "info": {
+    "singularName": "carrossel-treinamento",
+    "pluralName": "carrossel-treinamentos",
+    "displayName": "Carrossel Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "DepoimentosTreinamentos": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
+
+
+src\api\carrossel-treinamento\controllers\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::carrossel-treinamento.carrossel-treinamento');
+
+
+src\api\carrossel-treinamento\routes\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::carrossel-treinamento.carrossel-treinamento');
+
+
+src\api\carrossel-treinamento\services\carrossel-treinamento.js
+
+'use strict';
+
+/**
+ * carrossel-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::carrossel-treinamento.carrossel-treinamento');
+
+
+src\api\cliente\content-types\cliente\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "clientes",
+  "info": {
+    "singularName": "cliente",
+    "pluralName": "clientes",
+    "displayName": "Clientes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    
+    "Descricao_Case": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
+
+
+src\api\cliente\controllers\cliente.js
+
+'use strict';
+
+/**
+ * cliente controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cliente.cliente');
+
+
+src\api\cliente\routes\cliente.js
+
+'use strict';
+
+/**
+ * cliente router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cliente.cliente');
+
+
+src\api\cliente\services\cliente.js
+
+'use strict';
+
+/**
+ * cliente service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cliente.cliente');
+
+
+src\api\configuracao-geral\content-types\configuracao-geral\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "configuracao_gerais",
+  "info": {
+    "singularName": "configuracao-geral",
+    "pluralName": "configuracao-gerais",
+    "displayName": "Configuracao Geral"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "LogoNavegacao": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\configuracao-geral\controllers\configuracao-geral.js
+
+'use strict';
+
+/**
+ * configuracao-geral controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::configuracao-geral.configuracao-geral');
+
+
+src\api\configuracao-geral\routes\configuracao-geral.js
+
+'use strict';
+
+/**
+ * configuracao-geral router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::configuracao-geral.configuracao-geral');
+
+
+src\api\configuracao-geral\services\configuracao-geral.js
+
+'use strict';
+
+/**
+ * configuracao-geral service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::configuracao-geral.configuracao-geral');
+
+
+src\api\cronograma\content-types\cronograma\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "cronogramas",
+  "info": {
+    "singularName": "cronograma",
+    "pluralName": "cronogramas",
+    "displayName": "Cronogramas",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Data": {
+      "type": "date",
+      "required": true
+    },
+    "Cidade": {
+      "type": "string",
+      "required": true,
+      "default": "Ribeirão Preto"
+    },
+    "Vagas_Totais": {
+      "type": "integer",
+      "required": true
+    },
+    "Vagas_Disponiveis": {
+      "type": "integer"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+
+
+
+    "treinamento": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treinamento.treinamento"
+    }
+  }
+}
+
+
+
+src\api\cronograma\controllers\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cronograma.cronograma');
+
+
+src\api\cronograma\routes\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cronograma.cronograma');
+
+
+src\api\cronograma\services\cronograma.js
+
+'use strict';
+
+/**
+ * cronograma service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cronograma.cronograma');
+
+
+src\api\curso-online\content-types\curso-online\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "cursos_online",
+  "info": {
+    "singularName": "curso-online",
+    "pluralName": "cursos-online",
+    "displayName": "Cursos Online"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome",
+      "required": true
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Básico",
+        "Intermediário",
+        "Avançado",
+        "Especialização"
+      ]
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Hotmart": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "Ordem_Exibicao": {
+      "type": "integer",
+      "default": 999
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_Title": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+src\api\curso-online\controllers\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::curso-online.curso-online');
+
+
+src\api\curso-online\routes\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::curso-online.curso-online');
+
+
+src\api\curso-online\services\curso-online.js
+
+'use strict';
+
+/**
+ * curso-online service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::curso-online.curso-online');
+
+
+src\api\hero-consultoria\content-types\hero-consultoria\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "hero_consultorias",
+  "info": {
+    "singularName": "hero-consultoria",
+    "pluralName": "hero-consultorias",
+    "displayName": "Hero Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Consultor": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\hero-consultoria\controllers\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::hero-consultoria.hero-consultoria');
+
+
+src\api\hero-consultoria\routes\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::hero-consultoria.hero-consultoria');
+
+
+src\api\hero-consultoria\services\hero-consultoria.js
+
+'use strict';
+
+/**
+ * hero-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::hero-consultoria.hero-consultoria');
+
+
+src\api\home-consultoria\content-types\home-consultoria\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_consultorias",
+  "info": {
+    "singularName": "home-consultoria",
+    "pluralName": "home-consultorias",
+    "displayName": "Home Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ConsultoriaPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\home-consultoria\controllers\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-consultoria.home-consultoria');
+
+
+src\api\home-consultoria\routes\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-consultoria.home-consultoria');
+
+
+src\api\home-consultoria\services\home-consultoria.js
+
+'use strict';
+
+/**
+ * home-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-consultoria.home-consultoria');
+
+
+src\api\home-hero\content-types\home-hero\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_heroes",
+  "info": {
+    "singularName": "home-hero",
+    "pluralName": "home-heroes",
+    "displayName": "Home Hero",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "PageHero": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
+
+
+src\api\home-hero\controllers\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-hero.home-hero');
+
+
+src\api\home-hero\routes\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-hero.home-hero');
+
+
+src\api\home-hero\services\home-hero.js
+
+'use strict';
+
+/**
+ * home-hero service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-hero.home-hero');
+
+
+src\api\home-treinamento\content-types\home-treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "home_treinamentos",
+  "info": {
+    "singularName": "home-treinamento",
+    "pluralName": "home-treinamentos",
+    "displayName": "Home Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "TreinamentoPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+src\api\home-treinamento\controllers\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-treinamento.home-treinamento');
+
+
+src\api\home-treinamento\routes\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-treinamento.home-treinamento');
+
+
+src\api\home-treinamento\services\home-treinamento.js
+
+'use strict';
+
+/**
+ * home-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-treinamento.home-treinamento');
+
+
+src\api\index-destaque\content-types\index-destaque\schema.json
+
+{
+  "kind": "singleType",
+  "collectionName": "index_destaques",
+  "info": {
+    "singularName": "index-destaque",
+    "pluralName": "index-destaques",
+    "displayName": "Index Destaques",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cursos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::curso-online.curso-online"
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "produtos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::produto.produto"
+    }
+  }
+}
+
+
+src\api\index-destaque\controllers\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::index-destaque.index-destaque');
+
+
+src\api\index-destaque\routes\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::index-destaque.index-destaque');
+
+
+src\api\index-destaque\services\index-destaque.js
+
+'use strict';
+
+/**
+ * index-destaque service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::index-destaque.index-destaque');
+
+
+src\api\produto\content-types\produto\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "produtos",
+  "info": {
+    "singularName": "produto",
+    "pluralName": "produtos",
+    "displayName": "Produtos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome"
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Maturados",
+        "Fermentados",
+        "Defumados",
+        "Cozidos",
+        "Frescais"
+      ],
+      "required": true
+    },
+    "Descricao_Catalogo": {
+      "type": "string",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Mercado_Livre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_File": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    },
+    "Disponivel": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}
+
+
+src\api\produto\controllers\produto.js
+
+'use strict';
+
+/**
+ * produto controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::produto.produto');
+
+
+src\api\produto\routes\produto.js
+
+'use strict';
+
+/**
+ * produto router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::produto.produto');
+
+
+src\api\produto\services\produto.js
+
+'use strict';
+
+/**
+ * produto service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::produto.produto');
+
+
+src\api\sobre-carrossel\content-types\sobre-carrossel\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "sobre_carrosseis",
+  "info": {
+    "singularName": "sobre-carrossel",
+    "pluralName": "sobre-carrosseis",
+    "displayName": "Sobre Carrossel"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Imagens": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
+
+
+src\api\sobre-carrossel\controllers\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::sobre-carrossel.sobre-carrossel');
+
+
+src\api\sobre-carrossel\routes\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::sobre-carrossel.sobre-carrossel');
+
+
+src\api\sobre-carrossel\services\sobre-carrossel.js
+
+'use strict';
+
+/**
+ * sobre-carrossel service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::sobre-carrossel.sobre-carrossel');
+
+
+src\api\testemunho\content-types\testemunho\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "testemunhos",
+  "info": {
+    "singularName": "testemunho",
+    "pluralName": "testemunhos",
+    "displayName": "Testemunhos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "Foto": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Depoimento": {
+      "type": "text"
+    },
+    "curso_realizado": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treinamento.treinamento"
+    },
+    "LinkedIn": {
+      "type": "string"
+    },
+    "Instagram": {
+      "type": "string"
+    },
+    "Facebook": {
+      "type": "string"
+    },
+    "Cargo": {
+      "type": "string"
+    },
+    "Empresa": {
+      "type": "string"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
+
+
+src\api\testemunho\controllers\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::testemunho.testemunho');
+
+
+src\api\testemunho\routes\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::testemunho.testemunho');
+
+
+src\api\testemunho\services\testemunho.js
+
+'use strict';
+
+/**
+ * testemunho service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::testemunho.testemunho');
+
+
+src\api\treinamento\content-types\treinamento\schema.json
+
+{
+  "kind": "collectionType",
+  "collectionName": "treinamentos",
+  "info": {
+    "singularName": "treinamento",
+    "pluralName": "treinamentos",
+    "displayName": "Treinamentos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Nivel": {
+      "type": "enumeration",
+      "enum": [
+        "Basico",
+        "Intermediario",
+        "Avancado"
+      ],
+      "required": true
+    },
+    "Duracao": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Topicos": {
+      "type": "richtext",
+      "required": true
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Ordem": {
+      "type": "integer"
+    },
+    "Meta_Title": {
+      "type": "text"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+src\api\treinamento\controllers\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::treinamento.treinamento');
+
+
+src\api\treinamento\routes\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::treinamento.treinamento');
+
+
+src\api\treinamento\services\treinamento.js
+
+'use strict';
+
+/**
+ * treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::treinamento.treinamento');
+
+
+src\extensions\upload\middlewares\imageProcessor.js
+
+// src/extensions/upload/middlewares/imageProcessor.js (versão simplificada para produção)
+'use strict';
+
+const sharp = require('sharp');
+const fs = require('fs');
+
+module.exports = (config, { strapi }) => {
+  return async (ctx, next) => {
+    // Em produção, logging detalhado
+    if (ctx.request.url.includes('/upload') && ctx.request.method === 'POST') {
+      const files = ctx.request.files?.files || [];
+
+      if (files.length > 0) {
+        for (const file of files) {
+          if (file && file.type && file.type.startsWith('image/')) {
+            try {
+              // Apenas verificar se a imagem é válida sem modificá-la
+              const metadata = await sharp(file.path).metadata();
+              console.log(`[PROD] Imagem verificada: ${file.name}, formato: ${metadata.format}, tamanho: ${file.size} bytes`);
+
+              // Verificar se o arquivo tem conteúdo
+              const stats = fs.statSync(file.path);
+              if (stats.size === 0) {
+                console.error(`[PROD ERROR] Arquivo vazio detectado: ${file.name}`);
+              } else {
+                console.log(`[PROD] Arquivo válido: ${file.name}, tamanho: ${stats.size} bytes`);
+              }
+            } catch (error) {
+              console.error(`[PROD ERROR] Falha ao verificar imagem ${file.name}: ${error.message}`);
+            }
+          }
+        }
+      }
+    }
+
+    // Prosseguir sem processar a imagem para evitar problemas
+    await next();
+  };
+};
+
+
+src\extensions\upload\services\format-url.js
+
+'use strict';
+
+/**
+ * Serviço aprimorado para formatação de URLs do R2
+ */
+
+/**
+ * Extrai o domínio de uma URL
+ * @param {string} url - URL para extrair o domínio
+ * @returns {string} Domínio da URL
+ */
+function extractDomain(url) {
+  if (!url) return '';
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao extrair domínio: ${error.message}`);
+    return '';
+  }
+}
+
+/**
+ * Formata URL de arquivo para usar o domínio público do R2
+ * @param {Object} file - Objeto de arquivo
+ * @returns {Object} Arquivo com URL atualizada
+ */
+function formatFileUrl(file) {
+  if (!file || !file.url) return file;
+
+  try {
+    // Obter configurações do R2
+    const publicDomain = process.env.CF_PUBLIC_ACCESS_URL;
+    const r2Endpoint = process.env.CF_ENDPOINT;
+    const bucket = process.env.CF_BUCKET;
+
+    if (!publicDomain) {
+      console.log(`[R2 URL] Domínio público não configurado, mantendo URL original: ${file.url}`);
+      return file;
+    }
+
+    // Log para depuração
+    console.log(`[R2 URL] Processando URL: ${file.url}`);
+
+    const currentDomain = extractDomain(file.url);
+    const publicUrlDomain = extractDomain(publicDomain);
+
+    // Se já estiver usando o domínio público, manter como está
+    if (currentDomain === publicUrlDomain) {
+      console.log(`[R2 URL] URL já usa domínio público, mantendo: ${file.url}`);
+      return file;
+    }
+
+    // Verificar se está usando o endpoint R2 direto
+    const isUsingR2Endpoint = r2Endpoint && file.url.includes(r2Endpoint);
+
+    // Se não estiver usando endpoint R2 nem domínio público, pode ser URL externa
+    if (!isUsingR2Endpoint && currentDomain !== publicUrlDomain) {
+      console.log(`[R2 URL] Possível URL externa, verificando estrutura: ${file.url}`);
+
+      // Verificar se é uma URL válida
+      try {
+        new URL(file.url);
+      } catch (e) {
+        console.log(`[R2 URL] URL inválida, mantendo como está: ${file.url}`);
+        return file;
+      }
+
+      // Se o domínio for diferente e não for do R2, é provavelmente uma URL externa
+      // Preserva-la se for válida
+      if (!currentDomain.includes('cloudflarestorage.com') &&
+          !currentDomain.includes('softmeat.com.br')) {
+        console.log(`[R2 URL] URL externa confirmada, mantendo: ${file.url}`);
+        return file;
+      }
+    }
+
+    // Se chegamos aqui, precisamos reformatar a URL para usar o domínio público
+
+    // Extrair o caminho relativo da URL
+    let relativePath = '';
+    try {
+      const urlObj = new URL(file.url);
+      relativePath = urlObj.pathname;
+
+      // Remover prefixo do bucket se presente
+      if (bucket && relativePath.includes(bucket)) {
+        const bucketIndex = relativePath.indexOf(bucket);
+        relativePath = relativePath.substring(bucketIndex + bucket.length);
+      }
+
+      // Remover barras iniciais
+      while (relativePath.startsWith('/')) {
+        relativePath = relativePath.substring(1);
+      }
+    } catch (error) {
+      console.error(`[R2 URL] Erro ao extrair caminho: ${error.message}`);
+      return file;
+    }
+
+    // Formar nova URL com domínio público
+    const formattedPublicDomain = publicDomain.endsWith('/')
+      ? publicDomain.slice(0, -1)
+      : publicDomain;
+
+    const newUrl = `${formattedPublicDomain}/${relativePath}`;
+
+    console.log(`[R2 URL] URL reformatada: ${file.url} -> ${newUrl}`);
+
+    // Criar cópia do arquivo com URL atualizada
+    return {
+      ...file,
+      url: newUrl
+    };
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao formatar URL: ${error.message}`);
+    // Em caso de erro, retornar arquivo original sem modificações
+    return file;
+  }
+}
+
+module.exports = {
+  formatFileUrl
+};
+
+
+src\extensions\upload\strapi-server.js
+
+'use strict';
+
+const axios = require('axios');
+const path = require('path');
+const fs = require('fs');
+const formatUrl = require('./services/format-url');
+
+module.exports = (plugin) => {
+  const originalUpload = plugin.services.upload.upload;
+
+  plugin.services.upload.upload = async (fileData, config) => {
+    // Verificar se o arquivo tem uma URL externa (do R2)
+    if (fileData && fileData.url) {
+      console.log(`[PROD] URL detectada: ${fileData.url}`);
+
+      // Se a URL for válida, apenas salvar a URL no banco de dados, sem reprocessar
+      if (isValidUrl(fileData.url)) {
+        // Apenas salvar a URL diretamente no _path
+        fileData = {
+          ...fileData,
+          _path: fileData.url, // Não fazemos upload, usamos a URL diretamente
+          size: 0,  // O tamanho é 0 porque não estamos fazendo upload
+        };
+
+        return fileData;  // Retornamos a URL sem alterar o arquivo
+      }
+    }
+
+    // Caso contrário, continuar com o upload normal (se não for uma URL externa)
+    return await originalUpload(fileData, config);
+  };
+
+  return plugin;
+};
+
+// Função para validar se a URL é válida
+function isValidUrl(url) {
+  try {
+    // Tenta construir a URL e verificar se ela é válida
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:';
+  } catch (error) {
+    console.error('[PROD] URL inválida:', url);
+    return false;
+  }
+}
+
+
+src\index.js
+
+// src/index.js - Adicione no início da função register ou bootstrap
+module.exports = {
+  /**
+   * An asynchronous register function that runs before
+   * your application is initialized.
+   *
+   * This gives you an opportunity to extend code.
+   */
+  register(/*{ strapi }*/) {
+    console.log('============ DEBUG ENVIRONMENT VARIABLES ============');
+    console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
+    console.log('R2_BUCKET:', process.env.R2_BUCKET);
+    console.log('R2_CUSTOM_DOMAIN:', process.env.R2_CUSTOM_DOMAIN);
+  },
+
+  /**
+   * An asynchronous bootstrap function that runs before
+   * your application gets started.
+   *
+   * This gives you an opportunity to set up your data model,
+   * run jobs, or perform some special logic.
+   */
+  bootstrap(/*{ strapi }*/) {},
+};
+
+
+src\utils\r2.js
+
+// src/utils/r2.js - versão melhorada
+'use strict';
+
+/**
+ * Utilitários para manipulação de URLs do Cloudflare R2
+ */
+
+/**
+ * Formata um caminho de arquivo para uma URL R2 completa
+ * @param {string} path - Caminho relativo do arquivo no bucket
+ * @returns {string} URL formatada
+ */
+const formatR2Url = (path) => {
+  if (!path) return '';
+
+  // Sanitizar o caminho
+  const cleanPath = String(path).startsWith('/') ? path.substring(1) : path;
+
+  // Usar domínio personalizado se disponível
+  if (process.env.CF_PUBLIC_ACCESS_URL) {
+    const domain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
+      ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
+      : process.env.CF_PUBLIC_ACCESS_URL;
+    return `${domain}/${cleanPath}`;
+  }
+
+  // Fallback para URL direta do R2
+  if (process.env.CF_ENDPOINT && process.env.CF_BUCKET) {
+    const endpoint = process.env.CF_ENDPOINT.endsWith('/')
+      ? process.env.CF_ENDPOINT.slice(0, -1)
+      : process.env.CF_ENDPOINT;
+    return `${endpoint}/${process.env.CF_BUCKET}/${cleanPath}`;
+  }
+
+  // Se tudo falhar, retornar o caminho como está
+  console.warn('[R2 URL Formatter] Configuração R2 incompleta, usando caminho original');
+  return path;
+};
+
+module.exports = {
+  formatR2Url
+};
+
+
