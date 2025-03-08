@@ -1,46 +1,43 @@
+'use strict';
+
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
+const stream = require('stream');
+const formatUrl = require('./services/format-url');
 
 module.exports = (plugin) => {
   const originalUpload = plugin.services.upload.upload;
 
   plugin.services.upload.upload = async (fileData, config) => {
-    if (fileData && fileData.url && !fileData._path) {
-      console.log(`[PROD UPLOAD] Detectado upload de URL externa: ${fileData.url}`);
+    // Verificar se o arquivo tem uma URL externa
+    if (fileData && fileData.url) {
+      console.log(`[PROD] URL detectada: ${fileData.url}`);
 
-      // Baixar o arquivo da URL externa
-      try {
-        const response = await axios.get(fileData.url, { responseType: 'arraybuffer' });
+      // Verificar se a URL é válida e já existe no R2
+      if (isValidUrl(fileData.url)) {
+        // Se a URL for válida, usar a URL diretamente
+        console.log(`[PROD] Usando URL existente no R2: ${fileData.url}`);
 
-        // Verificar se a resposta contém dados
-        if (!response.data) {
-          throw new Error("Imagem não encontrada ou inválida.");
-        }
-
-        // Criar um arquivo temporário para o arquivo baixado
-        const tempFilePath = path.join(__dirname, 'temp', `${fileData.name}`);
-        fs.writeFileSync(tempFilePath, response.data);
-
-        // Atualizar o fileData com o arquivo temporário
         fileData = {
           ...fileData,
-          _path: tempFilePath,
-          size: fs.statSync(tempFilePath).size,
+          _path: fileData.url, // Use a URL diretamente
+          size: 0,  // Tamanho pode ser ajustado conforme necessário
         };
-      } catch (error) {
-        console.error(`[PROD ERROR] Erro ao baixar a imagem da URL ${fileData.url}: ${error.message}`);
-        throw error;
+
+        // Retornar o fileData com a URL, sem fazer o upload
+        return fileData;
       }
     }
 
-    // Continuar com o upload original
+    // Caso contrário, continuar com o processo de upload do arquivo
     try {
       const result = await originalUpload(fileData, config);
       console.log(`[PROD UPLOAD] Upload concluído: ${fileData?.name || 'Unknown'}`);
 
+      // Garantir que as URLs de upload sejam formatadas corretamente
       if (Array.isArray(result)) {
         const formattedResults = result.map(file => formatUrl.formatFileUrl(file));
         console.log(`[PROD UPLOAD] URLs formatadas para ${formattedResults.length} arquivos`);
@@ -64,3 +61,15 @@ module.exports = (plugin) => {
 
   return plugin;
 };
+
+// Função para validar se a URL é válida
+function isValidUrl(url) {
+  try {
+    // Tenta construir a URL e verificar se ela é válida
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:';
+  } catch (error) {
+    console.error('[PROD] URL inválida:', url);
+    return false;
+  }
+}

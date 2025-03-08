@@ -1,4 +1,6 @@
 // config/plugins.js
+const path = require('path');
+
 module.exports = ({ env }) => ({
   'users-permissions': {
     config: {
@@ -17,7 +19,7 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
         region: env("CF_REGION", env('R2_REGION', 'auto')),
-        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
+        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
       },
       actionOptions: {
         upload: {
@@ -90,17 +92,17 @@ module.exports = ({ env }) => ({
             const fileName = `${truncatedName}-${shortHash}.${extension}`;
 
             // Caminho completo no formato categoria/nome-arquivo
-            const path = `${category}/${fileName}`;
+            const finalPath = `${category}/${fileName}`;
 
             if (env('DEBUG') === 'true') {
               console.log('[Upload Path]', {
                 original: file.name,
                 category: category,
-                path: path
+                path: finalPath
               });
             }
 
-            return path;
+            return finalPath;
           }
         },
         uploadStream: {
