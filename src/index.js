@@ -1,5 +1,4 @@
-'use strict';
-
+// src/index.js - Adicione no início da função register ou bootstrap
 module.exports = {
   /**
    * An asynchronous register function that runs before
@@ -7,7 +6,13 @@ module.exports = {
    *
    * This gives you an opportunity to extend code.
    */
-  register(/*{ strapi }*/) {},
+  register(/*{ strapi }*/) {
+    console.log('============ DEBUG ENVIRONMENT VARIABLES ============');
+    console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
+    console.log('R2_BUCKET:', process.env.R2_BUCKET);
+    console.log('R2_CUSTOM_DOMAIN:', process.env.R2_CUSTOM_DOMAIN);
+    console.log('CLOUDINARY_NAME:', process.env.CLOUDINARY_NAME);
+  },
 
   /**
    * An asynchronous bootstrap function that runs before

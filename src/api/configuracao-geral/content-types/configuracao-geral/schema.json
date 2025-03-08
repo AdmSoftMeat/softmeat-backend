@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "configuracao_gerais",
+  "info": {
+    "singularName": "configuracao-geral",
+    "pluralName": "configuracao-gerais",
+    "displayName": "Configuracao Geral"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "LogoNavegacao": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}

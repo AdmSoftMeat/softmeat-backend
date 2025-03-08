@@ -1,0 +1,66 @@
+'use strict';
+
+/**
+* Utilitário para manipulação de URLs do Cloudflare R2
+*/
+
+const formatR2Url = (path) => {
+ const customDomain = process.env.R2_CUSTOM_DOMAIN;
+ console.log('Formatando URL do R2:', { path, customDomain });
+
+ // Se tiver um domínio personalizado configurado, use-o
+ if (customDomain) {
+   // Certificar que o path não começa com barra para concatenar corretamente
+   const formattedPath = path.startsWith('/') ? path.substring(1) : path;
+   const finalUrl = `${customDomain}/${formattedPath}`;
+   console.log('URL formatada:', finalUrl);
+   return finalUrl;
+ }
+
+ // Caso contrário, use a URL direta do R2
+ const endpoint = process.env.R2_ENDPOINT;
+ const bucket = process.env.R2_BUCKET;
+ const fallbackUrl = `${endpoint}/${bucket}/${path}`;
+ console.log('URL direta do R2:', fallbackUrl);
+ return fallbackUrl;
+};
+
+const getResourceType = (mimeType) => {
+ if (!mimeType) return 'unknown';
+
+ if (mimeType.startsWith('image/')) return 'images';
+ if (mimeType.startsWith('video/')) return 'videos';
+ if (mimeType.startsWith('audio/')) return 'audios';
+
+ return 'files';
+};
+
+const generateFileName = (file) => {
+ const extension = file.ext.startsWith('.') ? file.ext.substring(1) : file.ext;
+ // Gera um nome de arquivo baseado no hash + timestamp para evitar colisões
+ const timestamp = Date.now();
+ return `${file.hash}-${timestamp}.${extension}`;
+};
+
+const getResourceFolder = (resourceType, options = {}) => {
+ const { category = '', subfolder = '' } = options;
+
+ let path = resourceType;
+
+ if (category) {
+   path += `/${category}`;
+ }
+
+ if (subfolder) {
+   path += `/${subfolder}`;
+ }
+
+ return path;
+};
+
+module.exports = {
+ formatR2Url,
+ getResourceType,
+ generateFileName,
+ getResourceFolder
+};

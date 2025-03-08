@@ -1,4 +1,4 @@
-module.exports = [
+module.exports = ({ env }) => [
   'strapi::errors',
   {
     name: 'strapi::security',
@@ -6,28 +6,38 @@ module.exports = [
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'connect-src': ["'self'", 'https:', 'http:', 'res.cloudinary.com'],
+          'connect-src': [
+            "'self'",
+            'https:',
+            'http:',
+            '*.r2.cloudflarestorage.com',
+            'images.softmeat.com.br',
+            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, "")
+          ],
           'img-src': [
             "'self'",
             'data:',
             'blob:',
             'dl.airtable.com',
-            '*.cloudinary.com',
-            'res.cloudinary.com'
+            '*.r2.cloudflarestorage.com',
+            'images.softmeat.com.br',
+            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, ""),
+            'market-assets.strapi.io'
           ],
           'media-src': [
             "'self'",
             'data:',
             'blob:',
             'dl.airtable.com',
-            '*.cloudinary.com',
-            'res.cloudinary.com'
+            '*.r2.cloudflarestorage.com',
+            'images.softmeat.com.br',
+            env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br").replace(/^https?:\/\//, ""),
+            'market-assets.strapi.io'
           ],
           'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
           'frame-ancestors': null,
           upgradeInsecureRequests: null,
         },
-        'default-src': ["'self'", '*.cloudinary.com', 'res.cloudinary.com'],
       },
       frameguard: false,
     },
@@ -45,7 +55,9 @@ module.exports = [
         'https://www.softmeat.com.br',
         'https://softmeat-backend-production.up.railway.app',
         'https://softmeat.pages.dev',
-        'https://res.cloudinary.com'
+        'https://images.softmeat.com.br',
+        env("CF_PUBLIC_ACCESS_URL", "https://images.softmeat.com.br"),
+        'https://*.r2.cloudflarestorage.com'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       keepHeaderOnError: true,
