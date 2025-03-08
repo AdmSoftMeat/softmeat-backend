@@ -11,7 +11,8 @@ module.exports = ({ env }) => [
             'https:',
             'http:',
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
-            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, "")
+            env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
+            '*.r2.cloudflarestorage.com'
           ],
           'img-src': [
             "'self'",
@@ -20,7 +21,11 @@ module.exports = ({ env }) => [
             'dl.airtable.com',
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
             env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
-            'market-assets.strapi.io'
+            '*.r2.cloudflarestorage.com',
+            '*.cloudflare.com',
+            '*.softmeat.com.br',
+            'market-assets.strapi.io',
+            '*'  // Temporariamente permissivo durante testes
           ],
           'media-src': [
             "'self'",
@@ -29,7 +34,11 @@ module.exports = ({ env }) => [
             'dl.airtable.com',
             env("CF_ENDPOINT", "").replace(/^https?:\/\//, ""),
             env("CF_PUBLIC_ACCESS_URL", "").replace(/^https?:\/\//, ""),
-            'market-assets.strapi.io'
+            '*.r2.cloudflarestorage.com',
+            '*.cloudflare.com',
+            '*.softmeat.com.br',
+            'market-assets.strapi.io',
+            '*'  // Temporariamente permissivo durante testes
           ],
           'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
           'frame-ancestors': null,

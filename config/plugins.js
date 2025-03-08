@@ -59,30 +59,45 @@ module.exports = ({ env }) => ({
                 'home-hero': 'index',
                 'index-destaque': 'index',
                 'sobre-carrossel': 'institucional',
-                'carrossel-treinamento': 'treinamentos',
+                'carrossel-treinamento': 'testemunhos',
                 'treinamento': 'treinamentos',
                 'cronograma': 'treinamentos',
-                'home-treinamento': 'treinamentos'
+                'home-treinamento': 'treinamentos',
+                'configuracao-geral': 'logo'
               };
 
               // Obter categoria do mapeamento ou usar 'geral' como fallback
               category = categoryMap[relatedType] || 'geral';
             }
 
-            // Sanitizar a categoria para garantir compatibilidade com URLs
+            // Sanitizar a categoria
             category = sanitizeString(category);
 
-            // Gerar nome de arquivo único
+            // Gerar nome de arquivo sem caracteres especiais mas mantendo a extensão
+            const nameWithoutExt = path.basename(file.name, file.ext);
+            const sanitizedName = sanitizeString(nameWithoutExt);
             const extension = file.ext.startsWith('.') ? file.ext.substring(1) : file.ext;
-            const timestamp = Date.now();
-            const fileName = `${file.hash}-${timestamp}.${extension}`;
 
-            // Gerar o caminho completo
-            const path = `${resourceType}/${category}/${fileName}`;
+            // Evitar nomes muito longos, limitando a 30 caracteres + extensão
+            const truncatedName = sanitizedName.length > 30
+              ? sanitizedName.substring(0, 30)
+              : sanitizedName;
 
-            // Log para diagnóstico
+            // Usar apenas o hash encurtado para garantir unicidade
+            const shortHash = file.hash.substring(0, 8);
+
+            // Gerar o nome final do arquivo
+            const fileName = `${truncatedName}-${shortHash}.${extension}`;
+
+            // Caminho completo no formato categoria/nome-arquivo
+            const path = `${category}/${fileName}`;
+
             if (env('DEBUG') === 'true') {
-              console.log('Upload path:', path);
+              console.log('[Upload Path]', {
+                original: file.name,
+                category: category,
+                path: path
+              });
             }
 
             return path;
