@@ -4,7 +4,7 @@ module.exports = ({ env }) => ({
   connection: {
     client: 'sqlite',
     connection: {
-      filename: env('DATABASE_FILENAME', '.tmp/data.db'),
+      filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'), // Modifique para um local persistente
       useNullAsDefault: true,
     },
     debug: false,
@@ -15,14 +15,12 @@ module.exports = ({ env }) => ({
       createTimeoutMillis: 300000,
       destroyTimeoutMillis: 300000,
       idleTimeoutMillis: 300000,
-      // Usando sintaxe correta do Knex para SQLite
       afterCreate: (conn, cb) => {
         conn.pragma('journal_mode = WAL');
         conn.pragma('synchronous = NORMAL');
         cb(null, conn);
       }
     },
-    useNullAsDefault: true,
     migrations: {
       directory: path.join(process.cwd(), 'database/migrations')
     }
