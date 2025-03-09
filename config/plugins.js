@@ -9,32 +9,25 @@ module.exports = ({ env }) => ({
   },
   upload: {
     config: {
-      provider: "strapi-provider-cloudflare-r2",
+      provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
-        accessKeyId: env("CF_ACCESS_KEY_ID", env('R2_ACCESS_KEY')),
-        secretAccessKey: env("CF_ACCESS_SECRET", env('R2_SECRET_KEY')),
-        endpoint: env("CF_ENDPOINT", env('R2_ENDPOINT')),
+        accessKeyId: env('R2_ACCESS_KEY'),
+        secretAccessKey: env('R2_SECRET_KEY'),
+        region: env('R2_REGION', 'auto'),
+        endpoint: env('R2_ENDPOINT'),
         params: {
-          Bucket: env("CF_BUCKET", env('R2_BUCKET')),
+          Bucket: env('R2_BUCKET', 'softmeat-storage'),
           ACL: 'public-read',
+          CacheControl: 'public, max-age=31536000, immutable',
         },
-        region: env("CF_REGION", env('R2_REGION', 'auto')),
-        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
-        // Adicionar configurações para reconhecer URLs externas
-        useExistingUrl: true,
-        r2Patterns: [
-          'images.softmeat.com.br',
-          '.r2.cloudflarestorage.com',
-          env("CF_PUBLIC_ACCESS_URL", ''),
-          env("R2_CUSTOM_DOMAIN", '')
-        ].filter(Boolean),
+        forcePathStyle: true,
+        customDomain: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br'),
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // Manter a lógica existente para novos uploads
-            // Função para sanitizar strings (remover acentos e caracteres especiais)
+            // Função para sanitizar strings
             const sanitizeString = (str) => {
               if (!str) return '';
               return str
@@ -50,10 +43,7 @@ module.exports = ({ env }) => ({
               return file.url;
             }
 
-            // O resto da sua lógica existente para novos uploads...
-            // (manter o código existente)
-
-            // Detectar o tipo de recurso (imagem, vídeo, etc.)
+            // Detectar o tipo de recurso
             const resourceType = file.mime?.startsWith('image/') ? 'images' :
                                file.mime?.startsWith('video/') ? 'videos' :
                                file.mime?.startsWith('audio/') ? 'audios' : 'files';
@@ -128,5 +118,4 @@ module.exports = ({ env }) => ({
       },
     },
   },
-  // Adicione aqui outros plugins conforme necessário
 });
