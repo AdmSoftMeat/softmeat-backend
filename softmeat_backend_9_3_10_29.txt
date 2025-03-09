@@ -102,6 +102,7 @@
 │   │   ├── upload
 │   │   │   ├── middlewares
 │   │   │   ├── services
+│   ├── middlewares
 │   ├── utils
 ├── .env
 ├── package.json
@@ -123,13 +124,13 @@ URL=http://localhost:1337
 PUBLIC_URL=http://localhost:1337
 WEBHOOKS_POPULATE_RELATIONS=false
 
-# Configurações Cloudflare R2
-CF_ACCESS_KEY_ID=ac7dbce38cf86a9df0239e0d1973aa6c
-CF_ACCESS_SECRET=79f513ca8cb364f64b2ea1a4a042b925e83f3cdd8aacb21f0f2967742fddc189
-CF_ENDPOINT=https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com
-CF_BUCKET=softmeat-dev
-CF_REGION=auto
-CF_PUBLIC_ACCESS_URL=https://images.softmeat.com.br
+# R2 Configuration
+R2_ACCESS_KEY=c5a5705f56ec2c7d0198c9b712eda3c4
+R2_SECRET_KEY=f01299d076461e261024d2778df30f9e23e6b74674633efa918798a58b806d33
+R2_ENDPOINT=https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com
+R2_BUCKET=softmeat-storage
+R2_REGION=auto
+R2_PUBLIC_URL=https://storage.softmeat.com.br
 
 
 config\admin.js
@@ -315,9 +316,21 @@ module.exports = ({ env }) => [
     },
   },
   {
+    name: 'strapi::body',
+    config: {
+      jsonLimit: '10mb',
+      formLimit: '50mb',
+      textLimit: '10mb',
+      formidable: {
+        maxFileSize: 50 * 1024 * 1024, // 50MB
+        multiples: true,
+        keepExtensions: true
+      },
+    },
+  },
+  {
     name: 'strapi::cors',
     config: {
-      enabled: true,
       headers: '*',
       origin: [
         'http://localhost:1337',
@@ -337,6 +350,11 @@ module.exports = ({ env }) => [
       exposedHeaders: ['Content-Range', 'X-Content-Range']
     },
   },
+  // Remover temporariamente o middleware personalizado
+  // {
+  //   name: 'global::imageR2Handler',
+  //   config: {}
+  // },
   'strapi::poweredBy',
   'strapi::logger',
   'strapi::query',
@@ -350,6 +368,8 @@ module.exports = ({ env }) => [
 config\plugins.js
 
 // config/plugins.js
+const path = require('path');
+
 module.exports = ({ env }) => ({
   'users-permissions': {
     config: {
@@ -358,24 +378,23 @@ module.exports = ({ env }) => ({
   },
   upload: {
     config: {
-      provider: "strapi-provider-cloudflare-r2",
+      provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
-        accessKeyId: env("CF_ACCESS_KEY_ID", env('R2_ACCESS_KEY')),
-        secretAccessKey: env("CF_ACCESS_SECRET", env('R2_SECRET_KEY')),
-        endpoint: env("CF_ENDPOINT", env('R2_ENDPOINT')),
+        accessKeyId: env('R2_ACCESS_KEY'),
+        secretAccessKey: env('R2_SECRET_KEY'),
+        region: env('R2_REGION', 'auto'),
+        endpoint: env('R2_ENDPOINT'),
         params: {
-          Bucket: env("CF_BUCKET", env('R2_BUCKET')),
+          Bucket: env('R2_BUCKET'),
           ACL: 'public-read',
         },
-        region: env("CF_REGION", env('R2_REGION', 'auto')),
-        cloudflarePublicAccessUrl: env("CF_PUBLIC_ACCESS_URL", env('R2_CUSTOM_DOMAIN', 'https://images.softmeat.com.br')),
+        customDomain: env('R2_PUBLIC_URL')
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
-          // Função para personalizar o caminho de upload
           customPath: (file) => {
-            // Função para sanitizar strings (remover acentos e caracteres especiais)
+            // Função para sanitizar strings
             const sanitizeString = (str) => {
               if (!str) return '';
               return str
@@ -386,17 +405,22 @@ module.exports = ({ env }) => ({
                 .toLowerCase();                   // Converte para minúsculas
             };
 
-            // Detectar o tipo de recurso (imagem, vídeo, etc.)
-            const resourceType = file.mime.startsWith('image/') ? 'images' :
-                               file.mime.startsWith('video/') ? 'videos' :
-                               file.mime.startsWith('audio/') ? 'audios' : 'files';
+            // Se for uma URL externa, retornar a URL completa sem modificação
+            if (file.isExternalUrl && file.url) {
+              return file.url;
+            }
+
+            // Detectar o tipo de recurso
+            const resourceType = file.mime?.startsWith('image/') ? 'images' :
+                               file.mime?.startsWith('video/') ? 'videos' :
+                               file.mime?.startsWith('audio/') ? 'audios' : 'files';
 
             // Determinar a categoria com base no contexto do upload
             let category = 'geral';
 
-            // Tenta determinar a categoria baseado no tipo de conteúdo relacionado
+            // Tentar determinar a categoria baseado no tipo de conteúdo relacionado
             if (file.related) {
-              // Extrai o modelo de relacionamento
+              // Extrair o modelo de relacionamento
               const relatedType = file.related.split('.')[0];
 
               // Mapeamento simplificado de categorias
@@ -434,24 +458,24 @@ module.exports = ({ env }) => ({
               ? sanitizedName.substring(0, 30)
               : sanitizedName;
 
-            // Usar apenas o hash encurtado para garantir unicidade
-            const shortHash = file.hash.substring(0, 8);
+            // Garantir que o hash seja único e esteja presente
+            const shortHash = (file.hash || Date.now().toString()).substring(0, 8);
 
             // Gerar o nome final do arquivo
             const fileName = `${truncatedName}-${shortHash}.${extension}`;
 
             // Caminho completo no formato categoria/nome-arquivo
-            const path = `${category}/${fileName}`;
+            const finalPath = `${category}/${fileName}`;
 
             if (env('DEBUG') === 'true') {
               console.log('[Upload Path]', {
                 original: file.name,
                 category: category,
-                path: path
+                path: finalPath
               });
             }
 
-            return path;
+            return finalPath;
           }
         },
         uploadStream: {
@@ -470,19 +494,11 @@ module.exports = ({ env }) => ({
   host: env('HOST', '0.0.0.0'),
   port: env.int('PORT', 1337),
   url: env('PUBLIC_URL', 'https://softmeat-backend-production.up.railway.app'),
-  admin: {
-    auth: {
-      secret: env('ADMIN_JWT_SECRET'),
-    },
-    url: '/admin',
-    autoOpen: false,
-  },
   app: {
     keys: env.array('APP_KEYS'),
   },
-  webhooks: {
-    populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
-  },
+  // Limite de upload
+  maxUploadLimit: '50mb',
 });
 
 
@@ -526,6 +542,263 @@ package.json
     "mime-types": "^2.1.35"
   }
 }
+
+
+scripts\check-r2-url.js
+
+// scripts/check-r2-url.js
+require('dotenv').config();
+
+// Função para verificar se uma URL é do R2
+function isR2Url(url) {
+  const r2Patterns = [
+    'images.softmeat.com.br',
+    '.r2.cloudflarestorage.com',
+    process.env.CF_PUBLIC_ACCESS_URL,
+    process.env.R2_CUSTOM_DOMAIN,
+    'softmeat-dev',
+    'softmeat-prod'
+  ].filter(Boolean);
+
+  return r2Patterns.some(pattern => pattern && url.includes(pattern));
+}
+
+// Função para normalizar URL R2
+function normalizeR2Url(url) {
+  if (!url || !isR2Url(url)) return url;
+
+  const publicUrl = process.env.CF_PUBLIC_ACCESS_URL || 'https://images.softmeat.com.br';
+
+  // Já usa o domínio público?
+  if (url.startsWith(publicUrl)) {
+    return url;
+  }
+
+  // Extrair caminho relativo
+  let relativePath = '';
+
+  if (url.includes('.r2.cloudflarestorage.com')) {
+    const match = url.match(/.*\/([^/]+)\/(.*)$/);
+    if (match && match[2]) {
+      relativePath = match[2];
+    }
+  }
+
+  if (relativePath) {
+    const cleanPublicUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
+    return `${cleanPublicUrl}/${relativePath}`;
+  }
+
+  return url;
+}
+
+// URLs de teste
+const testUrls = [
+  'https://images.softmeat.com.br/produtos/bacon-12345.jpg',
+  'https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com/softmeat-dev/produtos/salame-67890.png',
+  'https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com/softmeat-prod/images/test.jpg',
+  'https://example.com/imagem.jpg'
+];
+
+// Testar cada URL
+console.log('=== TESTE DE DETECÇÃO E NORMALIZAÇÃO DE URLS R2 ===');
+console.log('Variáveis de ambiente carregadas:');
+console.log('CF_PUBLIC_ACCESS_URL:', process.env.CF_PUBLIC_ACCESS_URL);
+console.log('CF_ENDPOINT:', process.env.CF_ENDPOINT);
+console.log('CF_BUCKET:', process.env.CF_BUCKET);
+
+testUrls.forEach(url => {
+  const isR2 = isR2Url(url);
+  const normalized = normalizeR2Url(url);
+
+  console.log(`\nURL: ${url}`);
+  console.log(`É URL do R2? ${isR2 ? 'SIM' : 'NÃO'}`);
+
+  if (isR2) {
+    console.log(`URL normalizada: ${normalized}`);
+    console.log(`Mudou? ${url !== normalized ? 'SIM' : 'NÃO'}`);
+  }
+});
+
+// Executar com: node scripts/check-r2-url.js
+
+
+scripts\checkExternalUrl.js
+
+'use strict';
+
+// Middleware que verifica se uma URL é externa e evita o processamento desnecessário
+module.exports = (config, { strapi }) => {
+  return async (ctx, next) => {
+    // Apenas interceptar uploads
+    if (ctx.request.url.includes('/upload') && ctx.request.method === 'POST') {
+      const fileData = ctx.request.body.fileInfo;
+
+      // Verificar se é uma URL externa do R2
+      if (fileData && fileData.url) {
+        const r2Patterns = [
+          'images.softmeat.com.br',
+          '.r2.cloudflarestorage.com',
+          process.env.CF_PUBLIC_ACCESS_URL,
+          process.env.R2_CUSTOM_DOMAIN
+        ].filter(Boolean);
+
+        const isR2Url = r2Patterns.some(pattern =>
+          fileData.url && fileData.url.includes(pattern)
+        );
+
+        if (isR2Url) {
+          // Marcar como URL externa
+          ctx.request.body.fileInfo.isExternalUrl = true;
+          console.log(`[R2 Middleware] URL R2 detectada: ${fileData.url}`);
+        }
+      }
+    }
+
+    await next();
+  };
+};
+
+
+scripts\copy-r2-buckets.js
+
+const dotenv = require('dotenv');
+const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
+
+dotenv.config();
+
+// Configurações
+const SOURCE_BUCKET = 'softmeat-dev';
+const TARGET_BUCKET = 'softmeat-prod';
+const DRY_RUN = true; // Definir como false para realmente copiar os objetos
+
+// Log inicial
+console.log('=== CÓPIA DE OBJETOS ENTRE BUCKETS R2 ===');
+console.log(`De: ${SOURCE_BUCKET}`);
+console.log(`Para: ${TARGET_BUCKET}`);
+console.log(`Modo: ${DRY_RUN ? 'Simulação (dry run)' : 'Cópia real'}`);
+
+// Verificar credenciais
+if (!process.env.CF_ACCESS_KEY_ID || !process.env.CF_ACCESS_SECRET) {
+  console.error('Erro: Credenciais R2 não configuradas!');
+  process.exit(1);
+}
+
+// Criar cliente R2
+const r2Client = new S3Client({
+  region: process.env.CF_REGION || 'auto',
+  endpoint: process.env.CF_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.CF_ACCESS_KEY_ID,
+    secretAccessKey: process.env.CF_ACCESS_SECRET,
+  }
+});
+
+// Função para copiar objetos entre buckets
+async function copyBucketObjects() {
+  try {
+    console.log('\nListando objetos do bucket de origem...');
+
+    // Listar objetos no bucket de origem
+    const listCommand = new ListObjectsV2Command({
+      Bucket: SOURCE_BUCKET
+    });
+
+    const sourceObjects = await r2Client.send(listCommand);
+
+    if (!sourceObjects.Contents || sourceObjects.Contents.length === 0) {
+      console.log('Nenhum objeto encontrado no bucket de origem.');
+      return;
+    }
+
+    console.log(`Encontrados ${sourceObjects.Contents.length} objetos para copiar.`);
+
+    // Listar objetos no bucket de destino para verificar quais já existem
+    console.log('Verificando objetos existentes no bucket de destino...');
+
+    const targetListCommand = new ListObjectsV2Command({
+      Bucket: TARGET_BUCKET
+    });
+
+    let targetObjects;
+    try {
+      targetObjects = await r2Client.send(targetListCommand);
+    } catch (error) {
+      console.error('Erro ao listar objetos do bucket de destino:', error.message);
+      targetObjects = { Contents: [] };
+    }
+
+    // Criar conjunto de chaves existentes no destino
+    const existingKeys = new Set();
+    if (targetObjects.Contents) {
+      targetObjects.Contents.forEach(obj => existingKeys.add(obj.Key));
+    }
+
+    console.log(`O bucket de destino já possui ${existingKeys.size} objetos.`);
+
+    // Copiar objetos
+    let copiedCount = 0;
+    let skippedCount = 0;
+    let errorCount = 0;
+
+    for (const obj of sourceObjects.Contents) {
+      // Verificar se o objeto já existe no destino
+      if (existingKeys.has(obj.Key)) {
+        console.log(`Pulando objeto existente: ${obj.Key}`);
+        skippedCount++;
+        continue;
+      }
+
+      try {
+        // Obter o objeto do bucket de origem
+        const getCommand = new GetObjectCommand({
+          Bucket: SOURCE_BUCKET,
+          Key: obj.Key
+        });
+
+        const sourceObject = await r2Client.send(getCommand);
+
+        if (!DRY_RUN) {
+          // Copiar para o bucket de destino
+          const putCommand = new PutObjectCommand({
+            Bucket: TARGET_BUCKET,
+            Key: obj.Key,
+            Body: sourceObject.Body,
+            ContentType: sourceObject.ContentType,
+            ContentLength: sourceObject.ContentLength,
+            ACL: 'public-read',
+            CacheControl: 'public, max-age=31536000, immutable'
+          });
+
+          await r2Client.send(putCommand);
+        }
+
+        console.log(`${DRY_RUN ? '[Simulação] ' : ''}Copiado: ${obj.Key} (${obj.Size} bytes)`);
+        copiedCount++;
+      } catch (error) {
+        console.error(`Erro ao copiar ${obj.Key}:`, error.message);
+        errorCount++;
+      }
+    }
+
+    // Resumo final
+    console.log('\n=== RESUMO DA OPERAÇÃO ===');
+    console.log(`Total de objetos: ${sourceObjects.Contents.length}`);
+    console.log(`Copiados: ${copiedCount}`);
+    console.log(`Pulados (já existentes): ${skippedCount}`);
+    console.log(`Erros: ${errorCount}`);
+
+    if (DRY_RUN) {
+      console.log('\nEste foi apenas um modo de simulação. Para realizar a cópia real, defina DRY_RUN como false.');
+    }
+
+  } catch (error) {
+    console.error('Erro durante a cópia de objetos:', error);
+  }
+}
+
+// Executar
+copyBucketObjects().catch(console.error);
 
 
 scripts\diagnose-r2.js
@@ -749,89 +1022,206 @@ diagnoseR2Images().catch(error => {
 
 scripts\fix-r2-urls.js
 
-// scripts/fix-r2-urls.js
+// scripts/fix-r2-urls-improved.js
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
+// Cores para console
+const colors = {
+  reset: '\x1b[0m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m'
+};
+
 async function fixImageUrls(strapi) {
-  console.log('=== CORREÇÃO DE URLs DE IMAGENS EM PRODUÇÃO ===');
+  console.log(`${colors.magenta}=== CORREÇÃO AVANÇADA DE URLs DE IMAGENS ===\n${colors.reset}`);
+
+  // Verificar configurações
+  console.log(`${colors.blue}Verificando configurações R2:${colors.reset}`);
+  const r2Config = {
+    publicUrl: process.env.CF_PUBLIC_ACCESS_URL,
+    endpoint: process.env.CF_ENDPOINT,
+    bucket: process.env.CF_BUCKET,
+    legacyUrl: process.env.R2_CUSTOM_DOMAIN,
+  };
+
+  // Validar configurações
+  for (const [key, value] of Object.entries(r2Config)) {
+    if (value) {
+      console.log(`  ✅ ${key}: ${value}`);
+    } else {
+      console.log(`  ${colors.yellow}⚠️ ${key}: Não configurado${colors.reset}`);
+    }
+  }
+
+  if (!r2Config.publicUrl) {
+    console.error(`${colors.red}Erro: CF_PUBLIC_ACCESS_URL não está configurado, é necessário para corrigir URLs.${colors.reset}`);
+    return;
+  }
 
   try {
-    // Buscar todas as imagens no banco de dados
-    const files = await strapi.db.query('plugin::upload.file').findMany({
-      where: {
-        mime: {
-          $startsWith: 'image/'
-        }
-      }
-    });
+    // Buscar todos os arquivos no banco de dados
+    console.log(`\n${colors.blue}Buscando arquivos no banco de dados...${colors.reset}`);
+    const files = await strapi.db.query('plugin::upload.file').findMany({});
 
-    console.log(`Encontrados ${files.length} arquivos de imagem no banco de dados`);
+    console.log(`Encontrados ${files.length} arquivos no total\n`);
 
-    // Formatador de URL
-    const formatFileUrl = (url) => {
-      if (!url) return url;
+    // Agrupar arquivos por tipo MIME
+    const filesByType = {};
+    for (const file of files) {
+      const type = file.mime ? (file.mime.split('/')[0] || 'other') : 'unknown';
+      if (!filesByType[type]) filesByType[type] = [];
+      filesByType[type].push(file);
+    }
 
+    console.log(`${colors.blue}Distribuição de arquivos por tipo:${colors.reset}`);
+    for (const [type, typeFiles] of Object.entries(filesByType)) {
+      console.log(`  ${type}: ${typeFiles.length} arquivos`);
+    }
+
+    // Extrator de domínio
+    const extractDomain = (url) => {
+      if (!url) return '';
       try {
-        // Verificar se a URL já usa o domínio correto
-        if (process.env.CF_PUBLIC_ACCESS_URL &&
-            !url.startsWith(process.env.CF_PUBLIC_ACCESS_URL)) {
-
-          // Extrair caminho relativo
-          const urlObj = new URL(url);
-          let relativePath = urlObj.pathname;
-
-          // Remover bucket se presente
-          if (process.env.CF_BUCKET && relativePath.includes(process.env.CF_BUCKET)) {
-            relativePath = relativePath.substring(
-              relativePath.indexOf(process.env.CF_BUCKET) + process.env.CF_BUCKET.length
-            );
-          }
-
-          // Remover barra inicial
-          if (relativePath.startsWith('/')) {
-            relativePath = relativePath.substring(1);
-          }
-
-          // Formar nova URL
-          const publicDomain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
-            ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
-            : process.env.CF_PUBLIC_ACCESS_URL;
-
-          return `${publicDomain}/${relativePath}`;
-        }
-
-        return url;
+        return new URL(url).hostname;
       } catch (error) {
-        console.error(`Erro ao formatar URL ${url}: ${error.message}`);
-        return url;
+        return '';
       }
     };
 
-    // Corrigir URLs
+    // Formatador de URL
+    const formatFileUrl = (url) => {
+      if (!url) return { formatted: false, url };
+
+      try {
+        // Verificar se a URL já usa o domínio correto
+        const publicUrlDomain = extractDomain(r2Config.publicUrl);
+        const currentDomain = extractDomain(url);
+
+        if (currentDomain === publicUrlDomain) {
+          return { formatted: false, url }; // Já está usando o domínio correto
+        }
+
+        // URL nula ou inválida
+        if (!url || !url.includes('://')) {
+          return { formatted: false, url };
+        }
+
+        // Se for URL externa (não R2 nem Cloudflare)
+        if (!url.includes('cloudflarestorage.com') &&
+            !url.includes(r2Config.endpoint) &&
+            !url.includes('softmeat.com.br')) {
+          return { formatted: false, url };
+        }
+
+        // Extrair caminho relativo
+        const urlObj = new URL(url);
+        let relativePath = urlObj.pathname;
+
+        // Remover bucket se presente
+        if (r2Config.bucket && relativePath.includes(r2Config.bucket)) {
+          const bucketIndex = relativePath.indexOf(r2Config.bucket);
+          relativePath = relativePath.substring(bucketIndex + r2Config.bucket.length);
+        }
+
+        // Remover barra inicial
+        while (relativePath.startsWith('/')) {
+          relativePath = relativePath.substring(1);
+        }
+
+        // Formar nova URL
+        const formattedPublicDomain = r2Config.publicUrl.endsWith('/')
+          ? r2Config.publicUrl.slice(0, -1)
+          : r2Config.publicUrl;
+
+        const newUrl = `${formattedPublicDomain}/${relativePath}`;
+
+        return { formatted: true, url: newUrl };
+      } catch (error) {
+        console.error(`Erro ao formatar URL ${url}: ${error.message}`);
+        return { formatted: false, url };
+      }
+    };
+
+    // Agrupar arquivos por fonte de URL
+    const urlSources = {};
+    for (const file of files) {
+      if (!file.url) continue;
+
+      const domain = extractDomain(file.url);
+      if (!urlSources[domain]) urlSources[domain] = [];
+      urlSources[domain].push(file);
+    }
+
+    console.log(`\n${colors.blue}Origens de URLs encontradas:${colors.reset}`);
+    for (const [domain, domainFiles] of Object.entries(urlSources)) {
+      console.log(`  ${domain}: ${domainFiles.length} arquivos`);
+    }
+
+    // Começar correção de URLs
+    console.log(`\n${colors.blue}Iniciando correção de URLs...${colors.reset}`);
+
     let updatedCount = 0;
+    let errorCount = 0;
+    let skippedCount = 0;
 
     for (const file of files) {
-      const oldUrl = file.url;
-      const newUrl = formatFileUrl(oldUrl);
+      if (!file.url) {
+        console.log(`${colors.yellow}⚠️ Arquivo ${file.id} não tem URL${colors.reset}`);
+        skippedCount++;
+        continue;
+      }
 
-      if (oldUrl !== newUrl) {
-        // Atualizar URL no banco de dados
-        await strapi.db.query('plugin::upload.file').update({
-          where: { id: file.id },
-          data: { url: newUrl }
-        });
+      const { formatted, url: newUrl } = formatFileUrl(file.url);
 
-        updatedCount++;
-        console.log(`${updatedCount}. URL atualizada: ${oldUrl} -> ${newUrl}`);
+      if (formatted) {
+        try {
+          // Verificar se a URL realmente mudou
+          if (file.url !== newUrl) {
+            // Atualizar URL no banco de dados
+            await strapi.db.query('plugin::upload.file').update({
+              where: { id: file.id },
+              data: { url: newUrl }
+            });
+
+            updatedCount++;
+            console.log(`✅ [${updatedCount}] URL atualizada: ${file.name}`);
+            console.log(`   De: ${file.url}`);
+            console.log(`   Para: ${newUrl}`);
+          } else {
+            skippedCount++;
+          }
+        } catch (error) {
+          console.error(`${colors.red}❌ Erro ao atualizar arquivo ${file.id}: ${error.message}${colors.reset}`);
+          errorCount++;
+        }
+      } else {
+        skippedCount++;
       }
     }
 
-    console.log(`\nTotal de ${updatedCount} URLs corrigidas`);
+    // Resumo final
+    console.log(`\n${colors.green}=== RESUMO DA CORREÇÃO DE URLs ===${colors.reset}`);
+    console.log(`✅ Total de URLs corrigidas: ${updatedCount}`);
+    console.log(`⏩ URLs ignoradas (já corretas ou externas): ${skippedCount}`);
+    console.log(`❌ Erros durante a correção: ${errorCount}`);
+
+    if (updatedCount > 0) {
+      console.log(`\n${colors.green}As URLs foram atualizadas com sucesso para usar o domínio: ${r2Config.publicUrl}${colors.reset}`);
+    } else if (errorCount === 0) {
+      console.log(`\n${colors.green}Todas as URLs já estão usando o domínio correto.${colors.reset}`);
+    } else {
+      console.log(`\n${colors.yellow}A correção de URLs encontrou problemas. Verifique os logs acima.${colors.reset}`);
+    }
 
   } catch (error) {
-    console.error('Erro ao corrigir URLs:', error);
+    console.error(`${colors.red}Erro fatal ao corrigir URLs: ${error.message}${colors.reset}`);
+    console.error(error.stack);
   }
 }
 
@@ -840,7 +1230,7 @@ module.exports = { fixImageUrls };
 // Se o script for executado diretamente
 if (require.main === module) {
   console.log('Este script deve ser executado através do Strapi:');
-  console.log('NODE_ENV=production node -e "require(\'./scripts/fix-r2-urls.js\').fixImageUrls(strapi)"');
+  console.log('NODE_ENV=production node -e "require(\'./scripts/fix-r2-urls-improved.js\').fixImageUrls(strapi)"');
 }
 
 
@@ -1215,6 +1605,66 @@ async function testUpload() {
 
 // Executar o teste
 testUpload();
+
+
+scripts\test-r2-reference.js
+
+// scripts/test-r2-reference.js
+const dotenv = require('dotenv');
+dotenv.config();
+
+async function testR2Reference(strapi) {
+  console.log('=== TESTE DE REFERENCIAMENTO DE IMAGENS R2 ===');
+
+  try {
+    // 1. Simular uma URL do R2
+    const r2Url = 'https://images.softmeat.com.br/produtos/bacon-12345.jpg';
+
+    // 2. Criar um objeto de arquivo simulado
+    const fileData = {
+      name: 'teste-referencia.jpg',
+      url: r2Url,
+      mime: 'image/jpeg',
+      size: 10240,
+      ext: '.jpg',
+    };
+
+    console.log('Testando referência de URL R2:', r2Url);
+
+    // 3. Simular o upload usando a biblioteca
+    const uploadService = strapi.plugins.upload.services.upload;
+    const result = await uploadService.upload({
+      data: {
+        fileInfo: fileData
+      },
+      files: {}
+    });
+
+    console.log('Resultado do teste:');
+    console.log(' - URL: ', result?.url);
+    console.log(' - Provider: ', result?.provider);
+    console.log(' - Tamanho: ', result?.size);
+    console.log(' - isExternalUrl: ', result?.isExternalUrl);
+
+    if (result?.url === r2Url) {
+      console.log('✅ SUCESSO! A URL original foi preservada');
+    } else {
+      console.log('❌ FALHA! A URL foi modificada');
+    }
+
+  } catch (error) {
+    console.error('Erro durante o teste:', error);
+  }
+}
+
+// Exportar para uso com strapi
+module.exports = { testR2Reference };
+
+// Se executado diretamente
+if (require.main === module) {
+  console.log('Execute este script através do Strapi:');
+  console.log('NODE_ENV=development node -e "require(\'./scripts/test-r2-reference.js\').testR2Reference(strapi)"');
+}
 
 
 scripts\test-r2-upload.js
@@ -1602,6 +2052,105 @@ async function main() {
 
 // Executar o script
 main();
+
+
+scripts\verify-r2-urls.js
+
+const dotenv = require('dotenv');
+const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+
+dotenv.config();
+
+// Log de configuração
+console.log('=== VERIFICAÇÃO DE CONFIGURAÇÃO R2 ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('CF_ACCESS_KEY_ID:', process.env.CF_ACCESS_KEY_ID ? '✓ Configurado' : '✗ Não configurado');
+console.log('CF_ACCESS_SECRET:', process.env.CF_ACCESS_SECRET ? '✓ Configurado' : '✗ Não configurado');
+console.log('CF_ENDPOINT:', process.env.CF_ENDPOINT);
+console.log('CF_BUCKET:', process.env.CF_BUCKET);
+console.log('CF_PUBLIC_ACCESS_URL:', process.env.CF_PUBLIC_ACCESS_URL);
+
+// Verificar se as credenciais estão configuradas
+if (!process.env.CF_ACCESS_KEY_ID || !process.env.CF_ACCESS_SECRET) {
+  console.error('Erro: Credenciais R2 não configuradas!');
+  process.exit(1);
+}
+
+// Função para verificar URLs em um bucket
+async function checkBucketUrls(bucketName) {
+  console.log(`\n=== Verificando URLs no bucket: ${bucketName} ===`);
+
+  // Configurar cliente R2
+  const r2Client = new S3Client({
+    region: process.env.CF_REGION || 'auto',
+    endpoint: process.env.CF_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.CF_ACCESS_KEY_ID,
+      secretAccessKey: process.env.CF_ACCESS_SECRET,
+    }
+  });
+
+  try {
+    // Listar objetos no bucket
+    const command = new ListObjectsV2Command({
+      Bucket: bucketName,
+      MaxKeys: 50 // Limitar para não sobrecarregar
+    });
+
+    const response = await r2Client.send(command);
+
+    if (!response.Contents || response.Contents.length === 0) {
+      console.log(`Nenhum objeto encontrado no bucket ${bucketName}`);
+      return;
+    }
+
+    console.log(`Encontrados ${response.Contents.length} objetos no bucket ${bucketName}`);
+
+    // Calcular estatísticas de estrutura de pastas
+    const prefixes = {};
+    response.Contents.forEach(obj => {
+      const firstLevel = obj.Key.split('/')[0];
+      prefixes[firstLevel] = (prefixes[firstLevel] || 0) + 1;
+    });
+
+    console.log('\nEstrutura de pastas:');
+    Object.entries(prefixes).forEach(([prefix, count]) => {
+      console.log(`- ${prefix}: ${count} objetos`);
+    });
+
+    // Verificar URLs públicas
+    const publicDomain = process.env.CF_PUBLIC_ACCESS_URL || 'https://images.softmeat.com.br';
+
+    console.log('\nExemplos de URLs:');
+    for (let i = 0; i < Math.min(5, response.Contents.length); i++) {
+      const obj = response.Contents[i];
+      const publicUrl = `${publicDomain}/${obj.Key}`;
+
+      console.log(`\n[${i+1}] Objeto: ${obj.Key}`);
+      console.log(`    Tamanho: ${obj.Size} bytes`);
+      console.log(`    URL pública: ${publicUrl}`);
+
+      // Verificar a acessibilidade da URL pública
+      try {
+        const checkResponse = await fetch(publicUrl, { method: 'HEAD' });
+        console.log(`    Acessível: ${checkResponse.ok ? '✓ Sim' : '✗ Não'} (Status: ${checkResponse.status})`);
+      } catch (error) {
+        console.log(`    Acessível: ✗ Não (Error: ${error.message})`);
+      }
+    }
+
+  } catch (error) {
+    console.error(`Erro ao verificar bucket ${bucketName}:`, error.message);
+  }
+}
+
+// Verificar ambos os buckets
+async function main() {
+  await checkBucketUrls('softmeat-dev');
+  await checkBucketUrls('softmeat-prod');
+}
+
+main().catch(console.error);
 
 
 src\admin\app.example.js
@@ -2876,137 +3425,285 @@ module.exports = (config, { strapi }) => {
 
 src\extensions\upload\services\format-url.js
 
-// src/extensions/upload/services/format-url.js (versão simplificada para produção)
 'use strict';
 
-module.exports = {
-  formatFileUrl(file) {
-    if (!file || !file.url) return file;
+/**
+ * Serviço aprimorado para formatação de URLs do R2
+ */
 
-    try {
-      // Log detalhado para depuração em produção
-      console.log(`[PROD URL] Formatando URL: ${file.url}`);
+/**
+ * Extrai o domínio de uma URL
+ * @param {string} url - URL para extrair o domínio
+ * @returns {string} Domínio da URL
+ */
+function extractDomain(url) {
+  if (!url) return '';
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao extrair domínio: ${error.message}`);
+    return '';
+  }
+}
 
-      // Verificar se a URL já usa o domínio público
-      if (process.env.CF_PUBLIC_ACCESS_URL &&
-          file.url.indexOf(process.env.CF_PUBLIC_ACCESS_URL) === -1) {
+/**
+ * Formata URL de arquivo para usar o domínio público do R2
+ * @param {Object} file - Objeto de arquivo
+ * @returns {Object} Arquivo com URL atualizada
+ */
+function formatFileUrl(file) {
+  if (!file || !file.url) return file;
 
-        // Tentar extrair caminho relativo
-        let relativePath = '';
+  try {
+    // Obter configurações do R2
+    const publicDomain = process.env.CF_PUBLIC_ACCESS_URL;
+    const r2Endpoint = process.env.CF_ENDPOINT;
+    const bucket = process.env.CF_BUCKET;
 
-        try {
-          const urlObj = new URL(file.url);
-          relativePath = urlObj.pathname;
-
-          // Remover o prefixo do bucket se presente
-          if (process.env.CF_BUCKET && relativePath.includes(process.env.CF_BUCKET)) {
-            relativePath = relativePath.substring(
-              relativePath.indexOf(process.env.CF_BUCKET) + process.env.CF_BUCKET.length
-            );
-          }
-
-          // Remover a barra inicial
-          if (relativePath.startsWith('/')) {
-            relativePath = relativePath.substring(1);
-          }
-
-          // Formar nova URL
-          const publicDomain = process.env.CF_PUBLIC_ACCESS_URL.endsWith('/')
-            ? process.env.CF_PUBLIC_ACCESS_URL.slice(0, -1)
-            : process.env.CF_PUBLIC_ACCESS_URL;
-
-          const newUrl = `${publicDomain}/${relativePath}`;
-
-          console.log(`[PROD URL] Transformação: ${file.url} -> ${newUrl}`);
-
-          // Criar cópia com URL atualizada
-          return { ...file, url: newUrl };
-        } catch (error) {
-          console.error(`[PROD URL ERROR] Falha ao processar URL ${file.url}: ${error.message}`);
-        }
-      }
-    } catch (error) {
-      console.error(`[PROD URL ERROR] Erro geral: ${error.message}`);
+    if (!publicDomain) {
+      console.log(`[R2 URL] Domínio público não configurado, mantendo URL original: ${file.url}`);
+      return file;
     }
 
-    // Retornar o arquivo original se não conseguir processar
+    // Log para depuração
+    console.log(`[R2 URL] Processando URL: ${file.url}`);
+
+    const currentDomain = extractDomain(file.url);
+    const publicUrlDomain = extractDomain(publicDomain);
+
+    // Se já estiver usando o domínio público, manter como está
+    if (currentDomain === publicUrlDomain) {
+      console.log(`[R2 URL] URL já usa domínio público, mantendo: ${file.url}`);
+      return file;
+    }
+
+    // Verificar se está usando o endpoint R2 direto
+    const isUsingR2Endpoint = r2Endpoint && file.url.includes(r2Endpoint);
+
+    // Se não estiver usando endpoint R2 nem domínio público, pode ser URL externa
+    if (!isUsingR2Endpoint && currentDomain !== publicUrlDomain) {
+      console.log(`[R2 URL] Possível URL externa, verificando estrutura: ${file.url}`);
+
+      // Verificar se é uma URL válida
+      try {
+        new URL(file.url);
+      } catch (e) {
+        console.log(`[R2 URL] URL inválida, mantendo como está: ${file.url}`);
+        return file;
+      }
+
+      // Se o domínio for diferente e não for do R2, é provavelmente uma URL externa
+      // Preserva-la se for válida
+      if (!currentDomain.includes('cloudflarestorage.com') &&
+          !currentDomain.includes('softmeat.com.br')) {
+        console.log(`[R2 URL] URL externa confirmada, mantendo: ${file.url}`);
+        return file;
+      }
+    }
+
+    // Se chegamos aqui, precisamos reformatar a URL para usar o domínio público
+
+    // Extrair o caminho relativo da URL
+    let relativePath = '';
+    try {
+      const urlObj = new URL(file.url);
+      relativePath = urlObj.pathname;
+
+      // Remover prefixo do bucket se presente
+      if (bucket && relativePath.includes(bucket)) {
+        const bucketIndex = relativePath.indexOf(bucket);
+        relativePath = relativePath.substring(bucketIndex + bucket.length);
+      }
+
+      // Remover barras iniciais
+      while (relativePath.startsWith('/')) {
+        relativePath = relativePath.substring(1);
+      }
+    } catch (error) {
+      console.error(`[R2 URL] Erro ao extrair caminho: ${error.message}`);
+      return file;
+    }
+
+    // Formar nova URL com domínio público
+    const formattedPublicDomain = publicDomain.endsWith('/')
+      ? publicDomain.slice(0, -1)
+      : publicDomain;
+
+    const newUrl = `${formattedPublicDomain}/${relativePath}`;
+
+    console.log(`[R2 URL] URL reformatada: ${file.url} -> ${newUrl}`);
+
+    // Criar cópia do arquivo com URL atualizada
+    return {
+      ...file,
+      url: newUrl
+    };
+  } catch (error) {
+    console.error(`[R2 URL] Erro ao formatar URL: ${error.message}`);
+    // Em caso de erro, retornar arquivo original sem modificações
     return file;
   }
+}
+
+module.exports = {
+  formatFileUrl
 };
 
 
 src\extensions\upload\strapi-server.js
 
+// src/extensions/upload/strapi-server.js
 'use strict';
-
-const formatUrl = require('./services/format-url');
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const stream = require('stream');
 
 module.exports = (plugin) => {
   const originalUpload = plugin.services.upload.upload;
 
-  plugin.services.upload.upload = async (fileData, config) => {
-    if (fileData && fileData.url && !fileData._path) {
-      console.log(`[PROD UPLOAD] Detectado upload de URL externa: ${fileData.url}`);
+  // Função para verificar se uma URL é do R2
+  const isR2Url = (url) => {
+    const patterns = [
+      'images.softmeat.com.br',
+      '.r2.cloudflarestorage.com',
+      process.env.R2_PUBLIC_URL,
+      process.env.R2_ENDPOINT,
+    ].filter(Boolean);
 
-      // Baixar o arquivo da URL externa
-      try {
-        const response = await axios.get(fileData.url, { responseType: 'stream' });
+    return url && patterns.some(pattern => url.includes(pattern));
+  };
 
-        const filePath = path.join(__dirname, 'temp', `${fileData.name}`);  // Caminho temporário para o arquivo
+  // Função para converter URLs diretas do R2 para o domínio personalizado
+  const formatR2Url = (url) => {
+    if (!url || !isR2Url(url)) return url;
 
-        // Salvar o arquivo temporariamente
-        const writer = fs.createWriteStream(filePath);
-        response.data.pipe(writer);
+    const publicUrl = process.env.R2_PUBLIC_URL || 'https://images.softmeat.com.br';
 
-        // Aguardar o download ser concluído
-        await new Promise((resolve, reject) => {
-          writer.on('finish', resolve);
-          writer.on('error', reject);
-        });
-
-        // Substituir os dados do arquivo com o arquivo baixado
-        fileData = {
-          ...fileData,
-          _path: filePath,  // Caminho temporário para o arquivo
-          size: fs.statSync(filePath).size,  // Ajuste o tamanho do arquivo
-        };
-      } catch (error) {
-        console.error(`[PROD ERROR] Erro ao baixar a imagem da URL ${fileData.url}: ${error.message}`);
-        throw error;
-      }
-    }
+    // Se já estiver usando o domínio público
+    if (url.includes(publicUrl)) return url;
 
     try {
-      const result = await originalUpload(fileData, config);
-      console.log(`[PROD UPLOAD] Upload concluído: ${fileData?.name || 'Unknown'}`);
+      // Extrair o caminho relativo
+      let relativePath = '';
+      const urlObj = new URL(url);
+      const bucketName = process.env.R2_BUCKET || 'softmeat-prod';
 
-      if (Array.isArray(result)) {
-        const formattedResults = result.map(file => formatUrl.formatFileUrl(file));
-        console.log(`[PROD UPLOAD] URLs formatadas para ${formattedResults.length} arquivos`);
-        return formattedResults;
+      // Tentar diferentes formatos de URL
+      if (url.includes('.r2.cloudflarestorage.com')) {
+        const parts = urlObj.pathname.split('/');
+        const bucketIndex = parts.findIndex(part => part === bucketName);
+
+        if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+          relativePath = parts.slice(bucketIndex + 1).join('/');
+        }
+      } else {
+        // Formato simples de URL
+        relativePath = urlObj.pathname;
+        if (relativePath.startsWith('/')) {
+          relativePath = relativePath.substring(1);
+        }
       }
 
-      return formatUrl.formatFileUrl(result);
-    } catch (error) {
-      console.error('[PROD UPLOAD ERROR]', {
-        message: error.message,
-        stack: error.stack,
-        fileName: fileData?.name,
-        fileSize: fileData?.size,
-        fileType: fileData?.type,
-        time: new Date().toISOString()
-      });
+      if (relativePath) {
+        const cleanPublicUrl = publicUrl.endsWith('/') ?
+                              publicUrl.slice(0, -1) :
+                              publicUrl;
+        return `${cleanPublicUrl}/${relativePath}`;
+      }
 
-      throw error;
+      return url;
+    } catch (error) {
+      console.error(`[R2] Erro ao formatar URL: ${error.message}`);
+      return url;
     }
   };
 
+  // Sobrescrever o método de upload
+  plugin.services.upload.upload = async (fileData, config) => {
+    // Se tiver uma URL e for do R2, apenas referenciar
+    if (fileData && fileData.url && isR2Url(fileData.url)) {
+      console.log(`[R2] URL externa detectada: ${fileData.url}`);
+
+      // Normalizar a URL
+      const normalizedUrl = formatR2Url(fileData.url);
+      console.log(`[R2] URL normalizada: ${normalizedUrl}`);
+
+      // Extrair informações do arquivo
+      const fileName = normalizedUrl.split('/').pop();
+      const ext = getExtension(fileName);
+      const mime = getMimeType(ext);
+
+      // Retornar objeto sem fazer upload (apenas referência)
+      return {
+        ...fileData,
+        url: normalizedUrl,
+        provider: 'aws-s3',
+        name: fileName || fileData.name,
+        ext: ext || fileData.ext,
+        mime: mime || fileData.mime,
+        size: fileData.size || 0,
+        isExternalUrl: true
+      };
+    }
+
+    // Caso contrário, continuar com o upload normal
+    return await originalUpload(fileData, config);
+  };
+
+  // Interceptar para normalizar URLs nas respostas
+  const originalFindOne = plugin.services.upload.findOne;
+  if (originalFindOne) {
+    plugin.services.upload.findOne = async (id, config) => {
+      const file = await originalFindOne(id, config);
+
+      if (file && file.url && isR2Url(file.url)) {
+        file.url = formatR2Url(file.url);
+      }
+
+      return file;
+    };
+  }
+
+  // Interceptar para normalizar URLs nas listagens
+  const originalFind = plugin.services.upload.find;
+  if (originalFind) {
+    plugin.services.upload.find = async (params, config) => {
+      const files = await originalFind(params, config);
+
+      if (Array.isArray(files)) {
+        files.forEach(file => {
+          if (file.url && isR2Url(file.url)) {
+            file.url = formatR2Url(file.url);
+          }
+        });
+      }
+
+      return files;
+    };
+  }
+
   return plugin;
 };
+
+// Funções auxiliares
+function getExtension(filename) {
+  if (!filename) return '';
+  const parts = filename.split('.');
+  return parts.length > 1 ? `.${parts.pop()}` : '';
+}
+
+function getMimeType(ext) {
+  if (!ext) return 'application/octet-stream';
+
+  const types = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.svg': 'image/svg+xml',
+  };
+
+  return types[ext.toLowerCase()] || 'application/octet-stream';
+}
 
 
 src\index.js
@@ -3035,6 +3732,150 @@ module.exports = {
    */
   bootstrap(/*{ strapi }*/) {},
 };
+
+
+src\middlewares\checkExternalUrl.js
+
+'use strict';
+
+// Middleware que verifica se uma URL é externa e evita o processamento desnecessário
+module.exports = (config, { strapi }) => {
+  return async (ctx, next) => {
+    // Apenas interceptar uploads
+    if (ctx.request.url.includes('/upload') && ctx.request.method === 'POST') {
+      const fileData = ctx.request.body?.fileInfo;
+
+      // Verificar se é uma URL externa do R2
+      if (fileData && fileData.url) {
+        const r2Patterns = [
+          'images.softmeat.com.br',
+          '.r2.cloudflarestorage.com',
+          process.env.CF_PUBLIC_ACCESS_URL,
+          process.env.R2_CUSTOM_DOMAIN
+        ].filter(Boolean);
+
+        const isR2Url = r2Patterns.some(pattern =>
+          fileData.url && pattern && fileData.url.includes(pattern)
+        );
+
+        if (isR2Url) {
+          // Marcar como URL externa
+          ctx.request.body.fileInfo.isExternalUrl = true;
+          console.log(`[R2 Middleware] URL R2 detectada: ${fileData.url}`);
+        }
+      }
+    }
+
+    await next();
+  };
+};
+
+
+src\middlewares\imageR2Handler.js
+
+'use strict';
+
+// Middleware para interceptar e ajustar requisições de imagens do R2
+module.exports = (config, { strapi }) => {
+  // Função para determinar qual bucket usar
+  const getBucketInfo = () => {
+    const isProd = process.env.NODE_ENV === 'production';
+    return {
+      bucket: isProd ? process.env.CF_BUCKET || 'softmeat-prod' : 'softmeat-dev',
+      publicUrl: process.env.CF_PUBLIC_ACCESS_URL || 'https://images.softmeat.com.br'
+    };
+  };
+
+  // Função para verificar se a URL é do R2
+  const isR2Url = (url) => {
+    if (!url) return false;
+
+    const r2Patterns = [
+      'images.softmeat.com.br',
+      '.r2.cloudflarestorage.com',
+      'softmeat-dev',
+      'softmeat-prod',
+      process.env.CF_PUBLIC_ACCESS_URL,
+      process.env.CF_ENDPOINT,
+    ].filter(Boolean);
+
+    return r2Patterns.some(pattern => pattern && url.includes(pattern));
+  };
+
+  return async (ctx, next) => {
+    const { bucket, publicUrl } = getBucketInfo();
+
+    // Registrar as variáveis de ambiente uma vez
+    if (!global.strapiR2ConfigLogged) {
+      console.log('[R2 Config]', {
+        env: process.env.NODE_ENV,
+        bucket,
+        publicUrl,
+        endpoint: process.env.CF_ENDPOINT,
+      });
+      global.strapiR2ConfigLogged = true;
+    }
+
+    // Interceptar requisições de upload
+    if (ctx.request.url.includes('/upload') && ctx.request.method === 'POST') {
+      // Verificar se há dados de arquivo com URL
+      if (ctx.request.body?.fileInfo?.url) {
+        const fileUrl = ctx.request.body.fileInfo.url;
+
+        // Verificar se é URL do R2
+        if (isR2Url(fileUrl)) {
+          console.log(`[R2 Handler] URL R2 detectada em upload: ${fileUrl}`);
+          ctx.request.body.fileInfo.isExternalUrl = true;
+        }
+      }
+    }
+
+    await next();
+
+    // Interceptar respostas para normalizar URLs
+    if (ctx.response.body && ctx.response.status >= 200 && ctx.response.status < 300) {
+      // Normalizar URLs em respostas de APIs
+      if (ctx.response.body.data) {
+        normalizeResponseUrls(ctx.response.body.data, publicUrl);
+      }
+    }
+  };
+};
+
+// Função recursiva para normalizar URLs em respostas
+function normalizeResponseUrls(data, publicUrl) {
+  if (!data) return;
+
+  // Se for array, processar cada item
+  if (Array.isArray(data)) {
+    data.forEach(item => normalizeResponseUrls(item, publicUrl));
+    return;
+  }
+
+  // Se for objeto, processar cada propriedade
+  if (typeof data === 'object') {
+    // Normalizar a URL diretamente
+    if (data.url && typeof data.url === 'string') {
+      // Verificar se é URL do R2 mas não usa o domínio público
+      if (data.url.includes('.r2.cloudflarestorage.com') && !data.url.includes(publicUrl)) {
+        // Extrair caminho relativo
+        const match = data.url.match(/.*\/([^/]+)\/(.*)$/);
+        if (match && match[2]) {
+          const relativePath = match[2];
+          const cleanPublicUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
+          data.url = `${cleanPublicUrl}/${relativePath}`;
+        }
+      }
+    }
+
+    // Processar propriedades aninhadas
+    Object.keys(data).forEach(key => {
+      if (data[key] && typeof data[key] === 'object') {
+        normalizeResponseUrls(data[key], publicUrl);
+      }
+    });
+  }
+}
 
 
 src\utils\r2.js
@@ -3079,6 +3920,60 @@ const formatR2Url = (path) => {
 };
 
 module.exports = {
+  formatR2Url
+};
+
+
+src\utils\r2Helper.js
+
+'use strict';
+
+/**
+ * Utilitários para auxiliar no tratamento de URLs do R2
+ */
+
+const isR2Url = (url) => {
+  if (!url) return false;
+
+  const r2Patterns = [
+    'images.softmeat.com.br',
+    '.r2.cloudflarestorage.com',
+    process.env.CF_PUBLIC_ACCESS_URL,
+    process.env.R2_CUSTOM_DOMAIN
+  ].filter(Boolean);
+
+  return r2Patterns.some(pattern => pattern && url.includes(pattern));
+};
+
+const formatR2Url = (url) => {
+  if (!url || !isR2Url(url)) return url;
+
+  // Se já estiver usando o domínio público, retornar como está
+  if (process.env.CF_PUBLIC_ACCESS_URL && url.includes(process.env.CF_PUBLIC_ACCESS_URL)) {
+    return url;
+  }
+
+  // Se estiver usando o endpoint direto do R2, converter para domínio público
+  if (process.env.CF_ENDPOINT && process.env.CF_BUCKET && url.includes(process.env.CF_ENDPOINT)) {
+    const publicUrl = process.env.CF_PUBLIC_ACCESS_URL;
+    if (!publicUrl) return url;
+
+    const cleanPublicUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
+
+    // Extrair o caminho do objeto no bucket
+    const regex = new RegExp(`.*?${process.env.CF_BUCKET}/?(.*)`, 'i');
+    const match = url.match(regex);
+
+    if (match && match[1]) {
+      return `${cleanPublicUrl}/${match[1]}`;
+    }
+  }
+
+  return url;
+};
+
+module.exports = {
+  isR2Url,
   formatR2Url
 };
 
