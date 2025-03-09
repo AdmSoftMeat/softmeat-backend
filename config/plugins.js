@@ -11,12 +11,10 @@ module.exports = ({ env }) => ({
         accessKeyId: env('R2_ACCESS_KEY'),
         secretAccessKey: env('R2_SECRET_KEY'),
         endpoint: env('R2_ENDPOINT'),
+        region: env('R2_REGION', 'auto'),
         params: {
           Bucket: env('R2_BUCKET'),
-        },
-        region: env('R2_REGION', 'auto'),
-        // Adicionar baseURL
-        baseUrl: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br'),
+        }
       },
     },
   },
