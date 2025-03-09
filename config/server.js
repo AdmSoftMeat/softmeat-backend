@@ -5,6 +5,16 @@ module.exports = ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS'),
   },
-  // Limite de upload
+  // Configurações de timeout
+  emitErrors: false,
   maxUploadLimit: '50mb',
+  maxRequestSize: '50mb',
+  http2: {
+    enabled: false,
+  },
+  webhooks: {
+    populateRelations: false,
+  },
+  // Timeouts
+  timeout: 120000,
 });
