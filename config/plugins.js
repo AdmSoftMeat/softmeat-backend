@@ -1,16 +1,18 @@
-const path = require('path');
-
+// config/plugins.js (versão simplificada)
 module.exports = ({ env }) => ({
   upload: {
     config: {
-      provider: path.resolve(__dirname, '../src/providers/r2-upload'),
+      provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
         accessKeyId: env('R2_ACCESS_KEY'),
         secretAccessKey: env('R2_SECRET_KEY'),
         endpoint: env('R2_ENDPOINT'),
-        bucket: env('R2_BUCKET'),
-        publicUrl: env('R2_PUBLIC_URL'),
+        params: {
+          Bucket: env('R2_BUCKET'),
+          ACL: 'public-read',
+        },
         region: env('R2_REGION', 'auto'),
+        customDomain: env('R2_PUBLIC_URL')
       },
     },
   },

@@ -14,6 +14,7 @@
     "@strapi/plugin-users-permissions": "4.12.0",
     "@strapi/provider-upload-aws-s3": "^4.12.0",
     "@strapi/strapi": "4.12.0",
+    "aws-sdk": "^2.1095.0",
     "better-sqlite3": "8.0.1",
     "sharp": "^0.33.5",
     "strapi-plugin-import-export-entries": "^1.23.1"
