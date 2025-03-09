@@ -4,10 +4,11 @@ module.exports = ({ env }) => ({
   connection: {
     client: 'sqlite',
     connection: {
-      filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'), // Modifique para um local persistente
+      filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'),
       useNullAsDefault: true,
     },
     debug: false,
+    useNullAsDefault: true,  // Adicione isto para corrigir o aviso
     pool: {
       min: 0,
       max: 1,

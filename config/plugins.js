@@ -23,15 +23,6 @@ module.exports = ({ env }) => ({
         baseUrl: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br'),
         uploadPath: '',
       },
-      actionOptions: {
-        upload: {
-          ACL: 'public-read'
-        },
-        uploadStream: {
-          ACL: 'public-read'
-        },
-        delete: {},
-      },
     },
   },
 });
