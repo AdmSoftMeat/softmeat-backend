@@ -48,7 +48,10 @@ module.exports = ({ env }) => [
       frameguard: false,
     },
   },
-  'global::upload-debug',
+  {
+    name: 'upload-debug',
+    resolve: './src/middlewares/upload-debug'
+  },
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::logger',
