@@ -17,11 +17,8 @@ module.exports = ({ env }) => ({
           endpoint: env('R2_ENDPOINT'),
           params: {
             Bucket: env('R2_BUCKET'),
-            ACL: 'public-read',
           }
         },
-        baseUrl: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br'),
-        uploadPath: '',
       },
     },
   },

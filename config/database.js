@@ -7,23 +7,14 @@ module.exports = ({ env }) => ({
       filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'),
       useNullAsDefault: true,
     },
-    debug: false,
-    useNullAsDefault: true,  // Adicione isto para corrigir o aviso
+    useNullAsDefault: true,
     pool: {
       min: 0,
       max: 1,
-      acquireTimeoutMillis: 300000,
-      createTimeoutMillis: 300000,
-      destroyTimeoutMillis: 300000,
-      idleTimeoutMillis: 300000,
-      afterCreate: (conn, cb) => {
-        conn.pragma('journal_mode = WAL');
-        conn.pragma('synchronous = NORMAL');
-        cb(null, conn);
-      }
-    },
-    migrations: {
-      directory: path.join(process.cwd(), 'database/migrations')
+      acquireTimeoutMillis: 600000,
+      createTimeoutMillis: 600000,
+      destroyTimeoutMillis: 600000,
+      idleTimeoutMillis: 600000,
     }
   }
 });
