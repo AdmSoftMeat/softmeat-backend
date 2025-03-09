@@ -1,6 +1,9 @@
-// config/plugins.js
 module.exports = ({ env }) => ({
-  // Outras configurações...
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
   upload: {
     config: {
       provider: '@strapi/provider-upload-aws-s3',
@@ -17,4 +20,4 @@ module.exports = ({ env }) => ({
       },
     },
   },
-});
+ });
