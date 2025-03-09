@@ -1,6 +1,4 @@
 'use strict';
 
-module.exports = (plugin) => {
-  // Manter apenas referência simples sem modificar comportamento
-  return plugin;
-};
+// Fornecer uma implementação mínima que não altere o comportamento padrão
+module.exports = (plugin) => plugin;
