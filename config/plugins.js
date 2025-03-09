@@ -9,8 +9,10 @@ module.exports = ({ env }) => ({
       provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
         s3Options: {
-          accessKeyId: env('R2_ACCESS_KEY'),
-          secretAccessKey: env('R2_SECRET_KEY'),
+          credentials: {
+            accessKeyId: env('R2_ACCESS_KEY'),
+            secretAccessKey: env('R2_SECRET_KEY'),
+          },
           region: env('R2_REGION', 'auto'),
           endpoint: env('R2_ENDPOINT'),
           params: {
