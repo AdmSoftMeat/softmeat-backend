@@ -1,4 +1,3 @@
-// config/plugins.js (versão simplificada)
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -12,7 +11,8 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
         region: env('R2_REGION', 'auto'),
-        customDomain: env('R2_PUBLIC_URL')
+        customDomain: true, // Ativar domínio personalizado
+        baseUrl: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br')
       },
     },
   },
