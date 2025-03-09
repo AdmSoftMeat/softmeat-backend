@@ -49,6 +49,19 @@ module.exports = ({ env }) => [
     },
   },
   {
+    name: 'strapi::body',
+    config: {
+      jsonLimit: '10mb',
+      formLimit: '50mb',
+      textLimit: '10mb',
+      formidable: {
+        maxFileSize: 50 * 1024 * 1024, // 50MB
+        keepExtensions: true,
+        multiples: true,
+      },
+    },
+  },
+  {
     name: 'strapi::cors',
     config: {
       headers: '*',
