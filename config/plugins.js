@@ -1,9 +1,6 @@
+// config/plugins.js
 module.exports = ({ env }) => ({
-  'users-permissions': {
-    config: {
-      jwtSecret: env('JWT_SECRET'),
-    },
-  },
+  // Outras configurações...
   upload: {
     config: {
       provider: '@strapi/provider-upload-aws-s3',
@@ -14,7 +11,9 @@ module.exports = ({ env }) => ({
         region: env('R2_REGION', 'auto'),
         params: {
           Bucket: env('R2_BUCKET'),
-        }
+          ACL: 'public-read',
+        },
+        customDomain: env('R2_PUBLIC_URL')
       },
     },
   },
