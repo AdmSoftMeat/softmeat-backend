@@ -56,8 +56,8 @@ module.exports = ({ env }) => [
       textLimit: '10mb',
       formidable: {
         maxFileSize: 50 * 1024 * 1024, // 50MB
-        keepExtensions: true,
         multiples: true,
+        keepExtensions: true
       },
     },
   },

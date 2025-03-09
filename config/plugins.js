@@ -16,12 +16,10 @@ module.exports = ({ env }) => ({
         region: env('R2_REGION', 'auto'),
         endpoint: env('R2_ENDPOINT'),
         params: {
-          Bucket: env('R2_BUCKET', 'softmeat-storage'),
+          Bucket: env('R2_BUCKET'),
           ACL: 'public-read',
-          CacheControl: 'public, max-age=31536000, immutable',
         },
-        forcePathStyle: true,
-        customDomain: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br'),
+        customDomain: env('R2_PUBLIC_URL')
       },
       actionOptions: {
         upload: {

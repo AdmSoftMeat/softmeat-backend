@@ -24,11 +24,14 @@ COPY . .
 
 # Build do Strapi
 RUN NODE_ENV=production npm run build
+RUN mkdir -p /tmp/uploads && chmod 777 /tmp/uploads
 
 # Criar diretório de dados e ajustar permissões
 RUN mkdir -p /opt/app/data && \
     chown -R node:node /opt/app && \
-    chmod -R 755 /opt/app/data
+    chmod -R 755 /opt/app/data && \
+    mkdir -p /tmp/uploads && \
+    chmod 777 /tmp/uploads
 
 # Expor porta
 EXPOSE 1337
