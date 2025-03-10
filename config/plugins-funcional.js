@@ -17,25 +17,10 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // Extrair pasta da URL original se for uma URL do R2
-            if (file.url && file.url.includes('storage.softmeat.com.br')) {
-              try {
-                const url = new URL(file.url);
-                const pathParts = url.pathname.split('/');
-
-                // Se tiver pelo menos uma pasta na estrutura
-                if (pathParts.length > 2) {
-                  const folder = pathParts[1]; // primeiro nível após a barra inicial
-                  return `${folder}/${file.hash}${file.ext}`;
-                }
-              } catch (e) {
-                console.error('Erro ao processar URL:', e);
-              }
-            }
-
-            // Fallback para a lógica original
+            // Determine folder based on file type
             const type = file.mime.split('/')[0];
             let folder = 'outros';
+
             if (type === 'image') folder = 'imagens';
             else if (type === 'video') folder = 'videos';
             else if (type === 'audio') folder = 'audios';
