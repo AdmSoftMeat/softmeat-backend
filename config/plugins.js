@@ -11,13 +11,15 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
         region: env('R2_REGION', 'auto'),
-        baseUrl: env('R2_PUBLIC_URL', 'https://storage.softmeat.com.br')
+        baseUrl: env('R2_PUBLIC_URL')
       },
-      actionOptions: {
-        upload: {},
-        uploadStream: {},
-        delete: {}
-      }
+      breakpoints: {
+        xlarge: 1920,
+        large: 1000,
+        medium: 750,
+        small: 500,
+        xsmall: 64
+      },
     },
   },
 });

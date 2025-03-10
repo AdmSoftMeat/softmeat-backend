@@ -1,6 +1,17 @@
 module.exports = [
   'strapi::errors',
-  'strapi::security',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'img-src': ["'self'", 'data:', 'blob:', 'storage.softmeat.com.br', '*.r2.cloudflarestorage.com'],
+          'media-src': ["'self'", 'data:', 'blob:', 'storage.softmeat.com.br', '*.r2.cloudflarestorage.com'],
+        },
+      },
+    },
+  },
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::logger',
@@ -9,8 +20,4 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-  {
-    name: 'global::upload-logger',
-    config: {},
-  },
 ];
