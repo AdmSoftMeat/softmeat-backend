@@ -1,20 +1,16 @@
-const path = require("path");
-
+// config/database.js
 module.exports = ({ env }) => ({
   connection: {
-    client: 'sqlite',
+    client: 'postgres',
     connection: {
-      filename: env('DATABASE_FILENAME', '/mnt/data/softmeat-db/data.db'),
-      useNullAsDefault: true,
+      host: env('DATABASE_HOST'),
+      port: env.int('DATABASE_PORT', 5432),
+      database: env('DATABASE_NAME'),
+      user: env('DATABASE_USERNAME'),
+      password: env('DATABASE_PASSWORD'),
+      ssl: env.bool('DATABASE_SSL', false) ?
+        { rejectUnauthorized: env.bool('DATABASE_SSL_SELF', false) } :
+        false,
     },
-    useNullAsDefault: true,
-    pool: {
-      min: 0,
-      max: 1,
-      acquireTimeoutMillis: 600000,
-      createTimeoutMillis: 600000,
-      destroyTimeoutMillis: 600000,
-      idleTimeoutMillis: 600000,
-    }
-  }
+  },
 });

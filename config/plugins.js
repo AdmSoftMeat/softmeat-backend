@@ -6,50 +6,48 @@ module.exports = ({ env }) => ({
         accessKeyId: env('R2_ACCESS_KEY'),
         secretAccessKey: env('R2_SECRET_KEY'),
         endpoint: env('R2_ENDPOINT'),
+        region: env('R2_REGION', 'auto'),
         params: {
           Bucket: env('R2_BUCKET'),
           ACL: 'public-read',
         },
-        region: env('R2_REGION', 'auto'),
         baseUrl: env('R2_PUBLIC_URL')
       },
       actionOptions: {
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // Extrair pasta da URL original se for uma URL do R2
-            if (file.url && file.url.includes('storage.softmeat.com.br')) {
-              try {
-                const url = new URL(file.url);
-                const pathParts = url.pathname.split('/');
-
-                // Se tiver pelo menos uma pasta na estrutura
-                if (pathParts.length > 2) {
-                  const folder = pathParts[1]; // primeiro nível após a barra inicial
-                  return `${folder}/${file.hash}${file.ext}`;
-                }
-              } catch (e) {
-                console.error('Erro ao processar URL:', e);
-              }
-            }
-
-            // Fallback para a lógica original
-            const type = file.mime.split('/')[0];
-            let folder = 'outros';
-            if (type === 'image') folder = 'imagens';
-            else if (type === 'video') folder = 'videos';
-            else if (type === 'audio') folder = 'audios';
-
-            // Add related model as subfolder if available
+            // Obter a coleção associada ao arquivo
+            let collection = 'geral';
             if (file.related) {
-              const model = file.related.split('.')[0];
-              return `${folder}/${model}/${file.hash}${file.ext}`;
+              // Extrair nome da coleção do campo relacionado
+              collection = file.related.split('.')[0];
             }
 
-            return `${folder}/${file.hash}${file.ext}`;
+            // Sanitizar o nome do arquivo
+            const originalName = file.name ? file.name.substring(0, file.name.lastIndexOf('.')) : '';
+            const sanitizedName = sanitizeString(originalName);
+
+            // Adicionar hash curto para garantir unicidade
+            const shortHash = file.hash ? file.hash.substring(0, 8) : '';
+
+            // Retornar caminho com padrão: collection_filename-hash.ext
+            return `${collection}/${collection}_${sanitizedName}-${shortHash}${file.ext}`;
           }
         }
       }
     },
   },
 });
+
+// Função auxiliar para sanitizar nomes de arquivos
+function sanitizeString(str) {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .replace(/[^a-zA-Z0-9-_]/g, '-') // Substitui caracteres especiais por hífen
+    .replace(/-+/g, '-') // Remove hífens consecutivos
+    .toLowerCase();
+}
+
