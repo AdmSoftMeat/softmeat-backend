@@ -1,21 +1,7 @@
+// config/middlewares.js
 module.exports = [
   'strapi::errors',
-  {
-    name: 'strapi::security',
-    config: {
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          'img-src': ["'self'", 'data:', 'blob:', 'storage.softmeat.com.br', '*.r2.cloudflarestorage.com'],
-          'media-src': ["'self'", 'data:', 'blob:', 'storage.softmeat.com.br', '*.r2.cloudflarestorage.com'],
-        },
-      },
-    },
-  },
-  {
-    name: 'global::custom-naming',
-    config: {}
-  },
+  'strapi::security',
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::logger',
@@ -24,4 +10,8 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+  {
+    name: 'global::custom-naming',
+    config: {}
+  }
 ];

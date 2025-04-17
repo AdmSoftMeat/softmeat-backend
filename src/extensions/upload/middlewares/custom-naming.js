@@ -1,4 +1,6 @@
-// src/extensions/upload/middlewares/custom-naming.js
+// src/middlewares/custom-naming.js
+'use strict';
+
 module.exports = (config, { strapi }) => {
   return async (ctx, next) => {
     if (ctx.request.url.includes('/upload') && ctx.request.method === 'POST') {
