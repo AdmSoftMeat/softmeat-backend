@@ -17,37 +17,40 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // Obter a coleção associada ao arquivo
+            // Função para sanitizar strings
+            const sanitizeString = (str) => {
+              if (!str) return '';
+              return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+                .replace(/[^a-zA-Z0-9-_]/g, '-') // Substitui caracteres especiais por hífen
+                .replace(/-+/g, '-') // Remove hífens consecutivos
+                .toLowerCase(); // Converte para minúsculas
+            };
+
+            // Determinar nome da coleção
             let collection = 'geral';
             if (file.related) {
-              // Extrair nome da coleção do campo relacionado
               collection = file.related.split('.')[0];
+              console.log(`Coleção detectada: ${collection}`);
             }
 
-            // Sanitizar o nome do arquivo
-            const originalName = file.name ? file.name.substring(0, file.name.lastIndexOf('.')) : '';
+            // Obter nome original do arquivo sem extensão
+            const originalName = file.name ? file.name.substring(0, file.name.lastIndexOf('.')) : 'unnamed';
             const sanitizedName = sanitizeString(originalName);
 
-            // Adicionar hash curto para garantir unicidade
-            const shortHash = file.hash ? file.hash.substring(0, 8) : '';
+            // Adicionar um pequeno hash para garantir unicidade
+            const shortHash = file.hash ? file.hash.substring(0, 8) : Date.now().toString().substring(0, 8);
 
-            // Retornar caminho com padrão: collection_filename-hash.ext
-            return `${collection}/${collection}_${sanitizedName}-${shortHash}${file.ext}`;
+            // Formato final: collection/collection_filename-hash.ext
+            const finalPath = `${collection}/${collection}_${sanitizedName}-${shortHash}${file.ext}`;
+            console.log(`Caminho do arquivo gerado: ${finalPath}`);
+
+            return finalPath;
           }
         }
       }
     },
   },
 });
-
-// Função auxiliar para sanitizar nomes de arquivos
-function sanitizeString(str) {
-  if (!str) return '';
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-    .replace(/[^a-zA-Z0-9-_]/g, '-') // Substitui caracteres especiais por hífen
-    .replace(/-+/g, '-') // Remove hífens consecutivos
-    .toLowerCase();
-}
 

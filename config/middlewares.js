@@ -12,6 +12,10 @@ module.exports = [
       },
     },
   },
+  {
+    name: 'global::upload-logger',
+    config: {}
+  },
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::logger',
