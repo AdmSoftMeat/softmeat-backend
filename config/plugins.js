@@ -1,3 +1,6 @@
+// config/plugins.js
+const path = require('path');
+
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -17,40 +20,32 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // Função para sanitizar strings
             const sanitizeString = (str) => {
               if (!str) return '';
               return str
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-                .replace(/[^a-zA-Z0-9-_]/g, '-') // Substitui caracteres especiais por hífen
-                .replace(/-+/g, '-') // Remove hífens consecutivos
-                .toLowerCase(); // Converte para minúsculas
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9-_]/g, '-')
+                .replace(/-+/g, '-')
+                .toLowerCase();
             };
 
-            // Determinar nome da coleção
+            // Determinar coleção a partir do contexto
             let collection = 'geral';
             if (file.related) {
-              collection = file.related.split('.')[0];
-              console.log(`Coleção detectada: ${collection}`);
+              const [model] = file.related.split('.');
+              collection = model;
             }
 
-            // Obter nome original do arquivo sem extensão
-            const originalName = file.name ? file.name.substring(0, file.name.lastIndexOf('.')) : 'unnamed';
-            const sanitizedName = sanitizeString(originalName);
+            // Usar nome original sem hash
+            const originalName = file.name || 'file';
+            const baseName = path.basename(originalName, path.extname(originalName));
+            const sanitizedName = sanitizeString(baseName);
 
-            // Adicionar um pequeno hash para garantir unicidade
-            const shortHash = file.hash ? file.hash.substring(0, 8) : Date.now().toString().substring(0, 8);
-
-            // Formato final: collection/collection_filename-hash.ext
-            const finalPath = `${collection}/${collection}_${sanitizedName}-${shortHash}${file.ext}`;
-            console.log(`Caminho do arquivo gerado: ${finalPath}`);
-
-            return finalPath;
+            // Formato final: coleção/nome-sanitizado.ext
+            return `${collection}/${collection}_${sanitizedName}${path.extname(originalName)}`;
           }
         }
       }
     },
   },
 });
-

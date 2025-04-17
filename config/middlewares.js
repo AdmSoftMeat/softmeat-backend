@@ -13,7 +13,7 @@ module.exports = [
     },
   },
   {
-    name: 'global::upload-logger',
+    name: 'global::custom-naming',
     config: {}
   },
   'strapi::cors',
