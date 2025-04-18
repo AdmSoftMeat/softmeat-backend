@@ -1,0 +1,14 @@
+[phases.setup]
+nixPkgs = ["nodejs", "python3", "gcc", "postgresql"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["NODE_OPTIONS='--max_old_space_size=4096' NODE_ENV=production npm run build"]
+
+[start]
+cmd = "npm run start"
+
+[variables]
+NODE_ENV = "production"

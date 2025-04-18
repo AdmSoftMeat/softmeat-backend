@@ -1,7 +1,0 @@
-node_modules
-.tmp
-.cache
-.git
-build
-data
-*.log
