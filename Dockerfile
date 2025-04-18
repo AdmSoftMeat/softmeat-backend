@@ -17,18 +17,17 @@ RUN npm install \
     @strapi/strapi@4.15.5 \
     @strapi/plugin-users-permissions@4.15.5 \
     @strapi/plugin-i18n@4.15.5 \
-    pg@8.11.3 \
+    pg@8.14.1 \
     pg-connection-string@2.7.0
 
-# Adicionar um arquivo de versão para invalidar o cache quando necessário
-ARG BUILD_DATE=unknown
-RUN echo "Build date: $BUILD_DATE" > build_version.txt
+# Forçar resolução de versões problemáticas
+RUN npm install --save-exact @radix-ui/react-use-effect-event@0.0.3
 
 # Copiar o código-fonte
 COPY . .
 
-# Construir a aplicação
-RUN NODE_ENV=production npm run build
+# Construir a aplicação com variáveis de ambiente adicionais
+RUN NODE_OPTIONS="--max_old_space_size=4096" NODE_ENV=production npm run build
 
 # Configurar diretórios de upload e permissões
 RUN mkdir -p /tmp/uploads && chmod 777 /tmp/uploads
