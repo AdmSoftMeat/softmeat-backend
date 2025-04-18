@@ -1,23 +1,12 @@
 // config/plugins.js
 const path = require('path');
 
-// Função para sanitizar nomes de arquivo
-const sanitizeString = (str) => {
-  if (!str) return '';
-  return str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-    .replace(/[^a-zA-Z0-9-_]/g, '-') // Substitui caracteres especiais
-    .replace(/-+/g, '-') // Remove hífens consecutivos
-    .toLowerCase();
-};
-
 module.exports = ({ env }) => ({
   upload: {
     config: {
       provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
-        s3Options: { // Formato correto para R2
+        s3Options: {
           accessKeyId: env('R2_ACCESS_KEY'),
           secretAccessKey: env('R2_SECRET_KEY'),
           endpoint: env('R2_ENDPOINT'),
@@ -33,40 +22,30 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            console.log('Upload file info:', {
-              name: file.name,
-              related: file.related,
-              mime: file.mime
-            });
+            // Função para sanitizar strings
+            const sanitizeString = (str) => {
+              if (!str) return '';
+              return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9-_]/g, '-')
+                .replace(/-+/g, '-')
+                .toLowerCase();
+            };
 
-            // Determinar categoria baseada no tipo de conteúdo
-            let collection = 'geral';
-
+            // Determinar categoria
+            let category = 'geral';
             if (file.related) {
-              try {
-                // Extrair modelo relacionado
-                const relatedType = typeof file.related === 'string'
-                  ? file.related.split('.')[0]
-                  : Array.isArray(file.related) && file.related.length > 0
-                    ? file.related[0].ref.split('.')[0]
-                    : 'geral';
-
-                collection = relatedType || 'geral';
-                console.log(`Categoria determinada: ${collection}`);
-              } catch (error) {
-                console.error('Erro ao extrair categoria:', error);
-              }
+              const relatedType = file.related.split('.')[0];
+              category = relatedType || 'geral';
             }
 
-            // Processar nome do arquivo
+            // Sanitizar nome do arquivo
             const nameWithoutExt = path.basename(file.name, path.extname(file.name));
             const sanitizedName = sanitizeString(nameWithoutExt);
 
             // Formato final: categoria/categoria_nome-arquivo.ext
-            const finalPath = `${collection}/${collection}_${sanitizedName}${path.extname(file.name)}`;
-            console.log(`Caminho final do arquivo: ${finalPath}`);
-
-            return finalPath;
+            return `${category}/${category}_${sanitizedName}${path.extname(file.name)}`;
           }
         }
       }

@@ -1,8 +1,12 @@
 [phases.setup]
-nixPkgs = ["nodejs", "python3", "gcc", "postgresql"]
+nixPkgs = ["nodejs", "python3", "gcc", "vips", "pkg-config"]
 
 [phases.install]
-cmds = ["npm install"]
+cmds = [
+  "mkdir -p /tmp/uploads",
+  "chmod 777 /tmp/uploads",
+  "npm install"
+]
 
 [phases.build]
 cmds = ["NODE_OPTIONS='--max_old_space_size=4096' NODE_ENV=production npm run build"]
