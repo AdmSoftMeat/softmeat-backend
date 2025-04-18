@@ -17,7 +17,7 @@ module.exports = ({ env }) => ({
     config: {
       provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
-        s3Options: { // Configuração correta para R2
+        s3Options: { // Formato correto para R2
           accessKeyId: env('R2_ACCESS_KEY'),
           secretAccessKey: env('R2_SECRET_KEY'),
           endpoint: env('R2_ENDPOINT'),
@@ -33,32 +33,42 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // 1. Determinar coleção
+            console.log('Upload file info:', {
+              name: file.name,
+              related: file.related,
+              mime: file.mime
+            });
+
+            // Determinar categoria baseada no tipo de conteúdo
             let collection = 'geral';
 
-            try {
-              // Tratamento seguro para evitar erros com propriedades undefined
-              if (file.related && Array.isArray(file.related) && file.related.length > 0) {
-                const model = file.related[0].ref.split('.')[0];
-                collection = model || 'geral';
-              } else if (file.related && typeof file.related === 'string') {
-                collection = file.related.split('.')[0] || 'geral';
+            if (file.related) {
+              try {
+                // Extrair modelo relacionado
+                const relatedType = typeof file.related === 'string'
+                  ? file.related.split('.')[0]
+                  : Array.isArray(file.related) && file.related.length > 0
+                    ? file.related[0].ref.split('.')[0]
+                    : 'geral';
+
+                collection = relatedType || 'geral';
+                console.log(`Categoria determinada: ${collection}`);
+              } catch (error) {
+                console.error('Erro ao extrair categoria:', error);
               }
-            } catch (error) {
-              console.error('Erro ao determinar coleção:', error);
             }
 
-            // 2. Obter nome original seguro
-            const originalName = file.name || 'arquivo';
-            const baseName = path.basename(originalName, path.extname(originalName));
-            const sanitizedName = sanitizeString(baseName);
+            // Processar nome do arquivo
+            const nameWithoutExt = path.basename(file.name, path.extname(file.name));
+            const sanitizedName = sanitizeString(nameWithoutExt);
 
-            // 3. Formato final: coleção/nome-coleção_nome-arquivo.ext
-            return `${collection}/${collection}_${sanitizedName}${path.extname(originalName)}`;
+            // Formato final: categoria/categoria_nome-arquivo.ext
+            const finalPath = `${collection}/${collection}_${sanitizedName}${path.extname(file.name)}`;
+            console.log(`Caminho final do arquivo: ${finalPath}`);
+
+            return finalPath;
           }
-        },
-        uploadStream: {},
-        delete: {},
+        }
       }
     },
   },
