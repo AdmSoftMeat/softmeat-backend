@@ -36,13 +36,20 @@ module.exports = ({ env }) => ({
             // 1. Determinar coleção
             let collection = 'geral';
 
-            if (file.related?.length > 0) {
-              const [model] = file.related[0].ref.split('.');
-              collection = model;
+            try {
+              // Tratamento seguro para evitar erros com propriedades undefined
+              if (file.related && Array.isArray(file.related) && file.related.length > 0) {
+                const model = file.related[0].ref.split('.')[0];
+                collection = model || 'geral';
+              } else if (file.related && typeof file.related === 'string') {
+                collection = file.related.split('.')[0] || 'geral';
+              }
+            } catch (error) {
+              console.error('Erro ao determinar coleção:', error);
             }
 
             // 2. Obter nome original seguro
-            const originalName = file.name || file.hash;
+            const originalName = file.name || 'arquivo';
             const baseName = path.basename(originalName, path.extname(originalName));
             const sanitizedName = sanitizeString(baseName);
 
@@ -56,4 +63,3 @@ module.exports = ({ env }) => ({
     },
   },
 });
-
