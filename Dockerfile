@@ -21,7 +21,7 @@ RUN npm install \
     pg-connection-string@2.7.0
 
 # Forçar resolução de versões problemáticas
-RUN npm install --save-exact @radix-ui/react-use-effect-event@0.0.3
+RUN npm install --save-exact @radix-ui/react-use-effect-event@0.0.0
 
 # Copiar o código-fonte
 COPY . .
