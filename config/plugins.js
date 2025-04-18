@@ -4,6 +4,7 @@ const path = require('path');
 module.exports = ({ env }) => ({
   upload: {
     config: {
+      provider: '@strapi/provider-upload-aws-s3', // Adicionado o provider
       providerOptions: {
         s3Options: {
           credentials: {
@@ -23,6 +24,16 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
+            // Logs para depuração
+            console.log('File object:', JSON.stringify({
+              name: file.name,
+              hash: file.hash,
+              ext: file.ext,
+              related: file.related,
+              mime: file.mime,
+              path: file.path
+            }, null, 2));
+
             // Função para sanitizar strings
             const sanitizeString = (str) => {
               if (!str) return '';
@@ -37,7 +48,11 @@ module.exports = ({ env }) => ({
             // Determinar categoria
             let category = 'geral';
             if (file.related) {
-              const relatedType = file.related.split('.')[0];
+              const relatedType = typeof file.related === 'string'
+                ? file.related.split('.')[0]
+                : Array.isArray(file.related) && file.related.length > 0
+                  ? file.related[0].ref.split('.')[0]
+                  : 'geral';
               category = relatedType || 'geral';
             }
 
@@ -46,7 +61,9 @@ module.exports = ({ env }) => ({
             const sanitizedName = sanitizeString(nameWithoutExt);
 
             // Formato final: categoria/categoria_nome-arquivo.ext
-            return `${category}/${category}_${sanitizedName}${path.extname(file.name)}`;
+            const finalPath = `${category}/${category}_${sanitizedName}${path.extname(file.name)}`;
+            console.log('Final path:', finalPath);
+            return finalPath;
           }
         }
       }
