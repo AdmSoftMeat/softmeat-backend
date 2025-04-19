@@ -1,7 +1,0 @@
-# pack-refs with: peeled fully-peeled sorted 
-9057d0c9301a6774ef9a2a222524ddb2046d1a0e refs/heads/main
-15abd92023c05607d3a37030d16f4d38a0e43436 refs/heads/staging
-cef7e8aaf69e6260b18890809369331e0217563b refs/tags/v1.0.0-180424
-23e1a957dc772f855cefbbbc8af8f6abe82d9577 refs/tags/v1.0.0-docker-final
-2a436f58fdf73b1605272042e7fe25bf186faac6 refs/tags/v1.0.0-nixpacks
-498dd6c1dc47e1bfe23c70dd4e9dc80ff63c675e refs/tags/v1.0.0-stable
