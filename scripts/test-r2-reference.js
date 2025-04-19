@@ -2,14 +2,11 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-async function testR2Reference(strapi) {
+async function testR2Reference(strapi, testUrl) {
   console.log('=== TESTE DE REFERENCIAMENTO DE IMAGENS R2 ===');
 
   try {
-    // 1. Simular uma URL do R2
-    const r2Url = 'https://images.softmeat.com.br/produtos/bacon-12345.jpg';
-
-    // 2. Criar um objeto de arquivo simulado
+    const r2Url = testUrl || 'https://images.softmeat.com.br/produtos/bacon-12345.jpg';
     const fileData = {
       name: 'teste-referencia.jpg',
       url: r2Url,
@@ -18,22 +15,27 @@ async function testR2Reference(strapi) {
       ext: '.jpg',
     };
 
-    console.log('Testando referência de URL R2:', r2Url);
+    if (!strapi?.plugin) {
+      console.error('❌ Strapi não está disponível no contexto. Execute via Strapi.');
+      return;
+    }
 
-    // 3. Simular o upload usando a biblioteca
-    const uploadService = strapi.plugins.upload.services.upload;
+    const uploadService = strapi.plugin('upload').service('upload');
+    if (!uploadService || !uploadService.upload) {
+      console.error('❌ Serviço de upload não disponível.');
+      return;
+    }
+
     const result = await uploadService.upload({
-      data: {
-        fileInfo: fileData
-      },
+      data: { fileInfo: fileData },
       files: {}
     });
 
     console.log('Resultado do teste:');
-    console.log(' - URL: ', result?.url);
-    console.log(' - Provider: ', result?.provider);
-    console.log(' - Tamanho: ', result?.size);
-    console.log(' - isExternalUrl: ', result?.isExternalUrl);
+    console.log(' - URL:', result?.url);
+    console.log(' - Provider:', result?.provider);
+    console.log(' - Tamanho:', result?.size);
+    console.log(' - isExternalUrl:', result?.isExternalUrl);
 
     if (result?.url === r2Url) {
       console.log('✅ SUCESSO! A URL original foi preservada');
@@ -46,11 +48,10 @@ async function testR2Reference(strapi) {
   }
 }
 
-// Exportar para uso com strapi
 module.exports = { testR2Reference };
 
-// Se executado diretamente
-if (require.main === module) {
-  console.log('Execute este script através do Strapi:');
-  console.log('NODE_ENV=development node -e "require(\'./scripts/test-r2-reference.js\').testR2Reference(strapi)"');
-}
+// Instruções de uso:
+// 1. Acesse o console do Strapi:
+//    npx strapi console
+// 2. Execute o teste:
+//    await require('./scripts/test-r2-reference.js').testR2Reference(strapi, 'https://images.softmeat.com.br/produtos/bacon-12345.jpg');

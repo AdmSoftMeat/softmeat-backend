@@ -1,0 +1,337 @@
+backend_main
+├── .cache
+├── .editorconfig
+├── .env
+├── .env.example
+├── .eslintignore
+├── .eslintrc
+├── .git
+├── .gitignore
+├── .strapi-updater.json
+├── README.md
+├── Railway.toml
+├── build
+├── config
+│   ├── admin.js
+│   ├── api.js
+│   ├── database.js
+│   ├── functions
+│   │   └── bootstrap.js
+│   ├── middlewares
+│   │   ├── debug.js
+│   │   └── r2.js
+│   ├── middlewares.js
+│   ├── plugins-funcional.js
+│   ├── plugins.js
+│   ├── server.js
+│   └── webhooks.js
+├── database
+├── diagnose-r2-config.js
+├── favicon.png
+├── fix-r2-urls.js
+├── jsconfig.json
+├── nixpacks.toml
+├── node_modules
+├── package-lock.json
+├── package.json
+├── package.sharp.json
+├── public
+│   ├── robots.txt
+│   └── uploads
+│       └── .gitkeep
+├── railway.json
+├── scripts
+│   ├── check-r2-url.js
+│   ├── checkExternalUrl.js
+│   ├── copy-r2-buckets.js
+│   ├── diagnose-r2.js
+│   ├── diagnose-upload.js
+│   ├── fix-r2-urls.js
+│   ├── images
+│   │   ├── clientes
+│   │   │   ├── cliente-frimarti.jpg
+│   │   │   ├── cliente_moreira.jpg
+│   │   │   ├── cliente_olho.png
+│   │   │   ├── cliente_sadia.png
+│   │   │   └── cliete_brf.jpg
+│   │   ├── consultoria
+│   │   │   └── hero_consultoria.webp
+│   │   ├── cursos
+│   │   │   ├── curso_defumados_lcyzdw.webp
+│   │   │   ├── curso_emulsifacados_k6vg9v.webp
+│   │   │   ├── curso_linguicas_zkwunx.webp
+│   │   │   └── curso_salames_faduhk.webp
+│   │   ├── index
+│   │   │   ├── chef_hero_index.webp
+│   │   │   ├── consultoria_index.webp
+│   │   │   └── treinamento_index.webp
+│   │   ├── institucional
+│   │   │   ├── carrossel_sobre_1.webp
+│   │   │   ├── carrossel_sobre_2.webp
+│   │   │   ├── carrossel_sobre_3.webp
+│   │   │   ├── carrossel_sobre_4.webp
+│   │   │   ├── carrossel_sobre_5.webp
+│   │   │   └── carrossel_sobre_6.webp
+│   │   ├── logo
+│   │   │   └── logo_sm.jpg
+│   │   ├── produtos
+│   │   │   ├── Linguica_toscana_c_ervas.webp
+│   │   │   ├── Lonzino_lombo_suino_maturado.webp
+│   │   │   ├── Mortadela Bologna Italiana.webp
+│   │   │   ├── Ndujia_da_calabria.webp
+│   │   │   ├── bacon_prime.webp
+│   │   │   ├── bacon_prime_def.webp
+│   │   │   ├── calabresa.webp
+│   │   │   ├── coma_lombo_fatiada.webp
+│   │   │   ├── copa_defumada.webp
+│   │   │   ├── copa_defumada2.webp
+│   │   │   ├── copa_maturada_inteira.webp
+│   │   │   ├── copa_maturada_pedaço_maturada.webp
+│   │   │   ├── costelinha defumada.webp
+│   │   │   ├── culatello_presunto_cru.webp
+│   │   │   ├── culatello_presunto_cru2.webp
+│   │   │   ├── cupim_maturado.webp
+│   │   │   ├── fileto.webp
+│   │   │   ├── fiochetto_presunto_cru.webp
+│   │   │   ├── frango_defumado.webp
+│   │   │   ├── guancialle maturado.webp
+│   │   │   ├── hotdog.webp
+│   │   │   ├── italianinha.webp
+│   │   │   ├── joelho_defumado.webp
+│   │   │   ├── joelho_defumado_desossado.webp
+│   │   │   ├── kit_feijo.webp
+│   │   │   ├── knackwurst.webp
+│   │   │   ├── linguica_4_ervas_raspas_limao.webp
+│   │   │   ├── linguica_alheira.webp
+│   │   │   ├── linguica_c_alho_negro.webp
+│   │   │   ├── linguica_c_azeitonas_pretas_Tomate_.webp
+│   │   │   ├── linguica_c_pimenta_biquinho.webp
+│   │   │   ├── linguica_caipira_fina.webp
+│   │   │   ├── linguica_calabresa_defuamda.webp
+│   │   │   ├── linguica_toscana_c_coalho.webp
+│   │   │   ├── lombo defumado.webp
+│   │   │   ├── manta_c_coalho.webp
+│   │   │   ├── mortadela com azeitonas pretas e totamte seco.webp
+│   │   │   ├── mortadela_b_italina_2.webp
+│   │   │   ├── panceta tesa.webp
+│   │   │   ├── panceta_arrotolada.webp
+│   │   │   ├── panceta_defumada_enrolada.webp
+│   │   │   ├── panceta_tesa.webp
+│   │   │   ├── pastrami.webp
+│   │   │   ├── presunto_italiano.webp
+│   │   │   ├── salame_calabria.webp
+│   │   │   ├── salame_catalao.webp
+│   │   │   ├── salame_chorizo.webp
+│   │   │   ├── salame_fino_italiano.webp
+│   │   │   ├── salame_fino_petisco.webp
+│   │   │   ├── salame_hamburgues.webp
+│   │   │   ├── salame_italiano.webp
+│   │   │   ├── salame_peperoni.webp
+│   │   │   ├── salame_sopressata.webp
+│   │   │   ├── salsicha_viena.webp
+│   │   │   └── toscana_c_queijo_coalho.webp
+│   │   └── testemunhos
+│   │       ├── carrossel_treinamento_1.webp
+│   │       ├── carrossel_treinamento_10.mp4
+│   │       ├── carrossel_treinamento_11.mp4
+│   │       ├── carrossel_treinamento_12.mp4
+│   │       ├── carrossel_treinamento_2.webp
+│   │       ├── carrossel_treinamento_3.webp
+│   │       ├── carrossel_treinamento_4.webp
+│   │       ├── carrossel_treinamento_5.webp
+│   │       ├── carrossel_treinamento_6.webp
+│   │       ├── carrossel_treinamento_7.webp
+│   │       ├── carrossel_treinamento_8.mp4
+│   │       └── carrossel_treinamento_9.mp4
+│   ├── list-all-r2-objects.js
+│   ├── sync-env-vars.js
+│   ├── test-r2-connection.js
+│   ├── test-r2-provider.js
+│   ├── test-r2-reference-endpoint.js
+│   ├── test-r2-reference.js
+│   ├── test-r2-simple.js
+│   ├── test-r2-upload.js
+│   ├── update-env.js
+│   ├── upload-original-images-to-r2.js
+│   └── verify-r2-urls.js
+├── softmeat_backend_10_3_0_45.txt
+├── softmeat_backend_9_3_10_29.txt
+├── softmeat_backend_9_3_14_21.txt
+├── softmeat_backend_9_3_18_48.txt
+├── softmeat_backend_main_17_4_16_18.txt
+├── softmeat_backend_main_17_4_17_16.txt
+├── softmeat_backend_main_17_4_9_53.txt
+├── softmeat_backend_main_18_4_13_5.txt
+├── softmeat_backend_main_19_4_10_48.txt
+├── src
+│   ├── admin
+│   │   ├── app.example.js
+│   │   ├── app.js
+│   │   └── webpack.config.example.js
+│   ├── api
+│   │   ├── .gitkeep
+│   │   ├── carrossel-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── carrossel-treinamento
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── carrossel-treinamento.js
+│   │   │   ├── routes
+│   │   │   │   └── carrossel-treinamento.js
+│   │   │   └── services
+│   │   │       └── carrossel-treinamento.js
+│   │   ├── cliente
+│   │   │   ├── content-types
+│   │   │   │   └── cliente
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── cliente.js
+│   │   │   ├── routes
+│   │   │   │   └── cliente.js
+│   │   │   └── services
+│   │   │       └── cliente.js
+│   │   ├── configuracao-geral
+│   │   │   ├── content-types
+│   │   │   │   └── configuracao-geral
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── configuracao-geral.js
+│   │   │   ├── routes
+│   │   │   │   └── configuracao-geral.js
+│   │   │   └── services
+│   │   │       └── configuracao-geral.js
+│   │   ├── cronograma
+│   │   │   ├── content-types
+│   │   │   │   └── cronograma
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── cronograma.js
+│   │   │   ├── routes
+│   │   │   │   └── cronograma.js
+│   │   │   └── services
+│   │   │       └── cronograma.js
+│   │   ├── curso-online
+│   │   │   ├── content-types
+│   │   │   │   └── curso-online
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── curso-online.js
+│   │   │   ├── routes
+│   │   │   │   └── curso-online.js
+│   │   │   └── services
+│   │   │       └── curso-online.js
+│   │   ├── hero-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── hero-consultoria
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── hero-consultoria.js
+│   │   │   ├── routes
+│   │   │   │   └── hero-consultoria.js
+│   │   │   └── services
+│   │   │       └── hero-consultoria.js
+│   │   ├── home-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── home-consultoria
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-consultoria.js
+│   │   │   ├── routes
+│   │   │   │   └── home-consultoria.js
+│   │   │   └── services
+│   │   │       └── home-consultoria.js
+│   │   ├── home-hero
+│   │   │   ├── content-types
+│   │   │   │   └── home-hero
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-hero.js
+│   │   │   ├── routes
+│   │   │   │   └── home-hero.js
+│   │   │   └── services
+│   │   │       └── home-hero.js
+│   │   ├── home-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── home-treinamento
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-treinamento.js
+│   │   │   ├── routes
+│   │   │   │   └── home-treinamento.js
+│   │   │   └── services
+│   │   │       └── home-treinamento.js
+│   │   ├── index-destaque
+│   │   │   ├── content-types
+│   │   │   │   └── index-destaque
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── index-destaque.js
+│   │   │   ├── routes
+│   │   │   │   └── index-destaque.js
+│   │   │   └── services
+│   │   │       └── index-destaque.js
+│   │   ├── media-reference
+│   │   │   ├── controllers
+│   │   │   │   └── media-reference.js
+│   │   │   └── routes
+│   │   │       └── media-reference.js
+│   │   ├── produto
+│   │   │   ├── content-types
+│   │   │   │   └── produto
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── produto.js
+│   │   │   ├── routes
+│   │   │   │   └── produto.js
+│   │   │   └── services
+│   │   │       └── produto.js
+│   │   ├── sobre-carrossel
+│   │   │   ├── content-types
+│   │   │   │   └── sobre-carrossel
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── sobre-carrossel.js
+│   │   │   ├── routes
+│   │   │   │   └── sobre-carrossel.js
+│   │   │   └── services
+│   │   │       └── sobre-carrossel.js
+│   │   ├── testemunho
+│   │   │   ├── content-types
+│   │   │   │   └── testemunho
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── testemunho.js
+│   │   │   ├── routes
+│   │   │   │   └── testemunho.js
+│   │   │   └── services
+│   │   │       └── testemunho.js
+│   │   └── treinamento
+│   │       ├── content-types
+│   │       │   └── treinamento
+│   │       │       └── schema.json
+│   │       ├── controllers
+│   │       │   └── treinamento.js
+│   │       ├── routes
+│   │       │   └── treinamento.js
+│   │       └── services
+│   │           └── treinamento.js
+│   ├── extensions
+│   │   ├── .gitkeep
+│   │   └── upload
+│   │       ├── middlewares
+│   │       ├── services
+│   │       │   └── Upload.js
+│   │       └── strapi-server.js
+│   ├── index.js
+│   ├── middlewares
+│   │   ├── custom-naming.js
+│   │   ├── upload-debug.js
+│   │   └── upload-logger.js
+│   ├── provider
+│   │   └── r2-upload
+│   │       └── index.js
+│   └── utils
+│       ├── r2.js
+│       └── r2Helper.js
+├── teste.yxy
+└── tree.txt
