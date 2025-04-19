@@ -24,7 +24,11 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
-            // ERRO PROPOSITAL PARA TESTE
+            console.log("=== plugins.js carregado NO DEPLOY ===");
+            throw new Error("Testando se plugins.js está sendo carregado!");
+
+
+            // ERRO PROPOSITAL PARA TESTe
             throw new Error("Testando se plugins.js está sendo carregado!");
 
             // Logs para depuração
