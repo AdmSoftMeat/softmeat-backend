@@ -11,7 +11,6 @@ module.exports = {
     console.log('R2_BUCKET:', process.env.R2_BUCKET);
     console.log('R2_PUBLIC_URL:', process.env.R2_PUBLIC_URL);
 
-    // Removida a linha problemática que usava path.dirname com valor undefined
   },
 
   bootstrap(strapi) {
