@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = ({ env }) => ({
   upload: {
     config: {
-      provider: '@strapi/provider-upload-aws-s3', // Adicionado o provider
+      provider: '@strapi/provider-upload-aws-s3',
       providerOptions: {
         s3Options: {
           credentials: {
@@ -24,6 +24,9 @@ module.exports = ({ env }) => ({
         upload: {
           ACL: 'public-read',
           customPath: (file) => {
+            // ERRO PROPOSITAL PARA TESTE
+            throw new Error("Testando se plugins.js está sendo carregado!");
+
             // Logs para depuração
             console.log('File object:', JSON.stringify({
               name: file.name,
