@@ -6,7 +6,7 @@ async function testR2Reference(strapi, testUrl) {
   console.log('=== TESTE DE REFERENCIAMENTO DE IMAGENS R2 ===');
 
   try {
-    const r2Url = testUrl || 'https://images.softmeat.com.br/produtos/bacon-12345.jpg';
+    const r2Url = testUrl || 'https://storage.softmeat.com.br/produtos/bacon-12345.jpg';
     const fileData = {
       name: 'teste-referencia.jpg',
       url: r2Url,
@@ -54,4 +54,4 @@ module.exports = { testR2Reference };
 // 1. Acesse o console do Strapi:
 //    npx strapi console
 // 2. Execute o teste:
-//    await require('./scripts/test-r2-reference.js').testR2Reference(strapi, 'https://images.softmeat.com.br/produtos/bacon-12345.jpg');
+//    await require('./scripts/test-r2-reference.js').testR2Reference(strapi, 'https://storage.softmeat.com.br/produtos/bacon-12345.jpg');
