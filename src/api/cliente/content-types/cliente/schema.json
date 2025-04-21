@@ -23,10 +23,12 @@
       "multiple": false,
       "required": true
     },
-    
+
     "Descricao_Case": {
-      "type": "string",
+      "type": "richtext",
       "required": true
     }
   }
 }
+
+
