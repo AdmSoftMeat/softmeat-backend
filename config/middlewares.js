@@ -26,6 +26,18 @@ module.exports = [
       },
     },
   },
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      headers: '*',
+      origin: [
+        'https://softmeat.com.br',
+        'https://www.softmeat.com.br',
+        'https://softmeat-frontend.pages.dev', // Mantenha se necessário para testes
+      ],
+    },
+  },
   'strapi::cors',
   'strapi::poweredBy',
   'strapi::logger',
