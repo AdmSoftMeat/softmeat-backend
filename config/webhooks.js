@@ -1,32 +1,60 @@
-// config/webhooks.js
 module.exports = {
   default: {
-    'media.create': [
+    'entry.publish': [
       {
-        name: 'frontend-notification',
-        url: process.env.FRONTEND_WEBHOOK_URL,
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
         },
-      },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'entry.unpublish': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'media.create': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
     ],
     'media.update': [
       {
-        name: 'frontend-notification',
-        url: process.env.FRONTEND_WEBHOOK_URL,
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
         },
-      },
+        body: JSON.stringify({ purge_everything: true })
+      }
     ],
     'media.delete': [
       {
-        name: 'frontend-notification',
-        url: process.env.FRONTEND_WEBHOOK_URL,
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
         },
-      },
-    ],
-  },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ]
+  }
 };
+
