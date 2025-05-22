@@ -6,7 +6,7 @@ module.exports = ({ env }) => ({
       provider: 'aws-s3',
       providerOptions: {
         s3Client: new S3Client({
-          region: 'auto', // Cloudflare R2 requer 'auto'
+          region: 'auto',
           endpoint: env('R2_ENDPOINT'),
           credentials: {
             accessKeyId: env('R2_ACCESS_KEY'),
@@ -17,6 +17,12 @@ module.exports = ({ env }) => ({
         params: {
           Bucket: env('R2_BUCKET'),
           ACL: 'public-read',
+          Key: (file) => {
+            // Estrutura: /modelo/id/nome-do-arquivo.ext
+            const model = file.related[0]?.model?.uid || 'uploads';
+            const fileName = `${file.hash}${file.ext}`;
+            return `${model}/${file.id}/${fileName}`;
+          }
         },
         baseUrl: env('R2_PUBLIC_URL'),
       },
