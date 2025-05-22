@@ -1,4 +1,3 @@
-// config/plugins.js
 const path = require("path");
 
 module.exports = ({ env }) => ({
