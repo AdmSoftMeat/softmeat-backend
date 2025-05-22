@@ -12,12 +12,12 @@ module.exports = ({ env }) => ({
           ACL: 'public-read',
         },
       },
+      baseUrl: env('R2_PUBLIC_URL'),
       actionOptions: {
         upload: {},
         uploadStream: {},
         delete: {},
       },
-      baseUrl: env('R2_PUBLIC_URL'),
     },
   },
 });
