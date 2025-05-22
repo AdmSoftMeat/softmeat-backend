@@ -18,8 +18,7 @@ module.exports = ({ env }) => ({
           Bucket: env('R2_BUCKET'),
           ACL: 'public-read',
           Key: (file) => {
-            // Estrutura: /modelo/id/nome-do-arquivo.ext
-            const model = file.related[0]?.model?.uid || 'uploads';
+            const model = file.related[0]?.ref || 'uploads';
             const fileName = `${file.hash}${file.ext}`;
             return `${model}/${file.id}/${fileName}`;
           }

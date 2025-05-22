@@ -5,6 +5,9 @@ module.exports = ({ env }) => ({
   app: {
     keys: env.array('APP_KEYS'),
   },
+    analytics: {
+    enabled: false // Desativa o tracking
+  },
   emitErrors: false,
   maxUploadLimit: '50mb',
   maxRequestSize: '50mb',
