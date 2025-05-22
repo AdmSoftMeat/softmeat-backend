@@ -30,7 +30,7 @@
     "strapi-plugin-import-export-entries": "1.23.1"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.815.0",
+    "@aws-sdk/client-s3": "^3.425.0",
     "dotenv": "^16.4.7",
     "mime-types": "^2.1.35"
   },
