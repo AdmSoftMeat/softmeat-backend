@@ -1,4 +1,3 @@
-// config/plugins.js
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -10,15 +9,10 @@ module.exports = ({ env }) => ({
         region: "auto",
         params: {
           Bucket: env("R2_BUCKET"),
-          ACL: "public-read", // Obrigatório para acesso público
+          ACL: "public-read",
         },
       },
-      baseUrl: env("R2_PUBLIC_URL"), // Domínio customizado (ex: https://storage.softmeat.com.br)
-      actionOptions: {
-        upload: {},
-        uploadStream: {},
-        delete: {},
-      },
+      baseUrl: env("R2_PUBLIC_URL"), // Ex: https://storage.softmeat.com.br
     },
   },
 });
