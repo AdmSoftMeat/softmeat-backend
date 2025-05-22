@@ -52,7 +52,7 @@ module.exports = [
         'https://www.softmeat.com.br',
         'https://softmeat-frontend.pages.dev',
         // Backend/admin de produção (Railway ou custom domain)
-        'https://softmeat-backend-production-ac73.up.railway.app/',
+        'https://softmeat-backend-production-ac73.up.railway.app',
         // Adicione aqui o domínio customizado do backend, se usar
         // 'https://api.softmeat.com.br',
         // Desenvolvimento local
