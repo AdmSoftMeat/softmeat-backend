@@ -10,7 +10,7 @@
   "scripts": {
     "build": "strapi build",
     "develop": "strapi develop",
-    "start": "NODE_ENV=production strapi start",
+    "start": "cross-env NODE_ENV=production strapi start",
     "strapi": "strapi"
   },
   "resolutions": {
@@ -31,6 +31,7 @@
     "strapi-plugin-import-export-entries": "1.23.1"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "mime-types": "^2.1.35"
   },
