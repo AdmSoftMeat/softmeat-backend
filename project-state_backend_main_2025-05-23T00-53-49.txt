@@ -1,0 +1,2603 @@
+ESTADO DO PROJETO: backend_main
+D 22/05/2025, 21:53:49
+
+ÁRVORE DE DIRETÓRIOS
+
+├── .git
+│   ... conteúdo omitido
+├── .strapi
+│   └── client
+│       ├── app.js
+│       └── index.html
+├── build
+│   ... conteúdo omitido
+├── config
+│   ├── admin.js
+│   ├── api.js
+│   ├── database.js
+│   ├── middlewares.js
+│   ├── plugins.js
+│   ├── server.js
+│   └── webhooks.js
+├── database
+│   └── migrations
+├── node_modules
+│   ... conteúdo omitido
+├── public
+│   ├── uploads
+│   │   └── .gitkeep
+│   └── robots.txt
+├── scripts
+│   ├── images
+│   │   ├── clientes
+│   │   │   ├── cliente_moreira.jpg
+│   │   │   ├── cliente_olho.png
+│   │   │   ├── cliente_sadia.png
+│   │   │   ├── cliente-frimarti.jpg
+│   │   │   └── cliete_brf.jpg
+│   │   ├── consultoria
+│   │   │   └── hero_consultoria.webp
+│   │   ├── cursos
+│   │   │   ├── curso_defumados_lcyzdw.webp
+│   │   │   ├── curso_emulsifacados_k6vg9v.webp
+│   │   │   ├── curso_linguicas_zkwunx.webp
+│   │   │   └── curso_salames_faduhk.webp
+│   │   ├── index
+│   │   │   ├── chef_hero_index.webp
+│   │   │   ├── consultoria_index.webp
+│   │   │   └── treinamento_index.webp
+│   │   ├── institucional
+│   │   │   ├── carrossel_sobre_1.webp
+│   │   │   ├── carrossel_sobre_2.webp
+│   │   │   ├── carrossel_sobre_3.webp
+│   │   │   ├── carrossel_sobre_4.webp
+│   │   │   ├── carrossel_sobre_5.webp
+│   │   │   └── carrossel_sobre_6.webp
+│   │   ├── logo
+│   │   │   └── logo_sm.jpg
+│   │   ├── produtos
+│   │   │   ├── bacon_prime_def.webp
+│   │   │   ├── bacon_prime.webp
+│   │   │   ├── calabresa.webp
+│   │   │   ├── coma_lombo_fatiada.webp
+│   │   │   ├── copa_defumada.webp
+│   │   │   ├── copa_defumada2.webp
+│   │   │   ├── copa_maturada_inteira.webp
+│   │   │   ├── copa_maturada_pedaço_maturada.webp
+│   │   │   ├── costelinha defumada.webp
+│   │   │   ├── culatello_presunto_cru.webp
+│   │   │   ├── culatello_presunto_cru2.webp
+│   │   │   ├── cupim_maturado.webp
+│   │   │   ├── fileto.webp
+│   │   │   ├── fiochetto_presunto_cru.webp
+│   │   │   ├── frango_defumado.webp
+│   │   │   ├── guancialle maturado.webp
+│   │   │   ├── hotdog.webp
+│   │   │   ├── italianinha.webp
+│   │   │   ├── joelho_defumado_desossado.webp
+│   │   │   ├── joelho_defumado.webp
+│   │   │   ├── kit_feijo.webp
+│   │   │   ├── knackwurst.webp
+│   │   │   ├── linguica_4_ervas_raspas_limao.webp
+│   │   │   ├── linguica_alheira.webp
+│   │   │   ├── linguica_c_alho_negro.webp
+│   │   │   ├── linguica_c_azeitonas_pretas_Tomate_.webp
+│   │   │   ├── linguica_c_pimenta_biquinho.webp
+│   │   │   ├── linguica_caipira_fina.webp
+│   │   │   ├── linguica_calabresa_defuamda.webp
+│   │   │   ├── linguica_toscana_c_coalho.webp
+│   │   │   ├── Linguica_toscana_c_ervas.webp
+│   │   │   ├── lombo defumado.webp
+│   │   │   ├── Lonzino_lombo_suino_maturado.webp
+│   │   │   ├── manta_c_coalho.webp
+│   │   │   ├── Mortadela Bologna Italiana.webp
+│   │   │   ├── mortadela com azeitonas pretas e totamte seco.webp
+│   │   │   ├── mortadela_b_italina_2.webp
+│   │   │   ├── Ndujia_da_calabria.webp
+│   │   │   ├── panceta tesa.webp
+│   │   │   ├── panceta_arrotolada.webp
+│   │   │   ├── panceta_defumada_enrolada.webp
+│   │   │   ├── panceta_tesa.webp
+│   │   │   ├── pastrami.webp
+│   │   │   ├── presunto_italiano.webp
+│   │   │   ├── salame_calabria.webp
+│   │   │   ├── salame_catalao.webp
+│   │   │   ├── salame_chorizo.webp
+│   │   │   ├── salame_fino_italiano.webp
+│   │   │   ├── salame_fino_petisco.webp
+│   │   │   ├── salame_hamburgues.webp
+│   │   │   ├── salame_italiano.webp
+│   │   │   ├── salame_peperoni.webp
+│   │   │   ├── salame_sopressata.webp
+│   │   │   ├── salsicha_viena.webp
+│   │   │   └── toscana_c_queijo_coalho.webp
+│   │   └── testemunhos
+│   │       ├── carrossel_treinamento_1.webp
+│   │       ├── carrossel_treinamento_10.mp4
+│   │       ├── carrossel_treinamento_11.mp4
+│   │       ├── carrossel_treinamento_12.mp4
+│   │       ├── carrossel_treinamento_2.webp
+│   │       ├── carrossel_treinamento_3.webp
+│   │       ├── carrossel_treinamento_4.webp
+│   │       ├── carrossel_treinamento_5.webp
+│   │       ├── carrossel_treinamento_6.webp
+│   │       ├── carrossel_treinamento_7.webp
+│   │       ├── carrossel_treinamento_8.mp4
+│   │       └── carrossel_treinamento_9.mp4
+│   ├── diagnose-upload.js
+│   ├── test-r2-reference.js
+│   └── test-strapi-upload-active.js
+├── src
+│   ├── admin
+│   │   ├── app.example.js
+│   │   ├── app.js
+│   │   └── webpack.config.example.js
+│   ├── api
+│   │   ├── carrossel-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── carrossel-treinamento
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── carrossel-treinamento.js
+│   │   │   ├── routes
+│   │   │   │   └── carrossel-treinamento.js
+│   │   │   └── services
+│   │   │       └── carrossel-treinamento.js
+│   │   ├── cliente
+│   │   │   ├── content-types
+│   │   │   │   └── cliente
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── cliente.js
+│   │   │   ├── routes
+│   │   │   │   └── cliente.js
+│   │   │   └── services
+│   │   │       └── cliente.js
+│   │   ├── configuracao-geral
+│   │   │   ├── content-types
+│   │   │   │   └── configuracao-geral
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── configuracao-geral.js
+│   │   │   ├── routes
+│   │   │   │   └── configuracao-geral.js
+│   │   │   └── services
+│   │   │       └── configuracao-geral.js
+│   │   ├── cronograma
+│   │   │   ├── content-types
+│   │   │   │   └── cronograma
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── cronograma.js
+│   │   │   ├── routes
+│   │   │   │   └── cronograma.js
+│   │   │   └── services
+│   │   │       └── cronograma.js
+│   │   ├── curso-online
+│   │   │   ├── content-types
+│   │   │   │   └── curso-online
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── curso-online.js
+│   │   │   ├── routes
+│   │   │   │   └── curso-online.js
+│   │   │   └── services
+│   │   │       └── curso-online.js
+│   │   ├── hero-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── hero-consultoria
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── hero-consultoria.js
+│   │   │   ├── routes
+│   │   │   │   └── hero-consultoria.js
+│   │   │   └── services
+│   │   │       └── hero-consultoria.js
+│   │   ├── home-consultoria
+│   │   │   ├── content-types
+│   │   │   │   └── home-consultoria
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-consultoria.js
+│   │   │   ├── routes
+│   │   │   │   └── home-consultoria.js
+│   │   │   └── services
+│   │   │       └── home-consultoria.js
+│   │   ├── home-hero
+│   │   │   ├── content-types
+│   │   │   │   └── home-hero
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-hero.js
+│   │   │   ├── routes
+│   │   │   │   └── home-hero.js
+│   │   │   └── services
+│   │   │       └── home-hero.js
+│   │   ├── home-treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── home-treinamento
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── home-treinamento.js
+│   │   │   ├── routes
+│   │   │   │   └── home-treinamento.js
+│   │   │   └── services
+│   │   │       └── home-treinamento.js
+│   │   ├── index-destaque
+│   │   │   ├── content-types
+│   │   │   │   └── index-destaque
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── index-destaque.js
+│   │   │   ├── routes
+│   │   │   │   └── index-destaque.js
+│   │   │   └── services
+│   │   │       └── index-destaque.js
+│   │   ├── media-reference
+│   │   │   ├── controllers
+│   │   │   │   └── media-reference.js
+│   │   │   └── routes
+│   │   │       └── media-reference.js
+│   │   ├── produto
+│   │   │   ├── content-types
+│   │   │   │   └── produto
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── produto.js
+│   │   │   ├── routes
+│   │   │   │   └── produto.js
+│   │   │   └── services
+│   │   │       └── produto.js
+│   │   ├── sobre-carrossel
+│   │   │   ├── content-types
+│   │   │   │   └── sobre-carrossel
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── sobre-carrossel.js
+│   │   │   ├── routes
+│   │   │   │   └── sobre-carrossel.js
+│   │   │   └── services
+│   │   │       └── sobre-carrossel.js
+│   │   ├── testemunho
+│   │   │   ├── content-types
+│   │   │   │   └── testemunho
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── testemunho.js
+│   │   │   ├── routes
+│   │   │   │   └── testemunho.js
+│   │   │   └── services
+│   │   │       └── testemunho.js
+│   │   ├── treinamento
+│   │   │   ├── content-types
+│   │   │   │   └── treinamento
+│   │   │   │       └── schema.json
+│   │   │   ├── controllers
+│   │   │   │   └── treinamento.js
+│   │   │   ├── routes
+│   │   │   │   └── treinamento.js
+│   │   │   └── services
+│   │   │       └── treinamento.js
+│   │   └── .gitkeep
+│   └── index.js
+├── .editorconfig
+├── .env
+├── .env.example
+├── .eslintignore
+├── .eslintrc
+├── .gitignore
+├── .strapi-updater.json
+├── backup.sql
+├── favicon.png
+├── jsconfig.json
+├── nixpacks.toml
+├── node
+├── package.json
+├── package.sharp.json
+├── railway.json
+├── Railway.toml
+├── README.md
+├── softmeat_backend_main_19_4_17_10.txt
+├── softmeat_backend_main_19_4_18_27.txt
+├── softmeat_backend_main_21_4_20_48.txt
+└── test.txt
+
+CONTEÚDO DOS ARQUIVOS
+
+---
+.strapi\client\app.js
+/**
+ * This file was automatically generated by Strapi.
+ * Any modifications made will be discarded.
+ */
+import i18N from "@strapi/plugin-i18n/strapi-admin";
+import usersPermissions from "@strapi/plugin-users-permissions/strapi-admin";
+import importExportEntries from "strapi-plugin-import-export-entries/strapi-admin";
+import { renderAdmin } from "@strapi/strapi/admin";
+
+import customisations from "../../src/admin/app.js";
+
+renderAdmin(document.getElementById("strapi"), {
+  customisations,
+  plugins: {
+    i18n: i18N,
+    "users-permissions": usersPermissions,
+    "import-export-entries": importExportEntries,
+  },
+});
+
+
+---
+.strapi\client\index.html
+<!DOCTYPE html>
+<html lang="en">
+  <!--
+This file was automatically generated by Strapi.
+Any modifications made will be discarded.
+-->
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="robots" content="noindex" />
+    <meta name="referrer" content="same-origin" />
+    <title>Strapi Admin</title>
+    <style>
+      html,
+      body,
+      #strapi {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="strapi"></div>
+    <noscript
+      ><div class="strapi--root">
+        <div class="strapi--no-js">
+          <style type="text/css">
+            .strapi--root {
+              position: absolute;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0;
+              background: #fff;
+            }
+
+            .strapi--no-js {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              font-family: helvetica, arial, sans-serif;
+            }
+          </style>
+          <h1>JavaScript disabled</h1>
+          <p>
+            Please
+            <a href="https://www.enable-javascript.com/">enable JavaScript</a>
+            in your browser and reload the page to proceed.
+          </p>
+        </div>
+      </div></noscript
+    >
+  </body>
+</html>
+
+
+---
+config\admin.js
+module.exports = ({ env }) => ({
+  auth: {
+    secret: env('ADMIN_JWT_SECRET'),
+  },
+  apiToken: {
+    salt: env('API_TOKEN_SALT'),
+  },
+  transfer: {
+    token: {
+      salt: env('TRANSFER_TOKEN_SALT'),
+    },
+  },
+  flags: {
+    nps: env.bool('FLAG_NPS', false),
+    promoteEE: env.bool('FLAG_PROMOTE_EE', false),
+  },
+  watchIgnoreFiles: [
+    '**/config/sync/**',
+  ],
+});
+
+
+---
+config\api.js
+module.exports = {
+  rest: {
+    defaultLimit: 25,
+    maxLimit: 100,
+    withCount: true,
+  },
+  responses: {
+    privateAttributes: ['_v', 'id', 'created_at'],
+  },
+  webhook: {
+    populateRelations: false,
+  },
+};
+
+
+---
+config\database.js
+module.exports = ({ env }) => ({
+  connection: {
+    client: 'postgres',
+    connection: {
+      host: env('PGHOST', 'localhost'),
+      port: env.int('PGPORT', 5432), // Garante conversão para número
+      database: env('PGDATABASE', 'strapi'),
+      user: env('PGUSER', 'postgres'),
+      password: env('PGPASSWORD', 'postgres'),
+      ssl: env.bool('DATABASE_SSL', true) ? {
+        rejectUnauthorized: env.bool('DATABASE_SSL_SELF', false)
+      } : false,
+    },
+    debug: false,
+  },
+});
+
+
+---
+config\middlewares.js
+// config/middlewares.js
+
+module.exports = [
+  'strapi::errors',
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': [
+            "'self'",
+            'https:',
+            'http://localhost:*',
+            'https://softmeat.com.br',
+            'https://www.softmeat.com.br',
+            'https://softmeat-frontend.pages.dev',
+            'https://storage.softmeat.com.br',
+            'https://*.r2.cloudflarestorage.com',
+          ],
+          'img-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            'https://storage.softmeat.com.br',
+            'https://*.r2.cloudflarestorage.com',
+          ],
+          'media-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            'https://storage.softmeat.com.br',
+            'https://*.r2.cloudflarestorage.com',
+          ],
+          'script-src': ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net'],
+          'style-src': ["'self'", "'unsafe-inline'"],
+          'font-src': ["'self'", 'data:'],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  {
+    name: 'strapi::cors',
+    config: {
+      enabled: true,
+      origin: [
+        // Frontend de produção
+        'https://softmeat.com.br',
+        'https://www.softmeat.com.br',
+        'https://softmeat-frontend.pages.dev',
+        // Backend/admin de produção (Railway ou custom domain)
+        'https://softmeat-backend-production-ac73.up.railway.app',
+        // Adicione aqui o domínio customizado do backend, se usar
+        // 'https://api.softmeat.com.br',
+        // Desenvolvimento local
+        'http://localhost:4321',
+        'http://127.0.0.1:4321',
+        'http://localhost:1337',
+        'http://127.0.0.1:1337',
+      ],
+      headers: [
+        'Content-Type',
+        'Authorization',
+        'Origin',
+        
+[...conteúdo truncado]
+
+
+---
+config\plugins.js
+module.exports = ({ env }) => ({
+  upload: {
+    config: {
+      provider: "aws-s3",
+      providerOptions: {
+        accessKeyId: env("R2_ACCESS_KEY"),
+        secretAccessKey: env("R2_SECRET_KEY"),
+        endpoint: env("R2_ENDPOINT"),
+        region: "auto",
+        params: {
+          Bucket: env("R2_BUCKET"),
+          ACL: "public-read",
+        },
+      },
+      baseUrl: env("R2_PUBLIC_URL"), // Ex: https://storage.softmeat.com.br
+    },
+  },
+});
+
+
+---
+config\server.js
+module.exports = ({ env }) => ({
+  host: env('HOST', '0.0.0.0'),
+  port: env.int('PORT', 1337),
+  url: env('PUBLIC_URL', 'https://softmeat-backend-production-ac73.up.railway.app'),
+  app: {
+    keys: env.array('APP_KEYS'),
+  },
+    analytics: {
+    enabled: false // Desativa o tracking
+  },
+  emitErrors: false,
+  maxUploadLimit: '50mb',
+  maxRequestSize: '50mb',
+  http2: {
+    enabled: false,
+  },
+  webhooks: {
+    populateRelations: false,
+  },
+  timeout: 120000,
+});
+
+
+---
+config\webhooks.js
+module.exports = {
+  default: {
+    'entry.publish': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'entry.unpublish': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'media.create': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'media.update': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ],
+    'media.delete': [
+      {
+        name: 'cloudflare-purge-all',
+        url: process.env.CLOUDFLARE_PURGE_URL,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`
+        },
+        body: JSON.stringify({ purge_everything: true })
+      }
+    ]
+  }
+};
+
+
+
+---
+public\uploads\.gitkeep
+
+
+---
+public\robots.txt
+# To prevent search engines from seeing the site altogether, uncomment the next two lines:
+# User-Agent: *
+# Disallow: /
+
+
+---
+scripts\diagnose-upload.js
+// scripts/diagnose-upload.js
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config();
+
+console.log('=== DIAGNÓSTICO DE UPLOAD R2/STRAPI ===\n');
+
+// 1. Variáveis de ambiente
+const requiredVars = [
+  'R2_ACCESS_KEY', 'R2_SECRET_KEY', 'R2_ENDPOINT', 'R2_BUCKET', 'R2_PUBLIC_URL', 'R2_REGION'
+];
+console.log('Variáveis de ambiente:');
+requiredVars.forEach(v => {
+  console.log(`${v}:`, process.env[v] ? '✓ Configurado' : '✗ Não configurado');
+});
+
+// 2. plugins.js
+const pluginsPath = path.join(process.cwd(), 'config', 'plugins.js');
+if (fs.existsSync(pluginsPath)) {
+  const content = fs.readFileSync(pluginsPath, 'utf8');
+  console.log('\n✓ plugins.js encontrado');
+  console.log('  Provider configurado:', content.includes('@strapi/provider-upload-aws-s3') ? 'aws-s3' : 'outro');
+  console.log('  customPath presente:', content.includes('customPath') ? 'Sim' : 'Não');
+} else {
+  console.log('\n✗ plugins.js não encontrado');
+}
+
+// 3. plugins-funcional.js (deve ser removido)
+const pluginsFuncPath = path.join(process.cwd(), 'config', 'plugins-funcional.js');
+if (fs.existsSync(pluginsFuncPath)) {
+  console.log('\n⚠️ plugins-funcional.js encontrado (remova para evitar conflitos)');
+}
+
+// 4. config/env/
+const envPath = path.join(process.cwd(), 'config', 'env');
+if (fs.existsSync(envPath)) {
+  console.log('\n⚠️ Pasta config/env encontrada (verifique sobrescritas de configuração)');
+}
+
+// 5. src/extensions/upload/
+const extUploadPath = path.join(process.cwd(), 'src', 'extensions', 'upload');
+if (fs.existsSync(extUploadPath)) {
+  console.log('\n✓ src/extensions/upload/ existe');
+  const files = fs.readdirSync(extUploadPath);
+  if (files.length) {
+    console.log('  Arquivos encontrados:', files.join(', '));
+  } else {
+    console.log('  (Pasta está vazia)');
+  }
+}
+
+// 6. src/provider/r2-upload/index.js
+const providerPath = path.join(process.cwd(), 'src', 'provider', 'r2-upload', 'index.js');
+if (fs.existsSync(providerPath)) {
+  console.log('\n✓ Provider cust
+[...conteúdo truncado]
+
+
+---
+scripts\test-r2-reference.js
+// scripts/test-r2-reference.js
+const dotenv = require('dotenv');
+dotenv.config();
+
+async function testR2Reference(strapi, testUrl) {
+  console.log('=== TESTE DE REFERENCIAMENTO DE IMAGENS R2 ===');
+
+  try {
+    const r2Url = testUrl || 'https://storage.softmeat.com.br/produtos/bacon-12345.jpg';
+    const fileData = {
+      name: 'teste-referencia.jpg',
+      url: r2Url,
+      mime: 'image/jpeg',
+      size: 10240,
+      ext: '.jpg',
+    };
+
+    if (!strapi?.plugin) {
+      console.error('❌ Strapi não está disponível no contexto. Execute via Strapi.');
+      return;
+    }
+
+    const uploadService = strapi.plugin('upload').service('upload');
+    if (!uploadService || !uploadService.upload) {
+      console.error('❌ Serviço de upload não disponível.');
+      return;
+    }
+
+    const result = await uploadService.upload({
+      data: { fileInfo: fileData },
+      files: {}
+    });
+
+    console.log('Resultado do teste:');
+    console.log(' - URL:', result?.url);
+    console.log(' - Provider:', result?.provider);
+    console.log(' - Tamanho:', result?.size);
+    console.log(' - isExternalUrl:', result?.isExternalUrl);
+
+    if (result?.url === r2Url) {
+      console.log('✅ SUCESSO! A URL original foi preservada');
+    } else {
+      console.log('❌ FALHA! A URL foi modificada');
+    }
+
+  } catch (error) {
+    console.error('Erro durante o teste:', error);
+  }
+}
+
+module.exports = { testR2Reference };
+
+// Instruções de uso:
+// 1. Acesse o console do Strapi:
+//    npx strapi console
+// 2. Execute o teste:
+//    await require('./scripts/test-r2-reference.js').testR2Reference(strapi, 'https://storage.softmeat.com.br/produtos/bacon-12345.jpg');
+
+
+---
+scripts\test-strapi-upload-active.js
+// scripts/test-strapi-upload-active.js
+const dotenv = require('dotenv');
+dotenv.config();
+
+async function testStrapiUploadActive(strapi) {
+  console.log('=== TESTE DE UPLOAD ATIVO DO STRAPI ===');
+
+  try {
+    // 1. Descobrir provider ativo do upload
+    let providerName = null;
+    let providerConfig = null;
+    let customPathFunc = null;
+
+    // Tenta pelo plugin oficial
+    if (strapi?.plugin?.('upload')?.provider) {
+      providerName = strapi.plugin('upload').provider;
+      providerConfig = strapi.plugin('upload').providerConfig;
+    } else if (strapi?.plugins?.upload?.provider) {
+      providerName = strapi.plugins.upload.provider;
+      providerConfig = strapi.plugins.upload.providerConfig;
+    }
+
+    // Tenta acessar o customPath
+    const uploadConfig = strapi.config.get('plugin.upload');
+    if (uploadConfig?.actionOptions?.upload?.customPath) {
+      customPathFunc = uploadConfig.actionOptions.upload.customPath;
+    }
+
+    console.log('Provider ativo:', providerName || '(não detectado)');
+    console.log('Configuração do provider:', providerConfig || '(não detectada)');
+    console.log('Função customPath está presente:', !!customPathFunc);
+
+    // 2. Simula um upload para testar o customPath
+    if (customPathFunc) {
+      const fakeFile = {
+        name: 'Teste_Árvore-çãõ.jpg',
+        hash: '123abc',
+        ext: '.jpg',
+        related: [{ ref: 'api::produto.produto' }],
+        mime: 'image/jpeg',
+        path: null,
+      };
+      const resultPath = customPathFunc(fakeFile);
+      console.log('Resultado do customPath para arquivo de teste:', resultPath);
+    } else {
+      console.log('customPath não está configurado na actionOptions.upload.');
+    }
+
+    // 3. Verifica se existe provider customizado carregado
+    try {
+      const customProvider = require('../src/provider/r2-upload/index.js');
+      if (customProvider) {
+        console.log('⚠️ Provider customizado r2-upload está presente no projeto!');
+      }
+    } catch (err) {
+      // Não exi
+[...conteúdo truncado]
+
+
+---
+src\admin\app.example.js
+const config = {
+  locales: [
+    // 'ar',
+    // 'fr',
+    // 'cs',
+    // 'de',
+    // 'dk',
+    // 'es',
+    // 'he',
+    // 'id',
+    // 'it',
+    // 'ja',
+    // 'ko',
+    // 'ms',
+    // 'nl',
+    // 'no',
+    // 'pl',
+    // 'pt-BR',
+    // 'pt',
+    // 'ru',
+    // 'sk',
+    // 'sv',
+    // 'th',
+    // 'tr',
+    // 'uk',
+    // 'vi',
+    // 'zh-Hans',
+    // 'zh',
+  ],
+};
+
+const bootstrap = (app) => {
+  console.log(app);
+};
+
+export default {
+  config,
+  bootstrap,
+};
+
+
+---
+src\admin\app.js
+const config = {
+  locales: ['pt-BR'],
+  translations: {
+    'pt-BR': {
+      'app.components.LeftMenu.navbrand.title': 'SoftMeat Dashboard',
+      'Content Manager': 'Gerenciador de Conteúdo',
+      'app.components.LeftMenu.collection.title': 'Tipos de Coleção',
+      'Settings.permissions': 'Permissões',
+      'Settings.roles': 'Funções',
+      'Settings.users': 'Usuários',
+      'notification.success.saved': 'Salvo com sucesso',
+      'global.save': 'Salvar',
+      'global.delete': 'Deletar',
+      'global.back': 'Voltar',
+      'global.cancel': 'Cancelar',
+    },
+  },
+};
+
+
+---
+src\admin\webpack.config.example.js
+'use strict';
+
+/* eslint-disable no-unused-vars */
+module.exports = (config, webpack) => {
+  // Note: we provide webpack above so you should not `require` it
+  // Perform customizations to webpack config
+  // Important: return the modified config
+  return config;
+};
+
+
+---
+src\api\carrossel-treinamento\content-types\carrossel-treinamento\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "carrossel_treinamentos",
+  "info": {
+    "singularName": "carrossel-treinamento",
+    "pluralName": "carrossel-treinamentos",
+    "displayName": "Carrossel Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "DepoimentosTreinamentos": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    },
+    "edicao": {
+      "type": "text",
+      "required": true
+    }
+  }
+}
+
+
+---
+src\api\carrossel-treinamento\controllers\carrossel-treinamento.js
+'use strict';
+
+/**
+ * carrossel-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::carrossel-treinamento.carrossel-treinamento');
+
+
+---
+src\api\carrossel-treinamento\routes\carrossel-treinamento.js
+'use strict';
+
+/**
+ * carrossel-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::carrossel-treinamento.carrossel-treinamento');
+
+
+---
+src\api\carrossel-treinamento\services\carrossel-treinamento.js
+'use strict';
+
+/**
+ * carrossel-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::carrossel-treinamento.carrossel-treinamento');
+
+
+---
+src\api\cliente\content-types\cliente\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "clientes",
+  "info": {
+    "singularName": "cliente",
+    "pluralName": "clientes",
+    "displayName": "Clientes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+
+    "Descricao_Case": {
+      "type": "richtext",
+      "required": true
+    }
+  }
+}
+
+
+
+
+---
+src\api\cliente\controllers\cliente.js
+'use strict';
+
+/**
+ * cliente controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cliente.cliente');
+
+
+---
+src\api\cliente\routes\cliente.js
+'use strict';
+
+/**
+ * cliente router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cliente.cliente');
+
+
+---
+src\api\cliente\services\cliente.js
+'use strict';
+
+/**
+ * cliente service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cliente.cliente');
+
+
+---
+src\api\configuracao-geral\content-types\configuracao-geral\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "configuracao_gerais",
+  "info": {
+    "singularName": "configuracao-geral",
+    "pluralName": "configuracao-gerais",
+    "displayName": "Configuracao Geral"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "LogoNavegacao": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+---
+src\api\configuracao-geral\controllers\configuracao-geral.js
+'use strict';
+
+/**
+ * configuracao-geral controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::configuracao-geral.configuracao-geral');
+
+
+---
+src\api\configuracao-geral\routes\configuracao-geral.js
+'use strict';
+
+/**
+ * configuracao-geral router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::configuracao-geral.configuracao-geral');
+
+
+---
+src\api\configuracao-geral\services\configuracao-geral.js
+'use strict';
+
+/**
+ * configuracao-geral service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::configuracao-geral.configuracao-geral');
+
+
+---
+src\api\cronograma\content-types\cronograma\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "cronogramas",
+  "info": {
+    "singularName": "cronograma",
+    "pluralName": "cronogramas",
+    "displayName": "Cronogramas",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Data": {
+      "type": "date",
+      "required": true
+    },
+    "Cidade": {
+      "type": "string",
+      "required": true,
+      "default": "Ribeirão Preto"
+    },
+    "Vagas_Totais": {
+      "type": "integer",
+      "required": true
+    },
+    "Vagas_Disponiveis": {
+      "type": "integer"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+
+
+
+    "treinamento": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::treinamento.treinamento"
+    }
+  }
+}
+
+
+
+---
+src\api\cronograma\controllers\cronograma.js
+'use strict';
+
+/**
+ * cronograma controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::cronograma.cronograma');
+
+
+---
+src\api\cronograma\routes\cronograma.js
+'use strict';
+
+/**
+ * cronograma router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::cronograma.cronograma');
+
+
+---
+src\api\cronograma\services\cronograma.js
+'use strict';
+
+/**
+ * cronograma service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::cronograma.cronograma');
+
+
+---
+src\api\curso-online\content-types\curso-online\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "cursos_online",
+  "info": {
+    "singularName": "curso-online",
+    "pluralName": "cursos-online",
+    "displayName": "Cursos Online"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome",
+      "required": true
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Básico",
+        "Intermediário",
+        "Avançado",
+        "Especialização"
+      ]
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Hotmart": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "Ordem_Exibicao": {
+      "type": "integer",
+      "default": 999
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_Title": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+---
+src\api\curso-online\controllers\curso-online.js
+'use strict';
+
+/**
+ * curso-online controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::curso-online.curso-online');
+
+
+---
+src\api\curso-online\routes\curso-online.js
+'use strict';
+
+/**
+ * curso-online router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::curso-online.curso-online');
+
+
+---
+src\api\curso-online\services\curso-online.js
+'use strict';
+
+/**
+ * curso-online service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::curso-online.curso-online');
+
+
+---
+src\api\hero-consultoria\content-types\hero-consultoria\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "hero_consultorias",
+  "info": {
+    "singularName": "hero-consultoria",
+    "pluralName": "hero-consultorias",
+    "displayName": "Hero Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Consultor": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+---
+src\api\hero-consultoria\controllers\hero-consultoria.js
+'use strict';
+
+/**
+ * hero-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::hero-consultoria.hero-consultoria');
+
+
+---
+src\api\hero-consultoria\routes\hero-consultoria.js
+'use strict';
+
+/**
+ * hero-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::hero-consultoria.hero-consultoria');
+
+
+---
+src\api\hero-consultoria\services\hero-consultoria.js
+'use strict';
+
+/**
+ * hero-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::hero-consultoria.hero-consultoria');
+
+
+---
+src\api\home-consultoria\content-types\home-consultoria\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "home_consultorias",
+  "info": {
+    "singularName": "home-consultoria",
+    "pluralName": "home-consultorias",
+    "displayName": "Home Consultoria"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ConsultoriaPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+---
+src\api\home-consultoria\controllers\home-consultoria.js
+'use strict';
+
+/**
+ * home-consultoria controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-consultoria.home-consultoria');
+
+
+---
+src\api\home-consultoria\routes\home-consultoria.js
+'use strict';
+
+/**
+ * home-consultoria router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-consultoria.home-consultoria');
+
+
+---
+src\api\home-consultoria\services\home-consultoria.js
+'use strict';
+
+/**
+ * home-consultoria service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-consultoria.home-consultoria');
+
+
+---
+src\api\home-hero\content-types\home-hero\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "home_heroes",
+  "info": {
+    "singularName": "home-hero",
+    "pluralName": "home-heroes",
+    "displayName": "Home Hero",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "PageHero": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
+
+
+---
+src\api\home-hero\controllers\home-hero.js
+'use strict';
+
+/**
+ * home-hero controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-hero.home-hero');
+
+
+---
+src\api\home-hero\routes\home-hero.js
+'use strict';
+
+/**
+ * home-hero router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-hero.home-hero');
+
+
+---
+src\api\home-hero\services\home-hero.js
+'use strict';
+
+/**
+ * home-hero service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-hero.home-hero');
+
+
+---
+src\api\home-treinamento\content-types\home-treinamento\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "home_treinamentos",
+  "info": {
+    "singularName": "home-treinamento",
+    "pluralName": "home-treinamentos",
+    "displayName": "Home Treinamento"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "TreinamentoPage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
+    }
+  }
+}
+
+
+---
+src\api\home-treinamento\controllers\home-treinamento.js
+'use strict';
+
+/**
+ * home-treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::home-treinamento.home-treinamento');
+
+
+---
+src\api\home-treinamento\routes\home-treinamento.js
+'use strict';
+
+/**
+ * home-treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::home-treinamento.home-treinamento');
+
+
+---
+src\api\home-treinamento\services\home-treinamento.js
+'use strict';
+
+/**
+ * home-treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::home-treinamento.home-treinamento');
+
+
+---
+src\api\index-destaque\content-types\index-destaque\schema.json
+{
+  "kind": "singleType",
+  "collectionName": "index_destaques",
+  "info": {
+    "singularName": "index-destaque",
+    "pluralName": "index-destaques",
+    "displayName": "Index Destaques",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cursos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::curso-online.curso-online"
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "produtos_em_destaque": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::produto.produto"
+    }
+  }
+}
+
+
+---
+src\api\index-destaque\controllers\index-destaque.js
+'use strict';
+
+/**
+ * index-destaque controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::index-destaque.index-destaque');
+
+
+---
+src\api\index-destaque\routes\index-destaque.js
+'use strict';
+
+/**
+ * index-destaque router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::index-destaque.index-destaque');
+
+
+---
+src\api\index-destaque\services\index-destaque.js
+'use strict';
+
+/**
+ * index-destaque service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::index-destaque.index-destaque');
+
+
+---
+src\api\media-reference\controllers\media-reference.js
+// src/api/media-reference/controllers/media-reference.js
+'use strict';
+
+module.exports = {
+  async reference(ctx) {
+    try {
+      const { url, name, caption, alternativeText } = ctx.request.body;
+
+      if (!url) {
+        return ctx.badRequest('URL é obrigatória');
+      }
+
+      // Criar o objeto de referência
+      const fileData = {
+        fileInfo: {
+          name: name || url.split('/').pop(),
+          url,
+          caption,
+          alternativeText,
+          isExternalUrl: true
+        }
+      };
+
+      // Usar o serviço de upload existente
+      const file = await strapi.plugins.upload.services.upload.upload(fileData);
+
+      return {
+        success: true,
+        file
+      };
+    } catch (error) {
+      console.error('[Media Reference] Erro:', error);
+      return ctx.badRequest('Erro ao referenciar mídia', { error: error.message });
+    }
+  }
+};
+
+
+---
+src\api\media-reference\routes\media-reference.js
+// src/api/media-reference/routes/media-reference.js
+'use strict';
+
+module.exports = {
+  routes: [
+    {
+      method: 'POST',
+      path: '/api/media/reference',
+      handler: 'media-reference.reference',
+      config: {
+        policies: [],
+        description: 'Referencia uma mídia externa por URL'
+      }
+    }
+  ]
+};
+
+
+---
+src\api\produto\content-types\produto\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "produtos",
+  "info": {
+    "singularName": "produto",
+    "pluralName": "produtos",
+    "displayName": "Produtos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Nome"
+    },
+    "Categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Maturados",
+        "Fermentados",
+        "Defumados",
+        "Cozidos",
+        "Frescais"
+      ],
+      "required": true
+    },
+    "Descricao_Catalogo": {
+      "type": "string",
+      "required": true
+    },
+    "Descricao": {
+      "type": "richtext",
+      "required": true
+    },
+    "Link_Mercado_Livre": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Destaque": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Meta_File": {
+      "type": "string"
+    },
+    "Meta_Description": {
+      "type": "text"
+    },
+    "Disponivel": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}
+
+
+---
+src\api\produto\controllers\produto.js
+'use strict';
+
+/**
+ * produto controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::produto.produto');
+
+
+---
+src\api\produto\routes\produto.js
+'use strict';
+
+/**
+ * produto router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::produto.produto');
+
+
+---
+src\api\produto\services\produto.js
+'use strict';
+
+/**
+ * produto service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::produto.produto');
+
+
+---
+src\api\sobre-carrossel\content-types\sobre-carrossel\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "sobre_carrosseis",
+  "info": {
+    "singularName": "sobre-carrossel",
+    "pluralName": "sobre-carrosseis",
+    "displayName": "Sobre Carrossel"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Titulo": {
+      "type": "string"
+    },
+    "Imagens": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
+
+
+---
+src\api\sobre-carrossel\controllers\sobre-carrossel.js
+'use strict';
+
+/**
+ * sobre-carrossel controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::sobre-carrossel.sobre-carrossel');
+
+
+---
+src\api\sobre-carrossel\routes\sobre-carrossel.js
+'use strict';
+
+/**
+ * sobre-carrossel router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::sobre-carrossel.sobre-carrossel');
+
+
+---
+src\api\sobre-carrossel\services\sobre-carrossel.js
+'use strict';
+
+/**
+ * sobre-carrossel service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::sobre-carrossel.sobre-carrossel');
+
+
+---
+src\api\testemunho\content-types\testemunho\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "testemunhos",
+  "info": {
+    "singularName": "testemunho",
+    "pluralName": "testemunhos",
+    "displayName": "Testemunhos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Imagem": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "Foto": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Depoimento": {
+      "type": "text"
+    },
+    "curso_realizado": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::treinamento.treinamento"
+    },
+    "LinkedIn": {
+      "type": "string"
+    },
+    "Instagram": {
+      "type": "string"
+    },
+    "Facebook": {
+      "type": "string"
+    },
+    "Cargo": {
+      "type": "string"
+    },
+    "Empresa": {
+      "type": "string"
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
+
+
+---
+src\api\testemunho\controllers\testemunho.js
+'use strict';
+
+/**
+ * testemunho controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::testemunho.testemunho');
+
+
+---
+src\api\testemunho\routes\testemunho.js
+'use strict';
+
+/**
+ * testemunho router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::testemunho.testemunho');
+
+
+---
+src\api\testemunho\services\testemunho.js
+'use strict';
+
+/**
+ * testemunho service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::testemunho.testemunho');
+
+
+---
+src\api\treinamento\content-types\treinamento\schema.json
+{
+  "kind": "collectionType",
+  "collectionName": "treinamentos",
+  "info": {
+    "singularName": "treinamento",
+    "pluralName": "treinamentos",
+    "displayName": "Treinamentos",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Nome": {
+      "type": "string",
+      "required": true
+    },
+    "Nivel": {
+      "type": "enumeration",
+      "enum": [
+        "Basico",
+        "Intermediario",
+        "Avancado"
+      ],
+      "required": true
+    },
+    "Duracao": {
+      "type": "integer",
+      "required": true,
+      "default": 1
+    },
+    "Descricao_Catalogo": {
+      "type": "text",
+      "required": true
+    },
+    "Topicos": {
+      "type": "richtext",
+      "required": true
+    },
+    "Ativo": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "Ordem": {
+      "type": "integer"
+    },
+    "Meta_Title": {
+      "type": "text"
+    },
+    "Meta_Description": {
+      "type": "text"
+    }
+  }
+}
+
+
+---
+src\api\treinamento\controllers\treinamento.js
+'use strict';
+
+/**
+ * treinamento controller
+ */
+
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::treinamento.treinamento');
+
+
+---
+src\api\treinamento\routes\treinamento.js
+'use strict';
+
+/**
+ * treinamento router
+ */
+
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::treinamento.treinamento');
+
+
+---
+src\api\treinamento\services\treinamento.js
+'use strict';
+
+/**
+ * treinamento service
+ */
+
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::treinamento.treinamento');
+
+
+---
+src\api\.gitkeep
+
+
+---
+src\index.js
+module.exports = {
+  register(strapi) {
+    console.log('=== VERIFICAÇÃO DE AMBIENTE DE PRODUÇÃO ===');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('DATABASE_CLIENT:', process.env.DATABASE_CLIENT);
+
+    console.log('=== CONFIGURAÇÃO R2 ===');
+    console.log('R2_ACCESS_KEY configurado:', !!process.env.R2_ACCESS_KEY);
+    console.log('R2_SECRET_KEY configurado:', !!process.env.R2_SECRET_KEY);
+    console.log('R2_ENDPOINT:', process.env.R2_ENDPOINT);
+    console.log('R2_BUCKET:', process.env.R2_BUCKET);
+    console.log('R2_PUBLIC_URL:', process.env.R2_PUBLIC_URL);
+
+  },
+
+  bootstrap(strapi) {
+    console.log(`Strapi iniciado em ${process.env.NODE_ENV} mode`);
+  }
+};
+
+
+---
+.editorconfig
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{package.json,*.yml}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+
+---
+.env
+# Configurações Básicas
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=2VJlAoWpXfzDHzGqX7IVTA==,QSdu6uWUfiOcoPe5SgRI+w==,I9GT5I/hmBtES9PgklJFow==,W6LM3JinQfZ6BN/+u5aFSA==
+API_TOKEN_SALT=isFissNnC7p/4U1GpNnMDA==
+ADMIN_JWT_SECRET=E4rq8HGv9avD80L7hXY8TA==
+JWT_SECRET=vDZKwN6GXEPTfdIC8Aijrg==
+NODE_ENV=production
+TRANSFER_TOKEN_SALT=f7AxKedt8ymyXFKKRHw47A==
+
+# PostgreSQL (Railway Service Reference)
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+DATABASE_SSL=true
+PGHOST=${{Postgres.PGHOST}}
+PGPORT=${{Postgres.PGPORT}}
+PGDATABASE=${{Postgres.PGDATABASE}}
+PGUSER=${{Postgres.PGUSER}}
+PGPASSWORD=${{Postgres.PGPASSWORD}}
+
+# Cloudflare R2
+R2_ACCESS_KEY=c5a5705f56ec2c7d0198c9b712eda3c4
+R2_SECRET_KEY=f01299d076461e261024d2778df30f9e23e6b74674633efa918798a58b806d33
+R2_BUCKET=softmeat-storage
+R2_ENDPOINT=https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com
+R2_PUBLIC_URL=https://storage.softmeat.com.br
+R2_REGION=auto
+
+
+---
+.env.example
+# Configuração do Servidor
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS=chave1,chave2,chave3,chave4
+API_TOKEN_SALT=tokenSalt
+ADMIN_JWT_SECRET=jwtSecret
+TRANSFER_TOKEN_SALT=transferSalt
+JWT_SECRET=jwtSecret
+DATABASE_CLIENT=sqlite
+DATABASE_FILENAME=/mnt/data/softmeat-db/data.db
+URL=http://localhost:1337
+PUBLIC_URL=http://localhost:1337
+WEBHOOKS_POPULATE_RELATIONS=false
+
+# R2 Configuration
+R2_ACCESS_KEY=c5a5705f56ec2c7d0198c9b712eda3c4
+R2_SECRET_KEY=f01299d076461e261024d2778df30f9e23e6b74674633efa918798a58b806d33
+R2_ENDPOINT=https://950693b7edbd202561c3d20e4a036247.r2.cloudflarestorage.com
+R2_BUCKET=softmeat-storage
+R2_REGION=auto
+R2_PUBLIC_URL=https://storage.softmeat.com.br
+
+
+---
+.eslintignore
+.cache
+build
+**/node_modules/**
+
+
+---
+.eslintrc
+{
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "env": {
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "browser": false
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": false
+    },
+    "sourceType": "module"
+  },
+  "globals": {
+    "strapi": true
+  },
+  "rules": {
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "linebreak-style": ["error", "unix"],
+    "no-console": 0,
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"]
+  }
+}
+
+
+---
+.gitignore
+############################
+# OS X
+############################
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+._*
+
+
+############################
+# Linux
+############################
+
+*~
+
+
+############################
+# Windows
+############################
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+
+############################
+# Packages
+############################
+
+*.7z
+*.csv
+*.dat
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.seed
+*.so
+*.swo
+*.swp
+*.swn
+*.swm
+*.out
+*.pid
+
+
+############################
+# Logs and databases
+############################
+
+.tmp
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+
+############################
+# Misc.
+############################
+
+*#
+ssl
+.idea
+nbproject
+public/uploads/*
+!public/uploads/.gitkeep
+
+############################
+# Node.js
+############################
+
+lib-cov
+lcov.info
+pids
+logs
+results
+node_modules
+.node_history
+
+############################
+# Tests
+############################
+
+testApp
+coverage
+
+############################
+# Strapi
+############################
+
+.env
+.env.*
+license.txt
+exports
+*.cache
+dist
+build
+.strapi-updater.json
+
+
+---
+.strapi-updater.json
+{
+	"latest": "5.13.1",
+	"lastUpdateCheck": 1747899716104,
+	"lastNotification": 1747899716091
+}
+
+---
+backup.sql
+
+
+---
+jsconfig.json
+{
+  "compilerOptions": {
+    "checkJs": true
+  }
+}
+
+
+---
+nixpacks.toml
+[phases.setup]
+nixPkgs = ["nodejs", "python3", "gcc", "vips", "pkg-config"]
+
+[phases.install]
+cmds = [
+  "mkdir -p /tmp/uploads",
+  "chmod 777 /tmp/uploads",
+  "npm install"
+]
+
+[phases.build]
+cmds = ["NODE_OPTIONS='--max_old_space_size=4096' NODE_ENV=production npm run build"]
+
+[start]
+cmd = "npm run start"
+
+[variables]
+NODE_ENV = "production"
+
+
+---
+node
+
+
+---
+package.json
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "license": "MIT",
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "scripts": {
+    "build": "strapi build",
+    "develop": "strapi develop",
+    "start": "cross-env NODE_ENV=production strapi start",
+    "strapi": "strapi"
+  },
+  "resolutions": {
+    "@koa/cors": "3.4.1",
+    "@radix-ui/react-use-effect-event": "0.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@strapi/plugin-i18n": "4.15.5",
+    "@strapi/plugin-users-permissions": "4.15.5",
+    "@strapi/provider-upload-aws-s3": "4.15.5",
+    "@strapi/strapi": "4.15.5",
+    "aws-sdk": "^2.1583.0",
+    "pg": "8.14.1",
+    "pg-connection-string": "2.7.0",
+    "sharp": "0.32.6",
+    "strapi-plugin-import-export-entries": "1.23.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
+    "mime-types": "^2.1.35"
+  },
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "3289c097-8983-4dc0-817c-2192d4dfd468"
+  }
+}
+
+
+---
+package.sharp.json
+{
+  "name": "softmeat-backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@strapi/strapi": "4.15.5",
+    "@strapi/plugin-users-permissions": "4.15.5",
+    "@strapi/plugin-i18n": "4.15.5",
+    "better-sqlite3": "8.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=20.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "your-uuid-here"
+  }
+}
+
+
+---
+railway.json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npm run start",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
+
+
+---
+Railway.toml
+
+echo "[build]
+builder = \"nixpacks\"
+buildCommand = \"yarn build\"
+
+[deploy]
+startCommand = \"yarn start\"
+healthcheckPath = \"/\"
+healthcheckTimeout = 100
+
+[database]
+type = \"sqlite\"" > railway.toml
+
+
+---
+README.md
+# 🚀 Getting started with Strapi
+
+Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html) (CLI) which lets you scaffold and manage your project in seconds.
+
+### `develop`
+
+Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-develop)
+
+```
+npm run develop
+# or
+yarn develop
+```
+
+### `start`
+
+Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-start)
+
+```
+npm run start
+# or
+yarn start
+```
+
+### `build`
+
+Build your admin panel. [Learn more](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html#strapi-build)
+
+```
+npm run build
+# or
+yarn build
+```
+
+## ⚙️ Deployment
+
+Strapi gives you many possible deployment options for your project. Find the one that suits you on the [deployment section of the documentation](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment.html).
+
+## 📚 Learn more
+
+- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
+- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
+- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
+- [Strapi blog](https://docs.strapi.io) - Official Strapi blog containing articles made by the Strapi team and the community.
+- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+
+Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+
+## ✨ Community
+
+- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
+- [Forum](https://forum.strapi.io/) - Place
+[...conteúdo truncado]
+
+
+---
+test.txt
+found
+
+
