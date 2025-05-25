@@ -1,18 +1,16 @@
 module.exports = ({ env }) => ({
   upload: {
     config: {
-      provider: "aws-s3",
+      provider: 'strapi-provider-cloudflare-r2',
       providerOptions: {
-        accessKeyId: env("R2_ACCESS_KEY"),
-        secretAccessKey: env("R2_SECRET_KEY"),
-        endpoint: env("R2_ENDPOINT"),
-        region: "auto",
+        accessKeyId: env('R2_ACCESS_KEY'),
+        secretAccessKey: env('R2_SECRET_KEY'),
+        endpoint: env('R2_ENDPOINT'),
         params: {
-          Bucket: env("R2_BUCKET"),
-          ACL: "public-read",
+          Bucket: env('R2_BUCKET'),
         },
+        cloudflarePublicAccessUrl: env('R2_PUBLIC_URL'),
       },
-      baseUrl: env("R2_PUBLIC_URL"), // Ex: https://storage.softmeat.com.br
     },
   },
 });

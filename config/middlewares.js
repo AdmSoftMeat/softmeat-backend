@@ -18,14 +18,14 @@ module.exports = [
             'https://storage.softmeat.com.br',
             'https://*.r2.cloudflarestorage.com',
           ],
-          'img-src': [
-            "'self'",
-            'data:',
-            'blob:',
-            'market-assets.strapi.io',
-            'https://storage.softmeat.com.br',
-            'https://*.r2.cloudflarestorage.com',
-          ],
+        'img-src': [
+          "'self'",
+          'data:',
+          'blob:',
+          'market-assets.strapi.io',
+          'https://storage.softmeat.com.br',
+          'https://*.r2.cloudflarestorage.com',
+        ],
           'media-src': [
             "'self'",
             'data:',
