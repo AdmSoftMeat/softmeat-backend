@@ -1,3 +1,4 @@
+// config/plugins.js
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -8,9 +9,16 @@ module.exports = ({ env }) => ({
         endpoint: env('R2_ENDPOINT'),
         params: {
           Bucket: env('R2_BUCKET'),
+          ACL: 'public-read' // Adição crítica
         },
         cloudflarePublicAccessUrl: env('R2_PUBLIC_URL'),
+        pool: true // Fundamental para pastas numéricas
       },
-    },
-  },
+      actionOptions: {
+        upload: {},
+        uploadStream: {},
+        delete: {},
+      }
+    }
+  }
 });
