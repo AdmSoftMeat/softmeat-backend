@@ -1,4 +1,4 @@
-// config/plugins.js
+// config/plugins.js - Configuração definitiva do Strapi
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -9,10 +9,10 @@ module.exports = ({ env }) => ({
         endpoint: env('R2_ENDPOINT'),
         params: {
           Bucket: env('R2_BUCKET'),
-          ACL: 'public-read' // Adição crítica
+          ACL: 'public-read' // Garante acesso público
         },
         cloudflarePublicAccessUrl: env('R2_PUBLIC_URL'),
-        pool: true // Fundamental para pastas numéricas
+        pool: true // Mantém estrutura de pastas numéricas
       },
       actionOptions: {
         upload: {},
@@ -20,5 +20,11 @@ module.exports = ({ env }) => ({
         delete: {},
       }
     }
+  },
+  webhooks: {
+    defaultHeaders: {
+      'Authorization': `Bearer ${env('GITHUB_WEBHOOK_TOKEN')}`
+    }
   }
 });
+
