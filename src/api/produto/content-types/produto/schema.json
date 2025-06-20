@@ -45,6 +45,11 @@
       "required": true,
       "unique": true
     },
+    "Preco": {
+      "type": "decimal",
+      "default": 0.00,
+      "required": true
+    },
     "Imagem": {
       "type": "media",
       "multiple": true,
